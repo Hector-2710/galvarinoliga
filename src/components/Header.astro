@@ -1,0 +1,107 @@
+<header class="header">
+	<div class="header__inner">
+		<div class="header__left">
+			<img src="/logo.png" alt="Galvarino Liga Futbol" class="header__logo" width="40" height="40" />
+		</div>
+
+		<span class="header__title">Galvarino Liga Futbol</span>
+
+		<button class="header__menu-btn" aria-label="Abrir menú de navegación">
+			<span class="hamburger-line"></span>
+			<span class="hamburger-line"></span>
+			<span class="hamburger-line"></span>
+		</button>
+	</div>
+</header>
+
+<style>
+	.header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100;
+		height: var(--header-height);
+		background: linear-gradient(
+			135deg,
+			var(--color-tertiary) 0%,
+			var(--color-tertiary-light) 100%
+		);
+		border-bottom: 2px solid var(--color-primary);
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+	}
+
+	.header__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 100%;
+		padding: 0 var(--spacing-md);
+		max-width: 1200px;
+		margin: 0 auto;
+		position: relative;
+	}
+
+	.header__menu-btn {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 4px;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: var(--spacing-sm);
+		min-width: 40px;
+		min-height: 40px;
+		border-radius: var(--border-radius-sm);
+		transition: background 0.2s;
+	}
+
+	.header__menu-btn:active {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.hamburger-line {
+		display: block;
+		width: 24px;
+		height: 3px;
+		background: var(--color-neutral);
+		border-radius: 2px;
+		transition: transform 0.2s;
+	}
+
+	.header__left {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+	}
+
+	.header__logo {
+		width: 62px;
+		height:62px;
+		object-fit: cover;
+		flex-shrink: 0;
+	}
+
+	.header__title {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		white-space: nowrap;
+		font-family: var(--font-headline);
+		font-size: 1.2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.04em;
+	}
+
+	@media (min-width: 480px) {
+		.header__title {
+			font-size: 1.125rem;
+		}
+		.header__logo {
+			width: 40px;
+			height: 40px;
+		}
+	}
+</style>
