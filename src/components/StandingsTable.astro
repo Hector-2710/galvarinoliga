@@ -1,0 +1,233 @@
+---
+export interface Team {
+	pos: number;
+	equipo_nombre: string;
+	pj: number;
+	g: number;
+	e: number;
+	p: number;
+	gf: number;
+	gc: number;
+	dg: number;
+	pts: number;
+}
+
+export interface Props {
+	teams: Team[];
+}
+
+const { teams } = Astro.props;
+
+// Helper to determine row highlight
+function getRowClass(pos: number): string {
+	if (pos === 1) return 'standings__row--leader';
+	if (pos <= 3) return 'standings__row--top';
+	return '';
+}
+---
+
+<section class="standings">
+	<div class="container">
+		<h2 class="section-title fade-in-up">Tabla de Posiciones</h2>
+
+		{
+			teams.length > 0 ? (
+				<div class="standings__table-wrapper">
+					<table class="standings__table">
+						<thead>
+							<tr class="standings__header-row">
+								<th class="standings__th standings__th--pos">#</th>
+								<th class="standings__th standings__th--team">Equipo</th>
+								<th class="standings__th">PJ</th>
+								<th class="standings__th">G</th>
+								<th class="standings__th">E</th>
+								<th class="standings__th">P</th>
+								<th class="standings__th">GF</th>
+								<th class="standings__th">GC</th>
+								<th class="standings__th">DG</th>
+								<th class="standings__th standings__th--pts">Pts</th>
+							</tr>
+						</thead>
+						<tbody>
+							{
+								teams.map((team, i) => (
+									<tr class={`standings__row ${getRowClass(team.pos)} fade-in-up`} style={`animation-delay: ${i * 0.06}s`}>
+										<td class="standings__td standings__td--pos">
+											<span class={`standings__pos-badge ${team.pos <= 3 ? 'standings__pos-badge--highlight' : ''}`}>
+												{team.pos}
+											</span>
+										</td>
+									<td class="standings__td standings__td--team">
+										<span class="standings__team-name">{team.equipo_nombre} {team.pos === 1 ? '★' : ''}</span>
+									</td>
+										<td class="standings__td">{team.pj}</td>
+										<td class="standings__td">{team.g}</td>
+										<td class="standings__td">{team.e}</td>
+										<td class="standings__td">{team.p}</td>
+										<td class="standings__td">{team.gf}</td>
+										<td class="standings__td">{team.gc}</td>
+										<td class={`standings__td standings__td--dg ${team.dg > 0 ? 'standings__td--dg-positive' : team.dg < 0 ? 'standings__td--dg-negative' : ''}`}>
+											{team.dg > 0 ? `+${team.dg}` : team.dg}
+										</td>
+										<td class="standings__td standings__td--pts">
+											<span class="standings__pts-badge">{team.pts}</span>
+										</td>
+									</tr>
+								))
+							}
+						</tbody>
+					</table>
+				</div>
+			) : (
+				<p style="color: var(--color-secondary); text-align: center; padding: 2rem 0;">
+					No hay datos de posiciones disponibles.
+				</p>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.standings {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.standings__table-wrapper {
+		overflow-x: auto;
+		margin: 0 calc(-1 * var(--spacing-md));
+		padding: 0 var(--spacing-md);
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+
+	.standings__table {
+		width: 100%;
+		min-width: 380px;
+		border-collapse: separate;
+		border-spacing: 0 4px;
+	}
+
+	.standings__header-row {
+		background: var(--color-primary);
+	}
+
+	.standings__th {
+		font-family: var(--font-label);
+		font-size: 0.65rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		padding: var(--spacing-sm) var(--spacing-xs);
+		text-align: center;
+		letter-spacing: 0.06em;
+		white-space: nowrap;
+	}
+
+	.standings__th--pos {
+		text-align: center;
+		width: 36px;
+		padding-left: var(--spacing-sm);
+	}
+
+	.standings__th--team {
+		text-align: left;
+		padding-left: var(--spacing-sm);
+	}
+
+	.standings__th--pts {
+		padding-right: var(--spacing-sm);
+	}
+
+	.standings__row {
+		background: var(--color-tertiary-light);
+		border-radius: var(--border-radius-sm);
+		transition: background 0.2s;
+	}
+
+	.standings__row--leader {
+		background: linear-gradient(
+			135deg,
+			rgba(230, 30, 42, 0.15) 0%,
+			var(--color-tertiary-light) 100%
+		);
+		border-left: 3px solid var(--color-primary);
+	}
+
+	.standings__row--top {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.standings__td {
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		padding: var(--spacing-sm) var(--spacing-xs);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	.standings__td--pos {
+		padding-left: var(--spacing-sm);
+	}
+
+	.standings__td--team {
+		text-align: left;
+		padding-left: var(--spacing-sm);
+	}
+
+	.standings__td--pts {
+		padding-right: var(--spacing-sm);
+	}
+
+	.standings__pos-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.08);
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--color-secondary);
+	}
+
+	.standings__pos-badge--highlight {
+		background: var(--color-primary);
+		color: var(--color-neutral);
+		box-shadow: var(--shadow-red);
+	}
+
+	.standings__team-name {
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--color-neutral);
+	}
+
+	.standings__td--dg-positive {
+		color: #4ade80;
+		font-weight: 600;
+	}
+
+	.standings__td--dg-negative {
+		color: var(--color-primary);
+		font-weight: 600;
+	}
+
+	.standings__pts-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28px;
+		padding: 2px 8px;
+		border-radius: 20px;
+		background: var(--color-primary);
+		color: var(--color-neutral);
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		font-weight: 700;
+		box-shadow: var(--shadow-red);
+	}
+</style>

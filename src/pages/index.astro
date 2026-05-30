@@ -1,11 +1,102 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+export const prerender = false;
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Banner from '../components/Banner.astro';
+import NextMatches from '../components/NextMatches.astro';
+import StandingsTable from '../components/StandingsTable.astro';
+import Footer from '../components/Footer.astro';
+import { createServerSupabase } from '../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: proximosPartidos } = await supabase
+	.from('partidos')
+	.select(`
+		id,
+		fecha,
+		hora,
+		cancha,
+		estado,
+		equipo1:equipo1_id(nombre),
+		equipo2:equipo2_id(nombre)
+	`)
+	.gte('fecha', new Date().toISOString().split('T')[0])
+	.order('fecha', { ascending: true })
+	.order('hora', { ascending: true })
+	.limit(5);
+
+const matches = (proximosPartidos ?? []).map((p) => {
+	const eq1 = Array.isArray(p.equipo1) ? p.equipo1[0] : p.equipo1 as { nombre: string } | null;
+	const eq2 = Array.isArray(p.equipo2) ? p.equipo2[0] : p.equipo2 as { nombre: string } | null;
+	return {
+	id: p.id,
+	equipo1: eq1?.nombre ?? '',
+	equipo2: eq2?.nombre ?? '',
+	fecha: p.fecha,
+	hora: p.hora ?? '',
+	cancha: p.cancha,
+	estado: p.estado,
+};
+});
+
+const { data: posiciones } = await supabase
+	.from('vista_tabla_posiciones')
+	.select('*');
+
+const standings = (posiciones ?? []).map((t, index) => ({
+	pos: index + 1,
+	equipo_nombre: t.equipo_nombre ?? '',
+	pj: t.pj ?? 0,
+	g: t.g ?? 0,
+	e: t.e ?? 0,
+	p: t.p ?? 0,
+	gf: t.gf ?? 0,
+	gc: t.gc ?? 0,
+	dg: t.dg ?? 0,
+	pts: t.pts ?? 0,
+}));
 ---
 
 <Layout>
-	<Welcome />
+	<Header />
+	<main class="main-content">
+		<section class="banner-section">
+			<div class="container">
+				<Banner />
+			</div>
+		</section>
+		<NextMatches matches={matches} />
+		<StandingsTable teams={standings} />
+		<section class="banner-section">
+			<div class="container">
+				<Banner/>
+			</div>
+		</section>
+	</main>
+	<Footer />
 </Layout>
+
+<style is:global>
+	.main-content {
+		padding-top: var(--header-height);
+		padding-bottom: var(--spacing-lg);
+		min-height: 100vh;
+		min-height: 100dvh;
+	}
+
+	.banner-section {
+		padding: var(--spacing-md) 0;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.fade-in-up {
+			opacity: 0;
+			animation: fadeInUp 0.5s ease-out both;
+		}
+	}
+</style>
