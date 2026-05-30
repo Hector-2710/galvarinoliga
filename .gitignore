@@ -12,10 +12,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
-# environment variables
+# environment variables (real secrets — .env.example IS tracked)
 .env
+.env.local
 .env.production
+.env.staging
 
 # macOS-specific files
 .DS_Store
@@ -25,3 +28,7 @@ pnpm-debug.log*
 
 # opencode
 .opencode/
+docs/agents_result/
+
+# pnpm store (local cache)
+.pnpm-store/
