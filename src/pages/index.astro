@@ -1,13 +1,13 @@
 ---
 export const prerender = false;
 
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Banner from '../components/Banner.astro';
-import NextMatches from '../components/NextMatches.astro';
-import StandingsTable from '../components/StandingsTable.astro';
-import Footer from '../components/Footer.astro';
-import { createServerSupabase } from '../lib/supabase';
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Banner from "../components/Banner.astro";
+import NextMatches from "../components/NextMatches.astro";
+import StandingsTable from "../components/StandingsTable.astro";
+import Footer from "../components/Footer.astro";
+import { createServerSupabase } from "../lib/supabase";
 
 const supabase = createServerSupabase({
 	request: Astro.request,
@@ -15,8 +15,9 @@ const supabase = createServerSupabase({
 });
 
 const { data: proximosPartidos } = await supabase
-	.from('partidos')
-	.select(`
+	.from("partidos")
+	.select(
+		`
 		id,
 		fecha,
 		hora,
@@ -24,33 +25,38 @@ const { data: proximosPartidos } = await supabase
 		estado,
 		equipo1:equipo1_id(nombre),
 		equipo2:equipo2_id(nombre)
-	`)
-	.gte('fecha', new Date().toISOString().split('T')[0])
-	.order('fecha', { ascending: true })
-	.order('hora', { ascending: true })
+	`,
+	)
+	.gte("fecha", new Date().toISOString().split("T")[0])
+	.order("fecha", { ascending: true })
+	.order("hora", { ascending: true })
 	.limit(5);
 
 const matches = (proximosPartidos ?? []).map((p) => {
-	const eq1 = Array.isArray(p.equipo1) ? p.equipo1[0] : p.equipo1 as { nombre: string } | null;
-	const eq2 = Array.isArray(p.equipo2) ? p.equipo2[0] : p.equipo2 as { nombre: string } | null;
+	const eq1 = Array.isArray(p.equipo1)
+		? p.equipo1[0]
+		: (p.equipo1 as { nombre: string } | null);
+	const eq2 = Array.isArray(p.equipo2)
+		? p.equipo2[0]
+		: (p.equipo2 as { nombre: string } | null);
 	return {
-	id: p.id,
-	equipo1: eq1?.nombre ?? '',
-	equipo2: eq2?.nombre ?? '',
-	fecha: p.fecha,
-	hora: p.hora ?? '',
-	cancha: p.cancha,
-	estado: p.estado,
-};
+		id: p.id,
+		equipo1: eq1?.nombre ?? "",
+		equipo2: eq2?.nombre ?? "",
+		fecha: p.fecha,
+		hora: p.hora ?? "",
+		cancha: p.cancha,
+		estado: p.estado,
+	};
 });
 
 const { data: posiciones } = await supabase
-	.from('vista_tabla_posiciones')
-	.select('*');
+	.from("vista_tabla_posiciones")
+	.select("*");
 
 const standings = (posiciones ?? []).map((t, index) => ({
 	pos: index + 1,
-	equipo_nombre: t.equipo_nombre ?? '',
+	equipo_nombre: t.equipo_nombre ?? "",
 	pj: t.pj ?? 0,
 	g: t.g ?? 0,
 	e: t.e ?? 0,
@@ -74,7 +80,7 @@ const standings = (posiciones ?? []).map((t, index) => ({
 		<StandingsTable teams={standings} />
 		<section class="banner-section">
 			<div class="container">
-				<Banner/>
+				<Banner />
 			</div>
 		</section>
 	</main>
@@ -88,7 +94,7 @@ const standings = (posiciones ?? []).map((t, index) => ({
 		min-height: 100vh;
 		min-height: 100dvh;
 	}
-
+	
 	.banner-section {
 		padding: var(--spacing-md) 0;
 	}
