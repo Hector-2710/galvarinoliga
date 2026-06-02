@@ -29,6 +29,7 @@ pnpm-debug.log*
 # opencode
 .opencode/
 docs/
+agents_result/
 
 # pnpm store (local cache)
 .pnpm-store/
