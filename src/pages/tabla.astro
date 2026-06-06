@@ -1,0 +1,131 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import StandingsTable from "../components/StandingsTable.astro";
+import { createServerSupabase } from "../lib/supabase";
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: posiciones } = await supabase
+	.from("vista_tabla_posiciones")
+	.select("*");
+
+const standings = (posiciones ?? []).map((t, index) => ({
+	pos: index + 1,
+	equipo_nombre: t.equipo_nombre ?? "",
+	pj: t.pj ?? 0,
+	g: t.g ?? 0,
+	e: t.e ?? 0,
+	p: t.p ?? 0,
+	gf: t.gf ?? 0,
+	gc: t.gc ?? 0,
+	dg: t.dg ?? 0,
+	pts: t.pts ?? 0,
+}));
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="tabla">
+			<div class="container">
+				<h1 class="page-title fade-in-up">Tabla de Posiciones</h1>
+				<p class="page-subtitle fade-in-up">Clasificación actualizada de todos los equipos de la liga</p>
+
+				{
+					standings.length > 0 ? (
+						<StandingsTable teams={standings} />
+					) : (
+						<div class="empty-state">
+							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+								<polyline points="14 2 14 8 20 8"></polyline>
+								<line x1="16" y1="13" x2="8" y2="13"></line>
+								<line x1="16" y1="17" x2="8" y2="17"></line>
+							</svg>
+							<p>No hay datos de posiciones disponibles. Espera al inicio de la temporada.</p>
+						</div>
+					)
+				}
+			</div>
+		</section>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	.tabla {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-xs);
+	}
+
+	.page-subtitle {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin-bottom: var(--spacing-lg);
+	}
+
+	/* ===== Empty State ===== */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+		padding: var(--spacing-2xl) 0;
+		color: var(--color-secondary);
+		text-align: center;
+	}
+
+	.empty-state svg {
+		opacity: 0.4;
+	}
+
+	/* ===== Tablet (≥640px) ===== */
+	@media (min-width: 640px) {
+		.tabla {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.4rem;
+		}
+	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.tabla {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.8rem;
+		}
+
+		.page-subtitle {
+			font-size: 1rem;
+			margin-bottom: var(--spacing-xl);
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px) ===== */
+	@media (min-width: 1280px) {
+		.page-title {
+			font-size: 3.2rem;
+		}
+	}
+</style>

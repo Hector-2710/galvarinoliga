@@ -1,0 +1,687 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { createServerSupabase } from "../lib/supabase";
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const [{ data: goleadores }, { data: asistidores }, { data: tarjetas }] =
+	await Promise.all([
+		supabase
+			.from("vista_goleadores")
+			.select("*")
+			.order("goles", { ascending: false })
+			.limit(5),
+		supabase
+			.from("vista_asistidores")
+			.select("*")
+			.order("asistencias", { ascending: false })
+			.limit(5),
+		supabase
+			.from("vista_tarjetas")
+			.select("*")
+			.order("rojas", { ascending: false })
+			.order("amarillas", { ascending: false })
+			.limit(20),
+	]);
+
+interface GoleadorRow {
+	jugador_id: number;
+	nombre: string;
+	apellido: string;
+	equipo: string;
+	equipo_id: number;
+	goles: number;
+}
+
+interface AsistidorRow {
+	jugador_id: number;
+	nombre: string;
+	apellido: string;
+	equipo: string;
+	equipo_id: number;
+	asistencias: number;
+}
+
+interface TarjetaRow {
+	jugador_id: number;
+	nombre: string;
+	apellido: string;
+	equipo: string;
+	equipo_id: number;
+	amarillas: number;
+	rojas: number;
+}
+
+const topGoleadores = (goleadores ?? []) as GoleadorRow[];
+const topAsistidores = (asistidores ?? []) as AsistidorRow[];
+const topTarjetas = (tarjetas ?? []) as TarjetaRow[];
+
+function medalla(pos: number): string {
+	if (pos === 0) return "🥇";
+	if (pos === 1) return "🥈";
+	if (pos === 2) return "🥉";
+	return "";
+}
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="estadisticas">
+			<div class="container">
+				<h1 class="page-title fade-in-up">Estadísticas</h1>
+				<p class="page-subtitle fade-in-up">
+					Máximos goleadores, asistentes y acumulación de tarjetas de la temporada
+				</p>
+
+				<!-- ═══════════ GOLEADORES ═══════════ -->
+				<div class="stats-card fade-in-up">
+					<h2 class="stats-card__title">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="M12 6v6l4 2"></path>
+						</svg>
+						Goleadores
+					</h2>
+
+					{topGoleadores.length === 0 ? (
+						<div class="empty-state">
+							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="10"></circle>
+								<path d="M16.24 7.76a6 6 0 0 1 0 8.49"></path>
+								<path d="M7.76 7.76a6 6 0 0 0 0 8.49"></path>
+							</svg>
+							<p>No hay goles registrados todavía.</p>
+						</div>
+					) : (
+						<div class="stats-table-wrapper">
+							<table class="stats-table">
+								<thead>
+									<tr>
+										<th class="stats-table__th stats-table__th--pos">#</th>
+										<th class="stats-table__th stats-table__th--player">Jugador</th>
+										<th class="stats-table__th stats-table__th--team">Equipo</th>
+										<th class="stats-table__th stats-table__th--stat">Goles</th>
+									</tr>
+								</thead>
+								<tbody>
+									{topGoleadores.map((g, i) => (
+										<tr class="stats-table__row">
+											<td class="stats-table__td stats-table__td--pos">
+												<span class:list={{
+													"stats-table__pos-badge": true,
+													"stats-table__pos-badge--medal": i < 3,
+												}}>
+													{i < 3 ? medalla(i) : i + 1}
+												</span>
+											</td>
+											<td class="stats-table__td stats-table__td--player">
+												<span class="stats-table__player-name">{g.nombre} {g.apellido}</span>
+											</td>
+											<td class="stats-table__td stats-table__td--team">
+												<span class="stats-table__team-name">{g.equipo}</span>
+											</td>
+											<td class="stats-table__td stats-table__td--stat">
+												<span class="stats-table__stat-badge stats-table__stat-badge--goles">
+													{g.goles} {g.goles === 1 ? "gol" : "goles"}
+												</span>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					)}
+				</div>
+
+				<!-- ═══════════ ASISTIDORES ═══════════ -->
+				<div class="stats-card fade-in-up">
+					<h2 class="stats-card__title">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+						</svg>
+						Asistidores
+					</h2>
+
+					{topAsistidores.length === 0 ? (
+						<div class="empty-state">
+							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+								<circle cx="9" cy="7" r="4"></circle>
+								<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+								<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+							</svg>
+							<p>No hay asistencias registradas todavía.</p>
+						</div>
+					) : (
+						<div class="stats-table-wrapper">
+							<table class="stats-table">
+								<thead>
+									<tr>
+										<th class="stats-table__th stats-table__th--pos">#</th>
+										<th class="stats-table__th stats-table__th--player">Jugador</th>
+										<th class="stats-table__th stats-table__th--team">Equipo</th>
+										<th class="stats-table__th stats-table__th--stat">Asistencias</th>
+									</tr>
+								</thead>
+								<tbody>
+									{topAsistidores.map((a, i) => (
+										<tr class="stats-table__row">
+											<td class="stats-table__td stats-table__td--pos">
+												<span class:list={{
+													"stats-table__pos-badge": true,
+													"stats-table__pos-badge--medal": i < 3,
+												}}>
+													{i < 3 ? medalla(i) : i + 1}
+												</span>
+											</td>
+											<td class="stats-table__td stats-table__td--player">
+												<span class="stats-table__player-name">{a.nombre} {a.apellido}</span>
+											</td>
+											<td class="stats-table__td stats-table__td--team">
+												<span class="stats-table__team-name">{a.equipo}</span>
+											</td>
+											<td class="stats-table__td stats-table__td--stat">
+												<span class="stats-table__stat-badge stats-table__stat-badge--asistencias">
+													{a.asistencias} {a.asistencias === 1 ? "asistencia" : "asistencias"}
+												</span>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					)}
+				</div>
+
+				<!-- ═══════════ TARJETAS ═══════════ -->
+				<div class="stats-card fade-in-up">
+					<h2 class="stats-card__title">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+							<line x1="3" y1="9" x2="21" y2="9"></line>
+							<line x1="9" y1="21" x2="9" y2="9"></line>
+						</svg>
+						Tarjetas
+					</h2>
+
+					{topTarjetas.length === 0 ? (
+						<div class="empty-state">
+							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+								<line x1="3" y1="9" x2="21" y2="9"></line>
+								<line x1="9" y1="21" x2="9" y2="9"></line>
+							</svg>
+							<p>No hay tarjetas registradas todavía.</p>
+						</div>
+					) : (
+						<div class="stats-table-wrapper">
+							<table class="stats-table">
+								<thead>
+									<tr>
+										<th class="stats-table__th stats-table__th--pos">#</th>
+										<th class="stats-table__th stats-table__th--player">Jugador</th>
+										<th class="stats-table__th stats-table__th--team">Equipo</th>
+										<th class="stats-table__th stats-table__th--stat">Amarillas</th>
+										<th class="stats-table__th stats-table__th--stat">Rojas</th>
+										<th class="stats-table__th stats-table__th--stat">Total</th>
+									</tr>
+								</thead>
+								<tbody>
+									{topTarjetas.map((t, i) => {
+										const total = (t.amarillas ?? 0) + (t.rojas ?? 0);
+										return (
+											<tr class="stats-table__row">
+												<td class="stats-table__td stats-table__td--pos">
+													<span class:list={{
+														"stats-table__pos-badge": true,
+														"stats-table__pos-badge--medal": i < 3,
+													}}>
+														{i < 3 ? medalla(i) : i + 1}
+													</span>
+												</td>
+												<td class="stats-table__td stats-table__td--player">
+													<span class="stats-table__player-name">{t.nombre} {t.apellido}</span>
+												</td>
+												<td class="stats-table__td stats-table__td--team">
+													<span class="stats-table__team-name">{t.equipo}</span>
+												</td>
+												<td class="stats-table__td stats-table__td--stat">
+													<span class="stats-table__card-badge stats-table__card-badge--amarilla">
+														{t.amarillas ?? 0}
+													</span>
+												</td>
+												<td class="stats-table__td stats-table__td--stat">
+													<span class="stats-table__card-badge stats-table__card-badge--roja">
+														{t.rojas ?? 0}
+													</span>
+												</td>
+												<td class="stats-table__td stats-table__td--stat">
+													<span class="stats-table__stat-badge stats-table__stat-badge--total">
+														{total}
+													</span>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+					)}
+				</div>
+			</div>
+		</section>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	.estadisticas {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-xs);
+	}
+
+	.page-subtitle {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin-bottom: var(--spacing-xl);
+	}
+
+	/* ===== Empty State ===== */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+		padding: var(--spacing-2xl) 0;
+		color: var(--color-secondary);
+		text-align: center;
+	}
+
+	.empty-state svg {
+		opacity: 0.4;
+	}
+
+	.empty-state p {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		font-style: italic;
+	}
+
+	/* ===== Stats Card ===== */
+	.stats-card {
+		background: linear-gradient(
+			145deg,
+			var(--color-tertiary-light) 0%,
+			var(--color-tertiary) 100%
+		);
+		border-radius: var(--border-radius-lg);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow: var(--shadow-sm);
+		padding: var(--spacing-lg);
+		margin-bottom: var(--spacing-lg);
+		transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+	}
+
+	.stats-card:active {
+		transform: scale(0.99);
+	}
+
+	.stats-card__title {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		font-family: var(--font-headline);
+		font-size: 1.2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-md);
+		padding-bottom: var(--spacing-sm);
+		border-bottom: 2px solid var(--color-primary);
+	}
+
+	.stats-card__title svg {
+		flex-shrink: 0;
+		opacity: 0.8;
+	}
+
+	/* ===== Stats Table ===== */
+	.stats-table-wrapper {
+		overflow-x: auto;
+		margin: 0 calc(-1 * var(--spacing-lg));
+		padding: 0 var(--spacing-lg);
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+
+	.stats-table {
+		width: 100%;
+		min-width: 420px;
+		border-collapse: separate;
+		border-spacing: 0 4px;
+	}
+
+	.stats-table__th {
+		font-family: var(--font-label);
+		font-size: 0.65rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		padding: var(--spacing-sm) var(--spacing-xs);
+		text-align: center;
+		letter-spacing: 0.06em;
+		white-space: nowrap;
+		background: var(--color-primary);
+	}
+
+	.stats-table__th:first-child {
+		border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
+		padding-left: var(--spacing-sm);
+	}
+
+	.stats-table__th:last-child {
+		border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+		padding-right: var(--spacing-sm);
+	}
+
+	.stats-table__th--pos {
+		text-align: center;
+		width: 44px;
+	}
+
+	.stats-table__th--player {
+		text-align: left;
+	}
+
+	.stats-table__th--team {
+		text-align: left;
+	}
+
+	.stats-table__th--stat {
+		text-align: center;
+		width: 100px;
+	}
+
+	/* Rows */
+	.stats-table__row {
+		transition: background 0.2s;
+		border-radius: var(--border-radius-sm);
+	}
+
+	.stats-table__row:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	/* Cells */
+	.stats-table__td {
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		padding: var(--spacing-sm) var(--spacing-xs);
+		text-align: center;
+		white-space: nowrap;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.stats-table__td--pos {
+		text-align: center;
+		padding-left: var(--spacing-sm);
+	}
+
+	.stats-table__td--player {
+		text-align: left;
+	}
+
+	.stats-table__td--team {
+		text-align: left;
+	}
+
+	.stats-table__td--stat {
+		text-align: center;
+	}
+
+	/* Position badge */
+	.stats-table__pos-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.06);
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--color-secondary);
+	}
+
+	.stats-table__pos-badge--medal {
+		background: transparent;
+		font-size: 1.1rem;
+	}
+
+	/* Player / Team name */
+	.stats-table__player-name {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-neutral);
+	}
+
+	.stats-table__team-name {
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	/* Stat badges */
+	.stats-table__stat-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 32px;
+		padding: 2px 10px;
+		border-radius: 20px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
+
+	.stats-table__stat-badge--goles {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+
+	.stats-table__stat-badge--asistencias {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+
+	.stats-table__stat-badge--total {
+		background: rgba(168, 173, 179, 0.15);
+		color: var(--color-secondary-light);
+	}
+
+	/* Card badges */
+	.stats-table__card-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28px;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
+
+	.stats-table__card-badge--amarilla {
+		background: #fff8e1;
+		color: #f57f17;
+	}
+
+	.stats-table__card-badge--roja {
+		background: #ffebee;
+		color: #d32f2f;
+	}
+
+	/* ===== Tablet (≥640px) ===== */
+	@media (min-width: 640px) {
+		.estadisticas {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.4rem;
+		}
+
+		.stats-card {
+			padding: var(--spacing-xl);
+		}
+
+		.stats-card__title {
+			font-size: 1.3rem;
+		}
+
+		.stats-table__th {
+			font-size: 0.7rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.stats-table__th:first-child {
+			padding-left: var(--spacing-md);
+		}
+
+		.stats-table__th:last-child {
+			padding-right: var(--spacing-md);
+		}
+
+		.stats-table__td {
+			font-size: 0.8rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.stats-table__td--pos {
+			padding-left: var(--spacing-md);
+		}
+
+		.stats-table__player-name {
+			font-size: 0.9rem;
+		}
+
+		.stats-table__team-name {
+			font-size: 0.75rem;
+		}
+
+		.stats-table__stat-badge {
+			font-size: 0.75rem;
+			padding: 3px 12px;
+		}
+
+		.stats-table__card-badge {
+			font-size: 0.75rem;
+			padding: 3px 10px;
+		}
+
+		.stats-table__pos-badge {
+			width: 32px;
+			height: 32px;
+			font-size: 0.8rem;
+		}
+
+		.stats-table__pos-badge--medal {
+			font-size: 1.2rem;
+		}
+	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.estadisticas {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.8rem;
+		}
+
+		.page-subtitle {
+			font-size: 1rem;
+			margin-bottom: var(--spacing-2xl);
+		}
+
+		.stats-card {
+			padding: var(--spacing-xl);
+			margin-bottom: var(--spacing-xl);
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.stats-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.stats-card:active {
+			transform: scale(0.98);
+		}
+
+		.stats-card__title {
+			font-size: 1.4rem;
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.stats-table__th {
+			font-size: 0.75rem;
+		}
+
+		.stats-table__td {
+			font-size: 0.85rem;
+		}
+
+		.stats-table__player-name {
+			font-size: 0.95rem;
+		}
+
+		.stats-table__stat-badge {
+			font-size: 0.8rem;
+		}
+
+		.stats-table__table {
+			border-spacing: 0 6px;
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px) ===== */
+	@media (min-width: 1280px) {
+		.page-title {
+			font-size: 3.2rem;
+		}
+
+		.stats-card__title {
+			font-size: 1.5rem;
+		}
+
+		.stats-table__player-name {
+			font-size: 1rem;
+		}
+	}
+</style>
