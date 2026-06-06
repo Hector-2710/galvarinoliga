@@ -132,4 +132,41 @@
 		color: var(--color-neutral);
 		box-shadow: var(--shadow-red);
 	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.footer {
+			padding: var(--spacing-2xl) 0 var(--spacing-xl);
+			margin-top: var(--spacing-2xl);
+		}
+
+		.footer__inner {
+			gap: var(--spacing-lg);
+		}
+
+		.footer__brand {
+			text-align: left;
+		}
+
+		.footer__title {
+			font-size: 1.25rem;
+		}
+
+		.footer__desc {
+			font-size: 0.85rem;
+			max-width: 400px;
+			margin: 0;
+		}
+
+		.footer__bottom {
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.footer__copyright {
+			font-size: 0.75rem;
+			text-align: left;
+		}
+	}
 </style>

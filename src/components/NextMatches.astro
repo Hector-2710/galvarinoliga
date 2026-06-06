@@ -214,4 +214,89 @@ function formatFecha(fechaStr: string): string {
 		padding-left: var(--spacing-sm);
 		margin-top: var(--spacing-xs);
 	}
+
+	/* ===== Tablet (≥640px): 2-column grid ===== */
+	@media (min-width: 640px) {
+		.matches {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.matches__list {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-lg);
+		}
+
+		.match-card {
+			padding: var(--spacing-lg);
+		}
+
+		.match-card__team-name {
+			font-size: 1rem;
+		}
+
+		.match-card__date,
+		.match-card__time {
+			font-size: 0.75rem;
+		}
+
+		.match-card__footer {
+			font-size: 0.75rem;
+		}
+	}
+
+	/* ===== Desktop (≥1024px): hover effects & wider cards ===== */
+	@media (min-width: 1024px) {
+		.matches {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.matches__list {
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-xl);
+		}
+
+		.match-card {
+			padding: var(--spacing-xl);
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+		.match-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.match-card:active {
+			transform: scale(0.97);
+		}
+
+		.match-card__team-name {
+			font-size: 1.1rem;
+		}
+
+		.match-card__vs {
+			width: 52px;
+			height: 52px;
+		}
+
+		.match-card__vs-text {
+			font-size: 0.9rem;
+		}
+
+		.match-card__header {
+			margin-bottom: var(--spacing-md);
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px): 3-column grid ===== */
+	@media (min-width: 1280px) {
+		.matches__list {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+
+		.match-card__team-name {
+			font-size: 1.15rem;
+		}
+	}
 </style>

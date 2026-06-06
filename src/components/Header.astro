@@ -221,12 +221,33 @@ function isActive(href: string): boolean {
 		.header__title {
 			position: static;
 			transform: none;
+			font-size: 1.4rem;
 		}
 
 		.header__inner {
 			display: grid;
 			grid-template-columns: auto 1fr auto;
 			gap: var(--spacing-lg);
+		}
+
+		.header__nav-link {
+			font-size: 0.85rem;
+			padding: 0.45rem 0.75rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.header__title {
+			font-size: 1.6rem;
+		}
+
+		.header__nav-link {
+			font-size: 0.9rem;
+			padding: 0.5rem 0.85rem;
+		}
+
+		.header__nav-list {
+			gap: 0.35rem;
 		}
 	}
 

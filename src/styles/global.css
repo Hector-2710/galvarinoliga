@@ -95,6 +95,32 @@ ul, ol {
 	width: 100%;
 }
 
+@media (min-width: 640px) {
+	.container {
+		max-width: 600px;
+		padding: 0 var(--spacing-lg);
+	}
+}
+
+@media (min-width: 768px) {
+	.container {
+		max-width: 720px;
+	}
+}
+
+@media (min-width: 1024px) {
+	.container {
+		max-width: 980px;
+		padding: 0 var(--spacing-xl);
+	}
+}
+
+@media (min-width: 1280px) {
+	.container {
+		max-width: 1200px;
+	}
+}
+
 .section-title {
 	font-family: var(--font-headline);
 	font-size: 1.5rem;

@@ -14,4 +14,24 @@
 			object-fit: cover;
 		}
 	}
+
+	@media (min-width: 1024px) {
+		.banner {
+			border-radius: var(--border-radius-md);
+			height: 250px;
+			object-fit: cover;
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+		.banner:hover {
+			box-shadow: var(--shadow-lg);
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.banner {
+			height: 300px;
+			border-radius: var(--border-radius-lg);
+		}
+	}
 </style>

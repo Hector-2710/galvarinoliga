@@ -105,4 +105,33 @@ const standings = (posiciones ?? []).map((t, index) => ({
 			animation: fadeInUp 0.5s ease-out both;
 		}
 	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.main-content {
+			padding-top: calc(var(--header-height) + var(--spacing-lg));
+			padding-bottom: var(--spacing-2xl);
+		}
+
+		.banner-section {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.banner-section .container {
+			display: flex;
+			justify-content: center;
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px) ===== */
+	@media (min-width: 1280px) {
+		.main-content {
+			padding-top: calc(var(--header-height) + var(--spacing-2xl));
+			padding-bottom: var(--spacing-2xl);
+		}
+
+		.banner-section {
+			padding: var(--spacing-2xl) 0;
+		}
+	}
 </style>

@@ -230,4 +230,114 @@ function getRowClass(pos: number): string {
 		font-weight: 700;
 		box-shadow: var(--shadow-red);
 	}
+
+	/* ===== Tablet (≥768px) ===== */
+	@media (min-width: 768px) {
+		.standings {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.standings__table-wrapper {
+			margin: 0;
+			padding: 0;
+			overflow-x: visible;
+		}
+
+		.standings__table {
+			min-width: 0;
+		}
+
+		.standings__th {
+			font-size: 0.75rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.standings__th--pos {
+			width: 44px;
+			padding-left: var(--spacing-md);
+		}
+
+		.standings__th--team {
+			padding-left: var(--spacing-md);
+		}
+
+		.standings__th--pts {
+			padding-right: var(--spacing-md);
+		}
+
+		.standings__td {
+			font-size: 0.85rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.standings__td--pos {
+			padding-left: var(--spacing-md);
+		}
+
+		.standings__td--team {
+			padding-left: var(--spacing-md);
+		}
+
+		.standings__td--pts {
+			padding-right: var(--spacing-md);
+		}
+
+		.standings__team-name {
+			font-size: 0.85rem;
+		}
+
+		.standings__pts-badge {
+			min-width: 32px;
+			padding: 4px 12px;
+			font-size: 0.85rem;
+		}
+
+		.standings__pos-badge {
+			width: 28px;
+			height: 28px;
+			font-size: 0.8rem;
+		}
+	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.standings {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.standings__row {
+			transition: background 0.2s, transform 0.2s;
+		}
+
+		.standings__row:hover {
+			background: rgba(255, 255, 255, 0.06);
+			transform: scale(1.005);
+		}
+
+		.standings__row--leader:hover {
+			background: linear-gradient(
+				135deg,
+				rgba(230, 30, 42, 0.25) 0%,
+				rgba(255, 255, 255, 0.06) 100%
+			);
+		}
+
+		.standings__th {
+			font-size: 0.8rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.standings__td {
+			font-size: 0.9rem;
+			padding: var(--spacing-md) var(--spacing-sm);
+		}
+
+		.standings__team-name {
+			font-size: 0.9rem;
+		}
+
+		.standings__table {
+			border-spacing: 0 6px;
+		}
+	}
 </style>
