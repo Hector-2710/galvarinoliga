@@ -1,0 +1,696 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { createServerSupabase } from "../lib/supabase";
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: jornadas } = await supabase
+	.from("jornadas")
+	.select(
+		`
+		id,
+		numero,
+		nombre,
+		fecha_inicio,
+		fecha_fin,
+		partidos(
+			id,
+			fecha,
+			hora,
+			cancha,
+			goles1,
+			goles2,
+			estado,
+			equipo1:equipo1_id(nombre),
+			equipo2:equipo2_id(nombre)
+		)
+	`,
+	)
+	.order("numero", { ascending: true });
+
+interface MatchData {
+	id: number;
+	fecha: string;
+	hora: string | null;
+	cancha: string;
+	goles1: number | null;
+	goles2: number | null;
+	estado: string;
+	equipo1: { nombre: string } | { nombre: string }[] | null;
+	equipo2: { nombre: string } | { nombre: string }[] | null;
+}
+
+interface JornadaGroup {
+	id: number;
+	numero: number;
+	nombre: string;
+	fecha_inicio: string | null;
+	fecha_fin: string | null;
+	partidos: NormalizedMatch[];
+}
+
+interface NormalizedMatch {
+	id: number;
+	equipo1: string;
+	equipo2: string;
+	fecha: string;
+	hora: string;
+	cancha: string;
+	goles1: number | null;
+	goles2: number | null;
+	estado: string;
+}
+
+function normalizeEquipo(
+	eq: { nombre: string } | { nombre: string }[] | null,
+): string {
+	if (!eq) return "—";
+	if (Array.isArray(eq)) return eq[0]?.nombre ?? "—";
+	return eq.nombre;
+}
+
+function normalizeMatch(m: MatchData): NormalizedMatch {
+	return {
+		id: m.id,
+		equipo1: normalizeEquipo(m.equipo1),
+		equipo2: normalizeEquipo(m.equipo2),
+		fecha: m.fecha,
+		hora: m.hora?.slice(0, 5) ?? "",
+		cancha: m.cancha,
+		goles1: m.goles1,
+		goles2: m.goles2,
+		estado: m.estado,
+	};
+}
+
+const fixture: JornadaGroup[] = (jornadas ?? [])
+	.filter((j) => (j.partidos ?? []).length > 0)
+	.map((j) => ({
+		id: j.id,
+		numero: j.numero,
+		nombre: j.nombre,
+		fecha_inicio: j.fecha_inicio,
+		fecha_fin: j.fecha_fin,
+		partidos: (j.partidos as MatchData[] | undefined ?? [])
+			.map(normalizeMatch)
+			.sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora)),
+	}));
+
+function formatFecha(fechaStr: string): string {
+	const fecha = new Date(fechaStr + "T12:00:00");
+	const dias = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+	const meses = [
+		"Ene",
+		"Feb",
+		"Mar",
+		"Abr",
+		"May",
+		"Jun",
+		"Jul",
+		"Ago",
+		"Sep",
+		"Oct",
+		"Nov",
+		"Dic",
+	];
+	return `${dias[fecha.getDay()]} ${fecha.getDate()} ${meses[fecha.getMonth()]}`;
+}
+
+function estadoLabel(estado: string): string {
+	switch (estado) {
+		case "programado":
+			return "Programado";
+		case "en_vivo":
+			return "En Vivo";
+		case "finalizado":
+			return "Finalizado";
+		default:
+			return estado;
+	}
+}
+
+function isFechaPasada(fechaStr: string): boolean {
+	return fechaStr < new Date().toISOString().split("T")[0];
+}
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="fixture">
+			<div class="container">
+				<h1 class="page-title fade-in-up">Fixture</h1>
+				<p class="page-subtitle fade-in-up">Calendario completo de la temporada</p>
+
+				{
+					fixture.length === 0 ? (
+						<div class="empty-state">
+							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+								<line x1="16" y1="2" x2="16" y2="6"></line>
+								<line x1="8" y1="2" x2="8" y2="6"></line>
+								<line x1="3" y1="10" x2="21" y2="10"></line>
+							</svg>
+							<p>En espera del comienzo de la temporada.</p>
+						</div>
+					) : (
+						<>
+							{
+								fixture.map((jornada, gi) => (
+									<div class="jornada-group fade-in-up" style={`animation-delay: ${gi * 0.08}s`}>
+										<div class="jornada-header">
+											<h2 class="jornada-title">
+												<span class="jornada-badge">{jornada.numero}</span>
+												{jornada.nombre}
+											</h2>
+											{jornada.fecha_inicio && (
+												<span class="jornada-date">
+													{formatFecha(jornada.fecha_inicio)}
+													{jornada.fecha_fin && ` — ${formatFecha(jornada.fecha_fin)}`}
+												</span>
+											)}
+										</div>
+
+										<div class="matches__list">
+											{
+												jornada.partidos.map((match, mi) => (
+													<article
+														class:list={{
+															"match-card": true,
+															"match-card--finalizado": match.estado === "finalizado",
+															"match-card--envivo": match.estado === "en_vivo",
+															"match-card--pasado": match.estado === "programado" && isFechaPasada(match.fecha),
+														}}
+														style={`animation-delay: ${(gi * 0.08) + ((mi + 1) * 0.06)}s`}
+													>
+														<div class="match-card__header">
+															<span class="match-card__date">
+																<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+																	<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+																	<line x1="16" y1="2" x2="16" y2="6"></line>
+																	<line x1="8" y1="2" x2="8" y2="6"></line>
+																	<line x1="3" y1="10" x2="21" y2="10"></line>
+																</svg>
+																{formatFecha(match.fecha)}
+															</span>
+															<span class="match-card__time">
+																<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+																	<circle cx="12" cy="12" r="10"></circle>
+																	<polyline points="12 6 12 12 16 14"></polyline>
+																</svg>
+																{match.hora}
+															</span>
+															<span class:list={{
+																"match-card__estado": true,
+																"match-card__estado--envivo": match.estado === "en_vivo",
+																"match-card__estado--finalizado": match.estado === "finalizado",
+															}}>
+																{match.estado === "en_vivo" && (
+																	<span class="live-dot"></span>
+																)}
+																{estadoLabel(match.estado)}
+															</span>
+														</div>
+
+														<div class="match-card__body">
+															<div class="match-card__team match-card__team--local">
+																<span class="match-card__team-name">{match.equipo1}</span>
+															</div>
+
+															<div class="match-card__score">
+																{match.estado === "finalizado" ? (
+																	<span class="match-card__score-value">
+																		<span class:list={{
+																			"match-card__goal": true,
+																			"match-card__goal--winner": match.goles1 !== null && match.goles2 !== null && match.goles1 > match.goles2,
+																		}}>{match.goles1}</span>
+																		<span class="match-card__score-sep">-</span>
+																		<span class:list={{
+																			"match-card__goal": true,
+																			"match-card__goal--winner": match.goles1 !== null && match.goles2 !== null && match.goles2 > match.goles1,
+																		}}>{match.goles2}</span>
+																	</span>
+																) : match.estado === "en_vivo" ? (
+																	<span class="match-card__score-value match-card__score-value--envivo">
+																		{match.goles1 !== null ? match.goles1 : "?"}
+																		<span class="match-card__score-sep">-</span>
+																		{match.goles2 !== null ? match.goles2 : "?"}
+																	</span>
+																) : (
+																	<span class="match-card__vs-text">VS</span>
+																)}
+															</div>
+
+															<div class="match-card__team match-card__team--visita">
+																<span class="match-card__team-name">{match.equipo2}</span>
+															</div>
+														</div>
+
+														<div class="match-card__footer">
+															<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+																<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+																<circle cx="12" cy="10" r="3"></circle>
+															</svg>
+															{match.cancha}
+														</div>
+													</article>
+												))
+											}
+										</div>
+									</div>
+								))
+							}
+
+						</>
+					)
+				}
+			</div>
+		</section>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	.fixture {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-xs);
+	}
+
+	.page-subtitle {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+		padding: var(--spacing-2xl) 0;
+		color: var(--color-secondary);
+		text-align: center;
+	}
+
+	.empty-state svg {
+		opacity: 0.4;
+	}
+
+	.jornada-group {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.jornada-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-md);
+	}
+
+	.jornada-title {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		font-family: var(--font-headline);
+		font-size: 1.3rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+	}
+
+	.jornada-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		color: var(--color-neutral);
+		font-family: var(--font-label);
+		font-size: 0.85rem;
+		font-weight: 700;
+		box-shadow: var(--shadow-red);
+		flex-shrink: 0;
+	}
+
+	.jornada-date {
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.matches__list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.match-card {
+		background: linear-gradient(
+			145deg,
+			var(--color-tertiary-light) 0%,
+			var(--color-tertiary) 100%
+		);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-md);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow: var(--shadow-sm);
+		position: relative;
+		overflow: hidden;
+		transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+	}
+
+	.match-card:active {
+		transform: scale(0.98);
+	}
+
+	.match-card::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 4px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.match-card--finalizado::before {
+		background: #22c55e;
+	}
+
+	.match-card--envivo::before {
+		background: var(--color-primary);
+		animation: pulse 1.5s ease-in-out infinite;
+	}
+
+	.match-card--pasado {
+		opacity: 0.55;
+	}
+
+	.match-card__header {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--spacing-sm);
+		margin-bottom: var(--spacing-sm);
+		padding-left: var(--spacing-sm);
+	}
+
+	.match-card__date,
+	.match-card__time {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.match-card__date svg,
+	.match-card__time svg,
+	.match-card__footer svg {
+		flex-shrink: 0;
+	}
+
+	.match-card__estado {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-label);
+		font-size: 0.6rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		padding: 2px 8px;
+		border-radius: 20px;
+		background: rgba(168, 173, 179, 0.15);
+		color: var(--color-secondary);
+		margin-left: auto;
+	}
+
+	.match-card__estado--envivo {
+		background: rgba(230, 30, 42, 0.15);
+		color: var(--color-primary-light);
+	}
+
+	.match-card__estado--finalizado {
+		background: rgba(34, 197, 94, 0.12);
+		color: #4ade80;
+	}
+
+	.live-dot {
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-primary-light);
+		animation: pulse 1s ease-in-out infinite;
+	}
+
+	.match-card__body {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: var(--spacing-sm) 0;
+		gap: var(--spacing-sm);
+	}
+
+	.match-card__team {
+		flex: 1;
+	}
+
+	.match-card__team--local {
+		text-align: right;
+	}
+
+	.match-card__team--visita {
+		text-align: left;
+	}
+
+	.match-card__team-name {
+		font-family: var(--font-headline);
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		line-height: 1.2;
+	}
+
+	.match-card__score {
+		flex-shrink: 0;
+		width: 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.match-card__score-value {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-headline);
+		font-size: 1.1rem;
+		color: var(--color-neutral);
+	}
+
+	.match-card__score-value--envivo {
+		color: var(--color-primary-light);
+	}
+
+	.match-card__score-sep {
+		color: var(--color-secondary);
+		font-size: 0.8rem;
+	}
+
+	.match-card__goal {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 24px;
+		padding: 2px 4px;
+	}
+
+	.match-card__goal--winner {
+		color: #4ade80;
+		font-weight: 700;
+	}
+
+	.match-card__vs-text {
+		font-family: var(--font-headline);
+		font-size: 0.8rem;
+		color: var(--color-secondary);
+		letter-spacing: 0.04em;
+	}
+
+	.match-card__footer {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		padding-left: var(--spacing-sm);
+		margin-top: var(--spacing-xs);
+	}
+
+	@media (min-width: 640px) {
+		.fixture {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.4rem;
+		}
+
+		.jornada-title {
+			font-size: 1.5rem;
+		}
+
+		.jornada-badge {
+			width: 40px;
+			height: 40px;
+			font-size: 0.95rem;
+		}
+
+		.matches__list {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-lg);
+		}
+
+		.match-card {
+			padding: var(--spacing-lg);
+		}
+
+		.match-card__team-name {
+			font-size: 1rem;
+		}
+
+		.match-card__date,
+		.match-card__time {
+			font-size: 0.75rem;
+		}
+
+		.match-card__footer {
+			font-size: 0.75rem;
+		}
+
+		.match-card__score-value {
+			font-size: 1.2rem;
+		}
+
+		.match-card__score {
+			width: 70px;
+		}
+
+		.match-card__estado {
+			font-size: 0.65rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.fixture {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.8rem;
+		}
+
+		.page-subtitle {
+			font-size: 1rem;
+			margin-bottom: var(--spacing-2xl);
+		}
+
+		.jornada-title {
+			font-size: 1.7rem;
+		}
+
+		.matches__list {
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-xl);
+		}
+
+		.match-card {
+			padding: var(--spacing-xl);
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.match-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.match-card--finalizado:hover {
+			border-color: rgba(34, 197, 94, 0.3);
+		}
+
+		.match-card:active {
+			transform: scale(0.97);
+		}
+
+		.match-card__team-name {
+			font-size: 1.1rem;
+		}
+
+		.match-card__score-value {
+			font-size: 1.4rem;
+		}
+
+		.match-card__score {
+			width: 80px;
+		}
+
+		.match-card__estado {
+			font-size: 0.7rem;
+			padding: 3px 10px;
+		}
+
+		.match-card__header {
+			margin-bottom: var(--spacing-md);
+		}
+
+		.live-dot {
+			width: 8px;
+			height: 8px;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.matches__list {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+
+		.match-card__team-name {
+			font-size: 1.15rem;
+		}
+
+		.page-title {
+			font-size: 3.2rem;
+		}
+	}
+</style>
