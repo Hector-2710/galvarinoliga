@@ -1,0 +1,418 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getCollection } from "astro:content";
+
+const noticias = await getCollection("noticias");
+
+const sorted = noticias
+	.map((entry) => ({
+		slug: entry.id,
+		...entry.data,
+	}))
+	.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="noticias">
+			<div class="container">
+				<h1 class="page-title fade-in-up">Últimas Noticias</h1>
+
+				{
+					sorted.length === 0 ? (
+						<div class="empty-state">
+							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+								<polyline points="14 2 14 8 20 8"></polyline>
+								<line x1="16" y1="13" x2="8" y2="13"></line>
+								<line x1="16" y1="17" x2="8" y2="17"></line>
+							</svg>
+							<p>No hay noticias publicadas todavía.</p>
+						</div>
+					) : (
+						<div class="noticias-list">
+							{sorted.map((n, i) => (
+								<a href={`/noticias/${n.slug}`} class="noticia-row fade-in-up" style={`animation-delay: ${i * 0.05}s`}>
+									{n.imagen ? (
+										<img src={n.imagen} alt="" class="noticia-row__img" loading="lazy" />
+									) : (
+										<div class="noticia-row__img-placeholder">
+											<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+												<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+												<polyline points="14 2 14 8 20 8"></polyline>
+												<line x1="16" y1="13" x2="8" y2="13"></line>
+												<line x1="16" y1="17" x2="8" y2="17"></line>
+											</svg>
+										</div>
+									)}
+									<div class="noticia-row__info">
+										<time class="noticia-row__date" datetime={n.fecha.toISOString()}>
+											{n.fecha.toLocaleDateString("es-CL", {
+												year: "numeric",
+												month: "short",
+												day: "numeric",
+											})}
+										</time>
+										<h2 class="noticia-row__title">{n.titulo}</h2>
+										<p class="noticia-row__resumen">{n.resumen}</p>
+									</div>
+									<div class="noticia-row__arrow">
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+											<polyline points="9 18 15 12 9 6"></polyline>
+										</svg>
+									</div>
+								</a>
+							))}
+						</div>
+					)
+				}
+			</div>
+		</section>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	/* ===== Base (Mobile First) ===== */
+	.noticias {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 1.75rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.page-title::after {
+		content: '';
+		display: block;
+		width: 60px;
+		height: 3px;
+		background: var(--color-primary);
+		margin-top: 6px;
+		border-radius: 2px;
+	}
+
+	/* ===== Empty State ===== */
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+		padding: var(--spacing-2xl) 0;
+		color: var(--color-secondary);
+		text-align: center;
+	}
+
+	.empty-state svg {
+		opacity: 0.4;
+	}
+
+	/* ===== News List ===== */
+	.noticias-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+	}
+
+	/* ===== News Row (Card) ===== */
+	.noticia-row {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		background: linear-gradient(
+			145deg,
+			var(--color-tertiary-light) 0%,
+			var(--color-tertiary) 100%
+		);
+		border-radius: var(--border-radius-lg);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow: var(--shadow-sm);
+		text-decoration: none;
+		transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+		padding: var(--spacing-md);
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.noticia-row:active {
+		transform: scale(0.99);
+	}
+
+	@media (hover: hover) {
+		.noticia-row:hover {
+			border-color: rgba(230, 30, 42, 0.2);
+			background: linear-gradient(
+				145deg,
+				color-mix(in srgb, var(--color-tertiary-light) 95%, var(--color-primary)) 0%,
+				var(--color-tertiary) 100%
+			);
+		}
+	}
+
+	/* ===== Focus-visible for keyboard nav ===== */
+	.noticia-row:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+
+	/* ===== Row Image ===== */
+	.noticia-row__img {
+		width: 64px;
+		height: 64px;
+		object-fit: cover;
+		border-radius: var(--border-radius-sm);
+		flex-shrink: 0;
+	}
+
+	.noticia-row__img-placeholder {
+		width: 64px;
+		height: 64px;
+		border-radius: var(--border-radius-sm);
+		background: var(--color-tertiary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: var(--color-secondary);
+		opacity: 0.4;
+	}
+
+	/* ===== Row Info ===== */
+	.noticia-row__info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		min-width: 0;
+	}
+
+	.noticia-row__date {
+		font-family: var(--font-label);
+		font-size: 0.65rem;
+		color: var(--color-primary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.noticia-row__title {
+		font-family: var(--font-headline);
+		font-size: 0.95rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		line-height: 1.2;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.noticia-row__resumen {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	/* ===== Row Arrow (Mobile only) ===== */
+	.noticia-row__arrow {
+		display: flex;
+		align-items: center;
+		color: var(--color-secondary);
+		opacity: 0.3;
+		flex-shrink: 0;
+		transition: opacity 0.2s ease, transform 0.2s ease;
+	}
+
+	@media (hover: hover) {
+		.noticia-row:hover .noticia-row__arrow {
+			opacity: 0.7;
+			transform: translateX(3px);
+		}
+	}
+
+	/* ================================================
+	     Tablet (≥640px) — Full-width row, larger horizontal card
+	   ================================================ */
+	@media (min-width: 640px) {
+		.noticias {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.page-title {
+			font-size: 2rem;
+			margin-bottom: var(--spacing-xl);
+		}
+
+		.noticias-list {
+			gap: var(--spacing-md);
+		}
+
+		.noticia-row {
+			gap: var(--spacing-lg);
+			padding: var(--spacing-lg);
+		}
+
+		.noticia-row__img,
+		.noticia-row__img-placeholder {
+			width: 100px;
+			height: 100px;
+			border-radius: var(--border-radius-md);
+		}
+
+		.noticia-row__img-placeholder svg {
+			width: 32px;
+			height: 32px;
+		}
+
+		.noticia-row__date {
+			font-size: 0.7rem;
+		}
+
+		.noticia-row__title {
+			font-size: 1rem;
+		}
+
+		.noticia-row__resumen {
+			font-size: 0.8rem;
+			-webkit-line-clamp: 2;
+		}
+	}
+
+	/* ================================================
+	     Small desktop (≥1024px)
+	   ================================================ */
+	@media (min-width: 1024px) {
+		.noticias {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.4rem;
+		}
+
+		.noticias-list {
+			gap: var(--spacing-lg);
+		}
+
+		.noticia-row {
+			gap: var(--spacing-xl);
+			padding: var(--spacing-lg);
+		}
+
+		.noticia-row__img,
+		.noticia-row__img-placeholder {
+			width: 130px;
+			height: 130px;
+		}
+
+		.noticia-row__img-placeholder svg {
+			width: 40px;
+			height: 40px;
+		}
+
+		.noticia-row__title {
+			font-size: 1.15rem;
+		}
+
+		.noticia-row__resumen {
+			font-size: 0.85rem;
+			-webkit-line-clamp: 2;
+		}
+
+		.noticia-row__arrow svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		@media (hover: hover) {
+			.noticia-row:hover {
+				transform: translateX(4px);
+				box-shadow: var(--shadow-lg);
+				border-color: rgba(230, 30, 42, 0.3);
+			}
+		}
+
+		.noticia-row:active {
+			transform: scale(0.99);
+		}
+	}
+
+	/* ================================================
+	     Large Desktop (≥1280px)
+	   ================================================ */
+	@media (min-width: 1280px) {
+		.page-title {
+			font-size: 2.8rem;
+		}
+
+		.noticias-list {
+			gap: var(--spacing-lg);
+		}
+
+		.noticia-row {
+			gap: var(--spacing-xl);
+			padding: var(--spacing-xl);
+		}
+
+		.noticia-row__img,
+		.noticia-row__img-placeholder {
+			width: 150px;
+			height: 150px;
+		}
+
+		.noticia-row__img-placeholder svg {
+			width: 44px;
+			height: 44px;
+		}
+
+		.noticia-row__title {
+			font-size: 1.25rem;
+		}
+
+		.noticia-row__resumen {
+			font-size: 0.9rem;
+		}
+	}
+
+	/* ================================================
+	     Ultra-wide (≥1600px)
+	   ================================================ */
+	@media (min-width: 1600px) {
+		.noticia-row {
+			padding: var(--spacing-xl);
+		}
+
+		.noticia-row__img,
+		.noticia-row__img-placeholder {
+			width: 170px;
+			height: 170px;
+		}
+
+		.noticia-row__img-placeholder svg {
+			width: 48px;
+			height: 48px;
+		}
+
+		.noticia-row__title {
+			font-size: 1.35rem;
+		}
+
+		.noticia-row__resumen {
+			font-size: 0.95rem;
+		}
+	}
+</style>
