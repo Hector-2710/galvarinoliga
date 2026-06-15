@@ -1,0 +1,95 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: jornadas } = await supabase
+	.from('jornadas')
+	.select('*, temporadas(nombre, activa)')
+	.order('numero');
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Jornadas" activeRoute="jornadas" {adminName}>
+	<div class="page-header">
+		<h2>Jornadas</h2>
+		<a href="/admin/jornadas/nuevo" class="btn">+ Nueva Jornada</a>
+	</div>
+
+	<div class="table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Nombre</th>
+					<th>Temporada</th>
+					<th>Fecha Inicio</th>
+					<th>Fecha Fin</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					(jornadas ?? []).length > 0 ? (
+						(jornadas ?? []).map((j) => {
+							const temp = j.temporadas as { nombre: string; activa: boolean } | null;
+							return (
+								<tr>
+									<td style="text-align:center;font-weight:600;">{j.numero}</td>
+									<td>{j.nombre}</td>
+									<td>
+										{temp?.nombre || '—'}
+										{temp?.activa ? <span class="estado-badge estado-finalizado" style="margin-left:0.4rem;">Activa</span> : ''}
+									</td>
+									<td>{j.fecha_inicio || '—'}</td>
+									<td>{j.fecha_fin || '—'}</td>
+									<td>
+										<div style="display:flex;gap:0.4rem;">
+											<a href={`/admin/jornadas/${j.id}/editar`} class="btn btn-sm">Editar</a>
+											<button class="btn btn-sm btn-danger" data-delete-id={j.id}>Eliminar</button>
+										</div>
+									</td>
+								</tr>
+							);
+						})
+					) : (
+						<tr>
+							<td colspan="6">
+								<div class="empty-state">No hay jornadas registradas</div>
+							</td>
+						</tr>
+					)
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		document.querySelectorAll('[data-delete-id]').forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const id = btn.dataset.deleteId;
+				if (!confirm('¿Estas seguro de eliminar esta jornada?')) return;
+
+				try {
+					const res = await fetch(`/api/jornadas/${id}`, { method: 'DELETE' });
+					if (res.ok) {
+						window.location.reload();
+					} else {
+						const data = await res.json();
+						alert(data.error || 'Error al eliminar');
+					}
+				} catch {
+					alert('Error de conexion');
+				}
+			});
+		});
+	</script>
+</AdminLayout>

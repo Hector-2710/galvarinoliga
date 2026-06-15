@@ -1,0 +1,139 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { id } = Astro.params;
+
+const [jugadorRes, equiposRes] = await Promise.all([
+	supabase.from('jugadores').select('*, equipos(nombre)').eq('id', id).single(),
+	supabase.from('equipos').select('id, nombre').order('nombre'),
+]);
+
+const jugador = jugadorRes.data;
+const equipos = equiposRes.data;
+
+if (!jugador) {
+	return Astro.redirect('/admin/jugadores');
+}
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Editar Jugador" activeRoute="jugadores" {adminName}>
+	<div style="max-width:700px;margin:0 auto;">
+		<a href="/admin/jugadores" class="back-link">← Volver a Jugadores</a>
+		<div class="page-header">
+			<h2>Editar: {jugador.nombre} {jugador.apellido}</h2>
+		</div>
+
+		<div class="error-msg" id="error-msg" style="display:none;"></div>
+		<div class="success-msg" id="success-msg" style="display:none;"></div>
+
+		<form class="form-card" id="jugador-form" data-id={id}>
+			<div class="form-group">
+				<label for="equipo_id">Equipo</label>
+				<select id="equipo_id" name="equipo_id">
+					{equipos?.map((eq) => (
+						<option value={eq.id} selected={eq.id === jugador.equipo_id}>{eq.nombre}</option>
+					))}
+				</select>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="nombre">Nombre</label>
+					<input type="text" id="nombre" name="nombre" value={jugador.nombre} required />
+				</div>
+				<div class="form-group">
+					<label for="apellido">Apellido</label>
+					<input type="text" id="apellido" name="apellido" value={jugador.apellido} required />
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="posicion">Posicion</label>
+					<select id="posicion" name="posicion">
+						<option value="">Seleccionar...</option>
+						<option value="Arquero" selected={jugador.posicion === 'Arquero'}>Arquero</option>
+						<option value="Defensa" selected={jugador.posicion === 'Defensa'}>Defensa</option>
+						<option value="Mediocampista" selected={jugador.posicion === 'Mediocampista'}>Mediocampista</option>
+						<option value="Delantero" selected={jugador.posicion === 'Delantero'}>Delantero</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="numero_camiseta">Numero Camiseta</label>
+					<input type="number" id="numero_camiseta" name="numero_camiseta" min="1" max="99" value={jugador.numero_camiseta ?? ''} />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="fecha_nacimiento">Fecha de Nacimiento</label>
+				<input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value={jugador.fecha_nacimiento ?? ''} />
+			</div>
+
+			<div class="form-group">
+				<label>
+					<input type="checkbox" name="activo" value="true" checked={jugador.activo !== false} style="width:auto;margin-right:0.4rem;" />
+					Jugador activo
+				</label>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn">Guardar Cambios</button>
+				<a href="/admin/jugadores" class="btn btn-secondary">Cancelar</a>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		const jugadorId = document.getElementById('jugador-form').dataset.id;
+		document.getElementById('jugador-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const errorMsg = document.getElementById('error-msg');
+			const successMsg = document.getElementById('success-msg');
+
+			errorMsg.style.display = 'none';
+			successMsg.style.display = 'none';
+
+			const data = {
+				equipo_id: parseInt(formData.get('equipo_id')),
+				nombre: formData.get('nombre'),
+				apellido: formData.get('apellido'),
+				posicion: formData.get('posicion') || null,
+				numero_camiseta: formData.get('numero_camiseta') ? parseInt(formData.get('numero_camiseta')) : null,
+				fecha_nacimiento: formData.get('fecha_nacimiento') || null,
+				activo: formData.get('activo') === 'true',
+			};
+
+			try {
+				const res = await fetch(`/api/jugadores/${jugadorId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+
+				if (res.ok) {
+					successMsg.textContent = 'Jugador actualizado correctamente';
+					successMsg.style.display = 'block';
+				} else {
+					const result = await res.json();
+					errorMsg.textContent = result.error || 'Error al actualizar';
+					errorMsg.style.display = 'block';
+				}
+			} catch {
+				errorMsg.textContent = 'Error de conexion';
+				errorMsg.style.display = 'block';
+			}
+		});
+	</script>
+</AdminLayout>

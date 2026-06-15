@@ -1,0 +1,98 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: jugadores } = await supabase
+	.from('jugadores')
+	.select('*, equipos(nombre)')
+	.order('apellido');
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Jugadores" activeRoute="jugadores" {adminName}>
+	<div class="page-header">
+		<h2>Jugadores</h2>
+		<a href="/admin/jugadores/nuevo" class="btn">+ Nuevo Jugador</a>
+	</div>
+
+	<div class="table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Apellido</th>
+					<th>Equipo</th>
+					<th>Posicion</th>
+					<th># Camiseta</th>
+					<th>Estado</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					(jugadores ?? []).length > 0 ? (
+						(jugadores ?? []).map((j) => {
+							const eq = j.equipos as { nombre: string } | null;
+							return (
+								<tr>
+									<td>{j.nombre}</td>
+									<td>{j.apellido}</td>
+									<td style="color:#888;">{eq?.nombre || '—'}</td>
+									<td>{j.posicion || '—'}</td>
+									<td style="text-align:center;">{j.numero_camiseta || '—'}</td>
+									<td>
+										<span class={`estado-badge ${j.activo ? 'estado-finalizado' : 'estado-programado'}`}>
+											{j.activo ? 'Activo' : 'Inactivo'}
+										</span>
+									</td>
+									<td>
+										<div style="display:flex;gap:0.4rem;">
+											<a href={`/admin/jugadores/${j.id}/editar`} class="btn btn-sm">Editar</a>
+											<button class="btn btn-sm btn-danger" data-delete-id={j.id}>Eliminar</button>
+										</div>
+									</td>
+								</tr>
+							);
+						})
+					) : (
+						<tr>
+							<td colspan="7">
+								<div class="empty-state">No hay jugadores registrados</div>
+							</td>
+						</tr>
+					)
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		document.querySelectorAll('[data-delete-id]').forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const id = btn.dataset.deleteId;
+				if (!confirm('¿Estas seguro de eliminar este jugador?')) return;
+
+				try {
+					const res = await fetch(`/api/jugadores/${id}`, { method: 'DELETE' });
+					if (res.ok) {
+						window.location.reload();
+					} else {
+						const data = await res.json();
+						alert(data.error || 'Error al eliminar');
+					}
+				} catch {
+					alert('Error de conexion');
+				}
+			});
+		});
+	</script>
+</AdminLayout>

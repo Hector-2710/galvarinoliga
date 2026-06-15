@@ -1,0 +1,73 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: tarjetas } = await supabase
+	.from('vista_tarjetas')
+	.select('*')
+	.order('rojas', { ascending: false })
+	.order('amarillas', { ascending: false });
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Tarjetas" activeRoute="tarjetas" {adminName}>
+	<div class="page-header">
+		<h2>Acumulacion de Tarjetas</h2>
+	</div>
+
+	<div class="table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Jugador</th>
+					<th>Equipo</th>
+					<th>Amarillas</th>
+					<th>Rojas</th>
+					<th>Total</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					(tarjetas ?? []).length > 0 ? (
+						(tarjetas ?? []).map((t, i: number) => {
+							const total = (t.amarillas ?? 0) + (t.rojas ?? 0);
+							return (
+								<tr>
+									<td style="text-align:center;">{i + 1}</td>
+									<td><strong>{t.nombre} {t.apellido}</strong></td>
+									<td style="color:#888;">{t.equipo}</td>
+									<td style="text-align:center;">
+										<span style="display:inline-block;padding:0.15rem 0.5rem;background:#fff8e1;color:#f57f17;border-radius:3px;font-weight:600;">
+											{t.amarillas ?? 0}
+										</span>
+									</td>
+									<td style="text-align:center;">
+										<span style="display:inline-block;padding:0.15rem 0.5rem;background:#ffebee;color:#d32f2f;border-radius:3px;font-weight:600;">
+											{t.rojas ?? 0}
+										</span>
+									</td>
+									<td style="text-align:center;font-weight:600;">{total}</td>
+								</tr>
+							);
+						})
+					) : (
+						<tr>
+							<td colspan="6">
+								<div class="empty-state">No hay tarjetas registradas</div>
+							</td>
+						</tr>
+					)
+				}
+			</tbody>
+		</table>
+	</div>
+</AdminLayout>

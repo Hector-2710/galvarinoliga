@@ -1,0 +1,86 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const [partidosRes, equiposRes, jugadoresRes, jornadaActualRes, temporadasRes, goleadoresRes] = await Promise.all([
+	supabase.from('partidos').select('*', { count: 'exact', head: true }),
+	supabase.from('equipos').select('*', { count: 'exact', head: true }),
+	supabase.from('jugadores').select('*', { count: 'exact', head: true }),
+	supabase.from('jornadas').select('*').order('numero', { ascending: false }).limit(1),
+	supabase.from('temporadas').select('*', { count: 'exact', head: true }),
+	supabase.from('vista_goleadores').select('*').limit(5),
+]);
+
+const totalPartidos = partidosRes.count ?? 0;
+const totalEquipos = equiposRes.count ?? 0;
+const totalJugadores = jugadoresRes.count ?? 0;
+const totalTemporadas = temporadasRes.count ?? 0;
+const ultimaJornada = jornadaActualRes.data?.[0];
+const topGoleadores = goleadoresRes.data ?? [];
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Dashboard" activeRoute="dashboard" {adminName}>
+	<h2 style="font-size:1.3rem;color:#1a1a2e;margin-bottom:1rem;">Dashboard</h2>
+
+	<div class="stats-grid">
+		<div class="stat-card">
+			<div class="stat-number">{totalEquipos}</div>
+			<div class="stat-label">Equipos</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-number">{totalJugadores}</div>
+			<div class="stat-label">Jugadores</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-number">{totalPartidos}</div>
+			<div class="stat-label">Partidos</div>
+		</div>
+		<div class="stat-card">
+			<div class="stat-number">{totalTemporadas}</div>
+			<div class="stat-label">Temporadas</div>
+		</div>
+	</div>
+
+	{
+		ultimaJornada && (
+			<div class="stat-card" style="margin-bottom:1rem;">
+				<div class="stat-label">Ultima Jornada</div>
+				<div style="font-size:0.95rem;margin-top:0.4rem;">
+					{ultimaJornada.nombre}
+				</div>
+			</div>
+		)
+	}
+
+	{
+		topGoleadores.length > 0 && (
+			<div class="stat-card" style="margin-bottom:1rem;">
+				<div class="stat-label">Maximos Goleadores</div>
+				<div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.3rem;">
+					{topGoleadores.slice(0, 3).map((g, idx) => (
+						<div style="display:flex;justify-content:space-between;font-size:0.85rem;padding:0.25rem 0;border-bottom:1px solid #eee;">
+							<span>{idx + 1}. {g.nombre} {g.apellido}</span>
+							<span style="font-weight:700;color:#1a73e8;">{String(g.goles)} goles</span>
+						</div>
+					))}
+				</div>
+			</div>
+		)
+	}
+
+	<p class="quick-actions-title">Acciones Rapidas</p>
+	<div class="quick-actions">
+		<a href="/admin/partidos/nuevo" class="btn">+ Nuevo Partido</a>
+		<a href="/admin/equipos/nuevo" class="btn">+ Nuevo Equipo</a>
+		<a href="/admin/jugadores/nuevo" class="btn">+ Nuevo Jugador</a>
+		<a href="/admin/partidos" class="btn">Ver Partidos</a>
+	</div>
+</AdminLayout>

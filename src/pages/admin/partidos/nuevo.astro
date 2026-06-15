@@ -1,0 +1,136 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: equipos } = await supabase
+	.from('equipos')
+	.select('id, nombre')
+	.order('nombre');
+
+const { data: jornadas } = await supabase
+	.from('jornadas')
+	.select('id, nombre, numero')
+	.order('numero');
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Nuevo Partido" activeRoute="partidos" {adminName}>
+	<div style="max-width:800px;margin:0 auto;">
+		<a href="/admin/partidos" class="back-link">← Volver a Partidos</a>
+		<div class="page-header">
+			<h2>Nuevo Partido</h2>
+		</div>
+
+		<div class="error-msg" id="error-msg" style="display:none;"></div>
+
+		<form class="form-card" id="partido-form">
+			<div class="form-row">
+				<div class="form-group">
+					<label for="equipo1">Equipo 1 *</label>
+					<select id="equipo1" name="equipo1_id" required>
+						<option value="">Seleccionar equipo...</option>
+						{equipos?.map((eq) => (
+							<option value={eq.id}>{eq.nombre}</option>
+						))}
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="equipo2">Equipo 2 *</label>
+					<select id="equipo2" name="equipo2_id" required>
+						<option value="">Seleccionar equipo...</option>
+						{equipos?.map((eq) => (
+							<option value={eq.id}>{eq.nombre}</option>
+						))}
+					</select>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="fecha">Fecha *</label>
+					<input type="date" id="fecha" name="fecha" required />
+				</div>
+
+				<div class="form-group">
+					<label for="hora">Hora *</label>
+					<input type="time" id="hora" name="hora" required />
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="cancha">Cancha *</label>
+					<input type="text" id="cancha" name="cancha" placeholder="Ej: Estadio Municipal" required />
+				</div>
+
+				<div class="form-group">
+					<label for="jornada_id">Jornada</label>
+					<select id="jornada_id" name="jornada_id">
+						<option value="">Sin jornada</option>
+						{jornadas?.map((j) => (
+							<option value={j.id}>{j.nombre}</option>
+						))}
+					</select>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn">Guardar Partido</button>
+				<a href="/admin/partidos" class="btn btn-secondary">Cancelar</a>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		document.getElementById('partido-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const formData = new FormData(form);
+			const errorMsg = document.getElementById('error-msg');
+
+			const data = {
+				equipo1_id: parseInt(formData.get('equipo1_id')),
+				equipo2_id: parseInt(formData.get('equipo2_id')),
+				fecha: formData.get('fecha'),
+				hora: formData.get('hora'),
+				cancha: formData.get('cancha'),
+				jornada_id: formData.get('jornada_id') ? parseInt(formData.get('jornada_id')) : null,
+			};
+
+			if (data.equipo1_id === data.equipo2_id) {
+				errorMsg.textContent = 'Los equipos deben ser distintos';
+				errorMsg.style.display = 'block';
+				return;
+			}
+
+			try {
+				const res = await fetch('/api/partidos', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+
+				if (res.ok) {
+					window.location.href = '/admin/partidos';
+				} else {
+					const result = await res.json();
+					errorMsg.textContent = result.error || 'Error al crear partido';
+					errorMsg.style.display = 'block';
+				}
+			} catch {
+				errorMsg.textContent = 'Error de conexion';
+				errorMsg.style.display = 'block';
+			}
+		});
+	</script>
+</AdminLayout>

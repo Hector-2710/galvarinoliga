@@ -1,0 +1,119 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { id } = Astro.params;
+
+const [jornadaRes, temporadasRes] = await Promise.all([
+	supabase.from('jornadas').select('*').eq('id', id).single(),
+	supabase.from('temporadas').select('id, nombre').order('nombre'),
+]);
+
+const jornada = jornadaRes.data;
+const temporadas = temporadasRes.data;
+
+if (!jornada) {
+	return Astro.redirect('/admin/jornadas');
+}
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Editar Jornada" activeRoute="jornadas" {adminName}>
+	<div style="max-width:700px;margin:0 auto;">
+		<a href="/admin/jornadas" class="back-link">← Volver a Jornadas</a>
+		<div class="page-header">
+			<h2>Editar: {jornada.nombre}</h2>
+		</div>
+
+		<div class="error-msg" id="error-msg" style="display:none;"></div>
+		<div class="success-msg" id="success-msg" style="display:none;"></div>
+
+		<form class="form-card" id="jornada-form" data-id={id}>
+			<div class="form-group">
+				<label for="temporada_id">Temporada</label>
+				<select id="temporada_id" name="temporada_id">
+					{temporadas?.map((t) => (
+						<option value={t.id} selected={t.id === jornada.temporada_id}>{t.nombre}</option>
+					))}
+				</select>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="numero">Numero</label>
+					<input type="number" id="numero" name="numero" min="1" value={jornada.numero} required />
+				</div>
+				<div class="form-group">
+					<label for="nombre">Nombre</label>
+					<input type="text" id="nombre" name="nombre" value={jornada.nombre} required />
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="fecha_inicio">Fecha Inicio</label>
+					<input type="date" id="fecha_inicio" name="fecha_inicio" value={jornada.fecha_inicio ?? ''} />
+				</div>
+				<div class="form-group">
+					<label for="fecha_fin">Fecha Fin</label>
+					<input type="date" id="fecha_fin" name="fecha_fin" value={jornada.fecha_fin ?? ''} />
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn">Guardar Cambios</button>
+				<a href="/admin/jornadas" class="btn btn-secondary">Cancelar</a>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		const jornadaId = document.getElementById('jornada-form').dataset.id;
+		document.getElementById('jornada-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const errorMsg = document.getElementById('error-msg');
+			const successMsg = document.getElementById('success-msg');
+
+			errorMsg.style.display = 'none';
+			successMsg.style.display = 'none';
+
+			const data = {
+				temporada_id: parseInt(formData.get('temporada_id')),
+				numero: parseInt(formData.get('numero')),
+				nombre: formData.get('nombre'),
+				fecha_inicio: formData.get('fecha_inicio') || null,
+				fecha_fin: formData.get('fecha_fin') || null,
+			};
+
+			try {
+				const res = await fetch(`/api/jornadas/${jornadaId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+
+				if (res.ok) {
+					successMsg.textContent = 'Jornada actualizada correctamente';
+					successMsg.style.display = 'block';
+				} else {
+					const result = await res.json();
+					errorMsg.textContent = result.error || 'Error al actualizar';
+					errorMsg.style.display = 'block';
+				}
+			} catch {
+				errorMsg.textContent = 'Error de conexion';
+				errorMsg.style.display = 'block';
+			}
+		});
+	</script>
+</AdminLayout>

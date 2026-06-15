@@ -1,0 +1,61 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: goleadores } = await supabase
+	.from('vista_goleadores')
+	.select('*')
+	.order('goles', { ascending: false });
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Goleadores" activeRoute="goleadores" {adminName}>
+	<div class="page-header">
+		<h2>Tabla de Goleadores</h2>
+	</div>
+
+	<div class="table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Jugador</th>
+					<th>Equipo</th>
+					<th>Goles</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					(goleadores ?? []).length > 0 ? (
+						(goleadores ?? []).map((g, i: number) => (
+							<tr>
+								<td style="text-align:center;font-weight:700;">{i + 1}</td>
+								<td><strong>{g.nombre} {g.apellido}</strong></td>
+								<td style="color:#888;">{g.equipo}</td>
+								<td style="text-align:center;">
+									<span class="estado-badge estado-finalizado" style="font-size:0.85rem;padding:0.25rem 0.6rem;">
+										{g.goles} {g.goles === 1 ? 'gol' : 'goles'}
+									</span>
+								</td>
+							</tr>
+						))
+					) : (
+						<tr>
+							<td colspan="4">
+								<div class="empty-state">No hay goles registrados</div>
+							</td>
+						</tr>
+					)
+				}
+			</tbody>
+		</table>
+	</div>
+</AdminLayout>
