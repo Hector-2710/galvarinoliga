@@ -21,13 +21,10 @@ if (!equipo) {
 	return Astro.redirect('/admin/equipos');
 }
 
-const [cuerpoTecnicoRes, titulosRes] = await Promise.all([
-	supabase.from('cuerpo_tecnico').select('*').eq('equipo_id', id),
-	supabase.from('titulos').select('*').eq('equipo_id', id).order('ano', { ascending: false }),
-]);
-
-const cuerpoTecnico = cuerpoTecnicoRes.data ?? [];
-const titulos = titulosRes.data ?? [];
+const { data: cuerpoTecnico } = await supabase
+	.from('cuerpo_tecnico')
+	.select('*')
+	.eq('equipo_id', id);
 
 const adminName = Astro.locals.user?.email ?? 'Admin';
 ---
@@ -106,25 +103,6 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			</div>
 		</div>
 
-		<!-- Titulos -->
-		<div class="form-card sub-section">
-			<h3 class="section-title">Titulos</h3>
-			<div id="titulos-list" class="inline-list">
-				{titulos.length > 0 ? titulos.map((t) => (
-					<div class="inline-item" data-titulo-id={t.id}>
-						<div><strong>{t.nombre}</strong> <small>({t.ano})</small></div>
-						<button class="btn btn-sm btn-danger" data-delete-titulo={t.id}>Eliminar</button>
-					</div>
-				)) : (
-					<div style="color:#888;font-size:0.85rem;">Sin titulos registrados</div>
-				)}
-			</div>
-			<div class="inline-add">
-				<input type="text" id="titulo-nombre" placeholder="Nombre del titulo" style="flex:2;" />
-				<input type="number" id="titulo-ano" placeholder="Año" min="1900" max="2030" style="flex:1;" />
-				<button class="btn btn-sm" id="add-titulo-btn">Agregar</button>
-			</div>
-		</div>
 	</div>
 
 	<script>
@@ -204,38 +182,5 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			});
 		});
 
-		document.getElementById('add-titulo-btn')?.addEventListener('click', async () => {
-			const nombre = document.getElementById('titulo-nombre').value.trim();
-			const ano = document.getElementById('titulo-ano').value;
-			if (!nombre || !ano) return alert('Ingrese nombre y año del titulo');
-
-			try {
-				const res = await fetch('/api/titulos', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ equipo_id: parseInt(equipoId), nombre, ano: parseInt(ano) }),
-				});
-
-				if (res.ok) {
-					window.location.reload();
-				} else {
-					const data = await res.json();
-					alert(data.error || 'Error al agregar');
-				}
-			} catch {
-				alert('Error de conexion');
-			}
-		});
-
-		document.querySelectorAll('[data-delete-titulo]').forEach((btn) => {
-			btn.addEventListener('click', async () => {
-				if (!confirm('¿Eliminar este titulo?')) return;
-				try {
-					const res = await fetch(`/api/titulos/${btn.dataset.deleteTitulo}`, { method: 'DELETE' });
-					if (res.ok) window.location.reload();
-					else alert('Error al eliminar');
-				} catch { alert('Error de conexion'); }
-			});
-		});
 	</script>
 </AdminLayout>

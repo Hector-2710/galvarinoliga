@@ -1,7 +1,7 @@
 -- Seed data for Galvarino Liga Fútbol
 -- Ejecutar después de la migración 001_schema.sql
 -- Limpia datos existentes antes de insertar (útil para re-ejecuciones)
-TRUNCATE TABLE asistencias, goles, tarjetas, partidos, cuerpo_tecnico, titulos, jugadores, jornadas, equipos, temporadas RESTART IDENTITY CASCADE;
+TRUNCATE TABLE asistencias, goles, partidos, cuerpo_tecnico, jugadores, jornadas, equipos, temporadas RESTART IDENTITY CASCADE;
 
 -- Temporada actual
 INSERT INTO temporadas (nombre, fecha_inicio, fecha_fin, activa)
@@ -120,17 +120,3 @@ INSERT INTO asistencias (gol_id, jugador_id) VALUES
   (32, 15), (33, 6), (34, 7), (37, 6), (38, 10),
   (39, 11), (40, 4), (41, 3), (42, 20), (43, 15);
 
--- Tarjetas (sin minuto)
-INSERT INTO tarjetas (partido_id, jugador_id, equipo_id, tipo) VALUES
-  (1, 6, 2, 'amarilla'),
-  (1, 5, 1, 'amarilla'),
-  (4, 11, 3, 'amarilla'),
-  (4, 10, 2, 'amarilla'),
-  (6, 23, 6, 'amarilla'),
-  (6, 22, 6, 'roja'),
-  (9, 25, 6, 'amarilla'),
-  (11, 19, 5, 'amarilla'),
-  (11, 20, 5, 'roja'),
-  (13, 19, 5, 'amarilla'),
-  (14, 14, 4, 'amarilla'),
-  (17, 13, 3, 'amarilla');

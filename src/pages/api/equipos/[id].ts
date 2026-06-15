@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ params, request, cookies }) => {
 
 	const { data, error } = await supabase
 		.from('equipos')
-		.select('*, jugadores(*), cuerpo_tecnico(*), titulos(*)')
+		.select('*, jugadores(*), cuerpo_tecnico(*)')
 		.eq('id', id)
 		.single();
 

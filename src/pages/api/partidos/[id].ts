@@ -16,8 +16,7 @@ export const GET: APIRoute = async ({ params, request, cookies }) => {
 			*,
 			equipo1:equipo1_id(id, nombre, logo_url),
 			equipo2:equipo2_id(id, nombre, logo_url),
-			goles(*, jugador:jugador_id(nombre, apellido)),
-			tarjetas(*, jugador:jugador_id(nombre, apellido))
+			goles(*, jugador:jugador_id(nombre, apellido))
 		`)
 		.eq('id', id)
 		.single();

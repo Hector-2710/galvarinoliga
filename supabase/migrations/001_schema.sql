@@ -51,16 +51,7 @@ CREATE TABLE cuerpo_tecnico (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 1.5 Títulos
-CREATE TABLE titulos (
-  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  equipo_id BIGINT NOT NULL REFERENCES equipos(id) ON DELETE CASCADE,
-  nombre TEXT NOT NULL,
-  ano SMALLINT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 1.6 Jornadas
+-- 1.5 Jornadas
 CREATE TABLE jornadas (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   temporada_id BIGINT NOT NULL REFERENCES temporadas(id) ON DELETE CASCADE,
@@ -107,17 +98,7 @@ CREATE TABLE asistencias (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 1.10 Tarjetas
-CREATE TABLE tarjetas (
-  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  partido_id BIGINT NOT NULL REFERENCES partidos(id) ON DELETE CASCADE,
-  jugador_id BIGINT NOT NULL REFERENCES jugadores(id) ON DELETE CASCADE,
-  equipo_id BIGINT NOT NULL REFERENCES equipos(id),
-  tipo TEXT NOT NULL CHECK (tipo IN ('amarilla', 'roja')),
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
--- 1.11 Perfiles de Administradores (vinculados a auth.users de Supabase)
+-- 1.10 Perfiles de Administradores (vinculados a auth.users de Supabase)
 CREATE TABLE perfiles_admin (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id UUID NOT NULL UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -137,8 +118,6 @@ CREATE INDEX idx_partidos_equipo2 ON partidos(equipo2_id);
 CREATE INDEX idx_partidos_fecha ON partidos(fecha);
 CREATE INDEX idx_goles_partido ON goles(partido_id);
 CREATE INDEX idx_goles_jugador ON goles(jugador_id);
-CREATE INDEX idx_tarjetas_partido ON tarjetas(partido_id);
-CREATE INDEX idx_tarjetas_jugador ON tarjetas(jugador_id);
 
 -- 3. VISTAS
 -- ---------
@@ -203,22 +182,6 @@ JOIN equipos e ON e.id = j.equipo_id
 GROUP BY j.id, j.nombre, j.apellido, e.nombre, e.id
 ORDER BY asistencias DESC;
 
--- 3.4 Tarjetas acumuladas
-CREATE VIEW vista_tarjetas AS
-SELECT
-  j.id AS jugador_id,
-  j.nombre,
-  j.apellido,
-  e.nombre AS equipo,
-  e.id AS equipo_id,
-  COUNT(CASE WHEN t.tipo = 'amarilla' THEN 1 END) AS amarillas,
-  COUNT(CASE WHEN t.tipo = 'roja' THEN 1 END) AS rojas
-FROM jugadores j
-JOIN tarjetas t ON t.jugador_id = j.id
-JOIN equipos e ON e.id = j.equipo_id
-GROUP BY j.id, j.nombre, j.apellido, e.nombre, e.id
-ORDER BY rojas DESC, amarillas DESC;
-
 -- 4. FUNCIÓN PARA ACTUALIZAR updated_at
 -- --------------------------------------
 
@@ -254,26 +217,22 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 ALTER TABLE equipos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jugadores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cuerpo_tecnico ENABLE ROW LEVEL SECURITY;
-ALTER TABLE titulos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE temporadas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jornadas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE partidos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE goles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE asistencias ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tarjetas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE perfiles_admin ENABLE ROW LEVEL SECURITY;
 
 -- Políticas: Lectura pública para datos públicos
 CREATE POLICY "Lectura pública" ON equipos FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON jugadores FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON cuerpo_tecnico FOR SELECT USING (true);
-CREATE POLICY "Lectura pública" ON titulos FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON temporadas FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON jornadas FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON partidos FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON goles FOR SELECT USING (true);
 CREATE POLICY "Lectura pública" ON asistencias FOR SELECT USING (true);
-CREATE POLICY "Lectura pública" ON tarjetas FOR SELECT USING (true);
 
 -- Políticas: Escritura solo para admins autenticados
 CREATE POLICY "Insert para admins" ON equipos FOR INSERT WITH CHECK (
@@ -323,13 +282,6 @@ CREATE POLICY "Delete para admins" ON asistencias FOR DELETE USING (
   EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol = 'admin')
 );
 
-CREATE POLICY "Insert para admins" ON tarjetas FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol IN ('admin', 'editor'))
-);
-CREATE POLICY "Delete para admins" ON tarjetas FOR DELETE USING (
-  EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol = 'admin')
-);
-
 CREATE POLICY "Insert para admins" ON cuerpo_tecnico FOR INSERT WITH CHECK (
   EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol IN ('admin', 'editor'))
 );
@@ -337,16 +289,6 @@ CREATE POLICY "Update para admins" ON cuerpo_tecnico FOR UPDATE USING (
   EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol IN ('admin', 'editor'))
 );
 CREATE POLICY "Delete para admins" ON cuerpo_tecnico FOR DELETE USING (
-  EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol = 'admin')
-);
-
-CREATE POLICY "Insert para admins" ON titulos FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol IN ('admin', 'editor'))
-);
-CREATE POLICY "Update para admins" ON titulos FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol IN ('admin', 'editor'))
-);
-CREATE POLICY "Delete para admins" ON titulos FOR DELETE USING (
   EXISTS (SELECT 1 FROM perfiles_admin WHERE user_id = auth.uid() AND rol = 'admin')
 );
 

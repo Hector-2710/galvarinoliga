@@ -1,7 +1,7 @@
 ---
 export interface Props {
 	title: string;
-	activeRoute: 'dashboard' | 'partidos' | 'equipos' | 'jugadores' | 'jornadas' | 'temporadas' | 'goleadores' | 'tarjetas';
+	activeRoute: 'dashboard' | 'partidos' | 'equipos' | 'jugadores' | 'jornadas' | 'temporadas' | 'goleadores';
 	adminName?: string;
 }
 
@@ -104,11 +104,9 @@ const { title, activeRoute, adminName = 'Admin' } = Astro.props;
 			/* Team section grid */
 			.team-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; }
 			@media (max-width: 700px) { .team-section { grid-template-columns: 1fr; } }
-			.team-goles h4, .team-tarjetas h4 { font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.4rem; }
+			.team-goles h4 { font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.4rem; }
 			.badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600; margin-right: 0.3rem; }
 			.badge-gol { background: #e8f5e9; color: #2e7d32; }
-			.badge-amarilla { background: #fff8e1; color: #f57f17; }
-			.badge-roja { background: #ffebee; color: #d32f2f; }
 
 			/* Back link */
 			.back-link { color: #1a73e8; font-size: 0.85rem; text-decoration: none; display: inline-block; margin-bottom: 0.5rem; }
@@ -137,7 +135,6 @@ const { title, activeRoute, adminName = 'Admin' } = Astro.props;
 			<a href="/admin/jornadas" class:list={{ active: activeRoute === 'jornadas' }}>Jornadas</a>
 			<a href="/admin/temporadas" class:list={{ active: activeRoute === 'temporadas' }}>Temporadas</a>
 			<a href="/admin/goleadores" class:list={{ active: activeRoute === 'goleadores' }}>Goleadores</a>
-			<a href="/admin/tarjetas" class:list={{ active: activeRoute === 'tarjetas' }}>Tarjetas</a>
 		</nav>
 
 		<main class="admin-content">

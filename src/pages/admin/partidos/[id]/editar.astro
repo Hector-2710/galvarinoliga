@@ -25,15 +25,13 @@ if (!partido) {
 	return Astro.redirect('/admin/partidos');
 }
 
-const [golesRes, tarjetasRes, jugadoresEq1Res, jugadoresEq2Res] = await Promise.all([
+const [golesRes, jugadoresEq1Res, jugadoresEq2Res] = await Promise.all([
 	supabase.from('goles').select('*, jugador:jugador_id(nombre, apellido, numero_camiseta)').eq('partido_id', id).order('id'),
-	supabase.from('tarjetas').select('*, jugador:jugador_id(nombre, apellido, numero_camiseta)').eq('partido_id', id).order('id'),
 	supabase.from('jugadores').select('id, nombre, apellido, numero_camiseta').eq('equipo_id', partido.equipo1_id).order('apellido'),
 	supabase.from('jugadores').select('id, nombre, apellido, numero_camiseta').eq('equipo_id', partido.equipo2_id).order('apellido'),
 ]);
 
 const goles = golesRes.data ?? [];
-const tarjetas = tarjetasRes.data ?? [];
 const jugadoresEq1 = jugadoresEq1Res.data ?? [];
 const jugadoresEq2 = jugadoresEq2Res.data ?? [];
 
@@ -192,75 +190,6 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			</div>
 		</div>
 
-		<!-- Tarjetas -->
-		<div class="form-card sub-section">
-			<h3 class="section-title">Tarjetas del Partido</h3>
-			<div class="team-section">
-				<div class="team-tarjetas">
-					<h4 style="color:#d32f2f;">{eq1Nombre}</h4>
-					<div id="tarjetas-eq1-list" class="inline-list">
-						{tarjetas.filter(t => t.equipo_id === partido.equipo1_id).map((tarj) => {
-							const jug = tarj.jugador as { nombre: string; apellido: string; numero_camiseta?: number } | null;
-							const badgeClass = tarj.tipo === 'amarilla' ? 'badge-amarilla' : 'badge-roja';
-							return (
-								<div class="inline-item" data-tarjeta-id={tarj.id}>
-									<div><span class={`badge ${badgeClass}`}>{tarj.tipo.toUpperCase()}</span> {jug?.nombre} {jug?.apellido}</div>
-									<button class="btn btn-sm btn-danger" data-delete-tarjeta={tarj.id}>Quitar</button>
-								</div>
-							);
-						})}
-						{tarjetas.filter(t => t.equipo_id === partido.equipo1_id).length === 0 && (
-							<div style="color:#888;font-size:0.85rem;">Sin tarjetas</div>
-						)}
-					</div>
-					<div class="inline-add">
-						<select id="tarjeta-jugador-eq1" style="flex:1;">
-							<option value="">Seleccionar jugador...</option>
-							{jugadoresEq1.map((j) => (
-								<option value={j.id}>{j.nombre} {j.apellido}</option>
-							))}
-						</select>
-						<select id="tarjeta-tipo-eq1">
-							<option value="amarilla">Amarilla</option>
-							<option value="roja">Roja</option>
-						</select>
-						<button class="btn btn-sm" data-add-tarjeta-equipo={partido.equipo1_id}>Agregar</button>
-					</div>
-				</div>
-
-				<div class="team-tarjetas">
-					<h4 style="color:#555;">{eq2Nombre}</h4>
-					<div id="tarjetas-eq2-list" class="inline-list">
-						{tarjetas.filter(t => t.equipo_id === partido.equipo2_id).map((tarj) => {
-							const jug = tarj.jugador as { nombre: string; apellido: string; numero_camiseta?: number } | null;
-							const badgeClass = tarj.tipo === 'amarilla' ? 'badge-amarilla' : 'badge-roja';
-							return (
-								<div class="inline-item" data-tarjeta-id={tarj.id}>
-									<div><span class={`badge ${badgeClass}`}>{tarj.tipo.toUpperCase()}</span> {jug?.nombre} {jug?.apellido}</div>
-									<button class="btn btn-sm btn-danger" data-delete-tarjeta={tarj.id}>Quitar</button>
-								</div>
-							);
-						})}
-						{tarjetas.filter(t => t.equipo_id === partido.equipo2_id).length === 0 && (
-							<div style="color:#888;font-size:0.85rem;">Sin tarjetas</div>
-						)}
-					</div>
-					<div class="inline-add">
-						<select id="tarjeta-jugador-eq2" style="flex:1;">
-							<option value="">Seleccionar jugador...</option>
-							{jugadoresEq2.map((j) => (
-								<option value={j.id}>{j.nombre} {j.apellido}</option>
-							))}
-						</select>
-						<select id="tarjeta-tipo-eq2">
-							<option value="amarilla">Amarilla</option>
-							<option value="roja">Roja</option>
-						</select>
-						<button class="btn btn-sm" data-add-tarjeta-equipo={partido.equipo2_id}>Agregar</button>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	<script>
@@ -355,45 +284,5 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			});
 		});
 
-		document.querySelectorAll('[data-add-tarjeta-equipo]').forEach((btn) => {
-			btn.addEventListener('click', async () => {
-				const equipoId = parseInt(btn.dataset.addTarjetaEquipo);
-				const eq1Id = parseInt(document.querySelector('[name="equipo1_id"]')?.value);
-				const jugadorSelectId = equipoId === eq1Id ? 'tarjeta-jugador-eq1' : 'tarjeta-jugador-eq2';
-				const tipoSelectId = equipoId === eq1Id ? 'tarjeta-tipo-eq1' : 'tarjeta-tipo-eq2';
-				const jugadorId = parseInt(document.getElementById(jugadorSelectId)?.value);
-				const tipo = document.getElementById(tipoSelectId)?.value;
-
-				if (!jugadorId) return alert('Seleccione un jugador');
-
-				try {
-					const res = await fetch('/api/tarjetas', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ partido_id: parseInt(partidoId), jugador_id: jugadorId, equipo_id: equipoId, tipo }),
-					});
-
-					if (res.ok) {
-						window.location.reload();
-					} else {
-						const data = await res.json();
-						alert(data.error || 'Error al agregar tarjeta');
-					}
-				} catch {
-					alert('Error de conexion');
-				}
-			});
-		});
-
-		document.querySelectorAll('[data-delete-tarjeta]').forEach((btn) => {
-			btn.addEventListener('click', async () => {
-				if (!confirm('¿Quitar esta tarjeta?')) return;
-				try {
-					const res = await fetch(`/api/tarjetas/${btn.dataset.deleteTarjeta}`, { method: 'DELETE' });
-					if (res.ok) window.location.reload();
-					else alert('Error al quitar tarjeta');
-				} catch { alert('Error de conexion'); }
-			});
-		});
 	</script>
 </AdminLayout>

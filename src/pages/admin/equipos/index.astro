@@ -70,7 +70,7 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 		document.querySelectorAll('[data-delete-id]').forEach((btn) => {
 			btn.addEventListener('click', async () => {
 				const id = btn.dataset.deleteId;
-				if (!confirm('¿Estas seguro de eliminar este equipo? Se eliminaran tambien sus jugadores, cuerpo tecnico y titulos.')) return;
+				if (!confirm('¿Estas seguro de eliminar este equipo? Se eliminaran tambien sus jugadores y cuerpo tecnico.')) return;
 
 				try {
 					const res = await fetch(`/api/equipos/${id}`, { method: 'DELETE' });
