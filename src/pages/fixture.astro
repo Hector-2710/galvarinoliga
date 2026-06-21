@@ -25,9 +25,6 @@ const { data: jornadas } = await supabase
 			fecha,
 			hora,
 			cancha,
-			goles1,
-			goles2,
-			estado,
 			equipo1:equipo1_id(nombre),
 			equipo2:equipo2_id(nombre)
 		)
@@ -40,9 +37,6 @@ interface MatchData {
 	fecha: string;
 	hora: string | null;
 	cancha: string;
-	goles1: number | null;
-	goles2: number | null;
-	estado: string;
 	equipo1: { nombre: string } | { nombre: string }[] | null;
 	equipo2: { nombre: string } | { nombre: string }[] | null;
 }
@@ -63,9 +57,6 @@ interface NormalizedMatch {
 	fecha: string;
 	hora: string;
 	cancha: string;
-	goles1: number | null;
-	goles2: number | null;
-	estado: string;
 }
 
 function normalizeEquipo(
@@ -84,9 +75,6 @@ function normalizeMatch(m: MatchData): NormalizedMatch {
 		fecha: m.fecha,
 		hora: m.hora?.slice(0, 5) ?? "",
 		cancha: m.cancha,
-		goles1: m.goles1,
-		goles2: m.goles2,
-		estado: m.estado,
 	};
 }
 
@@ -121,19 +109,6 @@ function formatFecha(fechaStr: string): string {
 		"Dic",
 	];
 	return `${dias[fecha.getDay()]} ${fecha.getDate()} ${meses[fecha.getMonth()]}`;
-}
-
-function estadoLabel(estado: string): string {
-	switch (estado) {
-		case "programado":
-			return "Programado";
-		case "en_vivo":
-			return "En Vivo";
-		case "finalizado":
-			return "Finalizado";
-		default:
-			return estado;
-	}
 }
 
 function isFechaPasada(fechaStr: string): boolean {
@@ -184,9 +159,7 @@ function isFechaPasada(fechaStr: string): boolean {
 													<article
 														class:list={{
 															"match-card": true,
-															"match-card--finalizado": match.estado === "finalizado",
-															"match-card--envivo": match.estado === "en_vivo",
-															"match-card--pasado": match.estado === "programado" && isFechaPasada(match.fecha),
+															"match-card--pasado": isFechaPasada(match.fecha),
 														}}
 														style={`animation-delay: ${(gi * 0.08) + ((mi + 1) * 0.06)}s`}
 													>
@@ -207,16 +180,6 @@ function isFechaPasada(fechaStr: string): boolean {
 																</svg>
 																{match.hora}
 															</span>
-															<span class:list={{
-																"match-card__estado": true,
-																"match-card__estado--envivo": match.estado === "en_vivo",
-																"match-card__estado--finalizado": match.estado === "finalizado",
-															}}>
-																{match.estado === "en_vivo" && (
-																	<span class="live-dot"></span>
-																)}
-																{estadoLabel(match.estado)}
-															</span>
 														</div>
 
 														<div class="match-card__body">
@@ -224,28 +187,8 @@ function isFechaPasada(fechaStr: string): boolean {
 																<span class="match-card__team-name">{match.equipo1}</span>
 															</div>
 
-															<div class="match-card__score">
-																{match.estado === "finalizado" ? (
-																	<span class="match-card__score-value">
-																		<span class:list={{
-																			"match-card__goal": true,
-																			"match-card__goal--winner": match.goles1 !== null && match.goles2 !== null && match.goles1 > match.goles2,
-																		}}>{match.goles1}</span>
-																		<span class="match-card__score-sep">-</span>
-																		<span class:list={{
-																			"match-card__goal": true,
-																			"match-card__goal--winner": match.goles1 !== null && match.goles2 !== null && match.goles2 > match.goles1,
-																		}}>{match.goles2}</span>
-																	</span>
-																) : match.estado === "en_vivo" ? (
-																	<span class="match-card__score-value match-card__score-value--envivo">
-																		{match.goles1 !== null ? match.goles1 : "?"}
-																		<span class="match-card__score-sep">-</span>
-																		{match.goles2 !== null ? match.goles2 : "?"}
-																	</span>
-																) : (
-																	<span class="match-card__vs-text">VS</span>
-																)}
+															<div class="match-card__vs">
+																<span class="match-card__vs-text">VS</span>
 															</div>
 
 															<div class="match-card__team match-card__team--visita">
@@ -395,15 +338,6 @@ function isFechaPasada(fechaStr: string): boolean {
 		border-radius: 0 2px 2px 0;
 	}
 
-	.match-card--finalizado::before {
-		background: #22c55e;
-	}
-
-	.match-card--envivo::before {
-		background: var(--color-primary);
-		animation: pulse 1.5s ease-in-out infinite;
-	}
-
 	.match-card--pasado {
 		opacity: 0.55;
 	}
@@ -435,41 +369,6 @@ function isFechaPasada(fechaStr: string): boolean {
 		flex-shrink: 0;
 	}
 
-	.match-card__estado {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		font-family: var(--font-label);
-		font-size: 0.6rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		padding: 2px 8px;
-		border-radius: 20px;
-		background: rgba(168, 173, 179, 0.15);
-		color: var(--color-secondary);
-		margin-left: auto;
-	}
-
-	.match-card__estado--envivo {
-		background: rgba(230, 30, 42, 0.15);
-		color: var(--color-primary-light);
-	}
-
-	.match-card__estado--finalizado {
-		background: rgba(34, 197, 94, 0.12);
-		color: #4ade80;
-	}
-
-	.live-dot {
-		display: inline-block;
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--color-primary-light);
-		animation: pulse 1s ease-in-out infinite;
-	}
-
 	.match-card__body {
 		display: flex;
 		align-items: center;
@@ -499,49 +398,22 @@ function isFechaPasada(fechaStr: string): boolean {
 		line-height: 1.2;
 	}
 
-	.match-card__score {
+	.match-card__vs {
 		flex-shrink: 0;
-		width: 60px;
+		width: 44px;
+		height: 44px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.match-card__score-value {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		font-family: var(--font-headline);
-		font-size: 1.1rem;
-		color: var(--color-neutral);
-	}
-
-	.match-card__score-value--envivo {
-		color: var(--color-primary-light);
-	}
-
-	.match-card__score-sep {
-		color: var(--color-secondary);
-		font-size: 0.8rem;
-	}
-
-	.match-card__goal {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 24px;
-		padding: 2px 4px;
-	}
-
-	.match-card__goal--winner {
-		color: #4ade80;
-		font-weight: 700;
+		background: var(--color-primary);
+		border-radius: 50%;
+		box-shadow: var(--shadow-red);
 	}
 
 	.match-card__vs-text {
 		font-family: var(--font-headline);
 		font-size: 0.8rem;
-		color: var(--color-secondary);
+		color: var(--color-neutral);
 		letter-spacing: 0.04em;
 	}
 
@@ -598,17 +470,6 @@ function isFechaPasada(fechaStr: string): boolean {
 			font-size: 0.75rem;
 		}
 
-		.match-card__score-value {
-			font-size: 1.2rem;
-		}
-
-		.match-card__score {
-			width: 70px;
-		}
-
-		.match-card__estado {
-			font-size: 0.65rem;
-		}
 	}
 
 	@media (min-width: 1024px) {
@@ -645,10 +506,6 @@ function isFechaPasada(fechaStr: string): boolean {
 			border-color: rgba(230, 30, 42, 0.3);
 		}
 
-		.match-card--finalizado:hover {
-			border-color: rgba(34, 197, 94, 0.3);
-		}
-
 		.match-card:active {
 			transform: scale(0.97);
 		}
@@ -657,26 +514,17 @@ function isFechaPasada(fechaStr: string): boolean {
 			font-size: 1.1rem;
 		}
 
-		.match-card__score-value {
-			font-size: 1.4rem;
+		.match-card__vs {
+			width: 52px;
+			height: 52px;
 		}
 
-		.match-card__score {
-			width: 80px;
-		}
-
-		.match-card__estado {
-			font-size: 0.7rem;
-			padding: 3px 10px;
+		.match-card__vs-text {
+			font-size: 0.9rem;
 		}
 
 		.match-card__header {
 			margin-bottom: var(--spacing-md);
-		}
-
-		.live-dot {
-			width: 8px;
-			height: 8px;
 		}
 	}
 
