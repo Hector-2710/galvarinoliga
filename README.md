@@ -1,46 +1,35 @@
-# Astro Starter Kit: Basics
+
+
+![Galvarino Liga Fútbol](public/banner.png)
+
+# Galvarino Liga Fútbol
+
+Sitio web oficial de la liga de fútbol local de la comuna de **Galvarino**, Chile. Un espacio digital para que la comunidad pueda seguir la información actualizada del campeonato.
+
+## 🏆 ¿Qué encontrarás?
+
+- **Fixture** — Calendario completo de partidos.
+- **Fechas** — Resultados jornada por jornada.
+- **Equipos** — Información de cada club participante.
+- **Tabla de posiciones** — Clasificación actualizada con puntos, partidos jugados, goles a favor/en contra, y más.
+- **Estadísticas** — Goleadores, asistentes y tarjetas.
+- **Noticias** — Artículos y novedades del campeonato.
+- **Donaciones** — Espacio para apoyar a la liga.
+
+
+## 🚀 Tecnología
+
+Construido con [Astro](https://astro.build) y [Supabase](https://supabase.com).
+
+## 🖥️ Desarrollo
 
 ```sh
-pnpm create astro@latest -- --template basics
+pnpm install
+pnpm dev          # servidor local en localhost:4321
+pnpm build        # build de producción en ./dist/
+pnpm preview      # vista previa del build local
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 📄 Licencia
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Uso interno — Liga de Fútbol de Galvarino.
