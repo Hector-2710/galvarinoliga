@@ -3,6 +3,7 @@ export const prerender = false;
 
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { createServerSupabase } from "../lib/supabase";
 
@@ -304,6 +305,7 @@ const jornadasConStats: JornadaConStats[] = (jornadas ?? [])
 			</div>
 		</section>
 	</main>
+	<SponsorsBanners />
 	<Footer />
 </Layout>
 

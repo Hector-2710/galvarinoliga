@@ -3,6 +3,7 @@ export const prerender = false;
 
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import StandingsTable from "../components/StandingsTable.astro";
 import { createServerSupabase } from "../lib/supabase";
@@ -56,6 +57,7 @@ const standings = (posiciones ?? []).map((t, index) => ({
 			</div>
 		</section>
 	</main>
+	<SponsorsBanners />
 	<Footer />
 </Layout>
 

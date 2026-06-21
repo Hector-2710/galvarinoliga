@@ -13,6 +13,8 @@
 			<div class="footer__bottom">
 				<div class="footer__links">
 					<a href="/privacidad" class="footer__link">Aviso de Privacidad</a>
+					<span class="footer__link-sep">·</span>
+					<a href="/sponsor" class="footer__link footer__link--sponsor">¿Quieres ser sponsor?</a>
 				</div>
 				<p class="footer__copyright">
 					&copy; 2026 Galvarino Liga Fútbol. Todos los derechos reservados.
@@ -147,6 +149,23 @@
 	.footer__link:hover {
 		opacity: 1;
 		color: var(--color-primary-light);
+	}
+
+	.footer__link--sponsor {
+		color: var(--color-primary-light);
+		opacity: 1;
+		font-weight: 600;
+	}
+
+	.footer__link--sponsor:hover {
+		color: var(--color-primary);
+		opacity: 1;
+	}
+
+	.footer__link-sep {
+		color: var(--color-secondary);
+		opacity: 0.3;
+		font-size: 0.7rem;
 	}
 
 	.footer__social-link:hover,

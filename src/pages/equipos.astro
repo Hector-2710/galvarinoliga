@@ -3,6 +3,7 @@ export const prerender = false;
 
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { createServerSupabase } from "../lib/supabase";
 
@@ -13,27 +14,15 @@ const supabase = createServerSupabase({
 
 const { data: equipos } = await supabase
 	.from("equipos")
-	.select("id, nombre, ano_creacion, logo_url, presidente, secretaria, tesorera, color_principal")
+	.select("id, nombre, ano_creacion, logo_url, color_principal")
 	.order("nombre");
-
-const { data: jugadoresCount } = await supabase
-	.from("jugadores")
-	.select("equipo_id");
-
-const playerCountMap = new Map<number, number>();
-for (const j of jugadoresCount ?? []) {
-	const equipoId = j.equipo_id as number;
-	playerCountMap.set(equipoId, (playerCountMap.get(equipoId) ?? 0) + 1);
-}
 
 interface TeamRow {
 	id: number;
 	nombre: string;
 	anoCreacion: number | null;
 	logoUrl: string | null;
-	presidente: string | null;
 	colorPrincipal: string;
-	jugadoresCount: number;
 }
 
 const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
@@ -41,9 +30,7 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 	nombre: eq.nombre,
 	anoCreacion: eq.ano_creacion,
 	logoUrl: eq.logo_url,
-	presidente: eq.presidente,
 	colorPrincipal: eq.color_principal ?? "#E61E2A",
-	jugadoresCount: playerCountMap.get(eq.id) ?? 0,
 }));
 ---
 
@@ -102,24 +89,13 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 											)}
 										</div>
 
-										{team.presidente && (
-											<div class="team-row__presidente">
-												<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-													<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-													<circle cx="12" cy="7" r="4"></circle>
-												</svg>
-												<span class="team-row__presidente-text">{team.presidente}</span>
-											</div>
-										)}
-
-										<div class="team-row__meta">
+										<div class="team-row__club-link">
 											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-												<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-												<circle cx="9" cy="7" r="4"></circle>
-												<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-												<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+												<circle cx="12" cy="12" r="10"></circle>
+												<path d="M12 16v-4"></path>
+												<path d="M12 8h.01"></path>
 											</svg>
-											<span>{team.jugadoresCount} jugador{team.jugadoresCount !== 1 ? "es" : ""}</span>
+											<span>Ver información del club</span>
 										</div>
 
 										<div class="team-row__arrow">
@@ -136,6 +112,7 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 			</div>
 		</section>
 	</main>
+	<SponsorsBanners />
 	<Footer />
 </Layout>
 
@@ -268,43 +245,22 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 		letter-spacing: 0.04em;
 	}
 
-	.team-row__presidente {
+	.team-row__club-link {
 		display: none;
 		align-items: center;
 		gap: 6px;
-		flex-shrink: 0;
-		max-width: 160px;
-	}
-
-	.team-row__presidente svg {
-		opacity: 0.5;
-		flex-shrink: 0;
-	}
-
-	.team-row__presidente-text {
-		font-family: var(--font-label);
-		font-size: 0.75rem;
-		color: var(--color-secondary);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.team-row__meta {
-		display: none;
-		align-items: center;
-		gap: 4px;
 		font-family: var(--font-label);
 		font-size: 0.7rem;
-		color: var(--color-secondary);
+		color: var(--color-primary);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
 		flex-shrink: 0;
+		white-space: nowrap;
 	}
 
-	.team-row__meta svg {
-		opacity: 0.5;
+	.team-row__club-link svg {
 		flex-shrink: 0;
+		opacity: 0.7;
 	}
 
 	.team-row__arrow {
@@ -349,11 +305,7 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 			font-size: 1.1rem;
 		}
 
-		.team-row__presidente {
-			display: flex;
-		}
-
-		.team-row__meta {
+		.team-row__club-link {
 			display: flex;
 		}
 	}
@@ -416,12 +368,8 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 			font-size: 1.25rem;
 		}
 
-		.team-row__meta {
+		.team-row__club-link {
 			font-size: 0.75rem;
-		}
-
-		.team-row__presidente {
-			max-width: 200px;
 		}
 
 		.team-row__arrow {
@@ -442,8 +390,8 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 			font-size: 1.3rem;
 		}
 
-		.team-row__presidente {
-			max-width: 240px;
+		.team-row__club-link {
+			font-size: 0.8rem;
 		}
 	}
 </style>

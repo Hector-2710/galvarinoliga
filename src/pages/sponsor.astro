@@ -1,0 +1,256 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="sponsor-page">
+			<div class="container">
+				<h1 class="page-title fade-in-up">¿Quieres ser sponsor?</h1>
+
+				<div class="content-card fade-in-up">
+					<p>
+						<strong>Galvarino Liga Fútbol</strong> es la plataforma digital del fútbol amateur de
+						Galvarino. Semanalmente cientos de personas consultan fixtures, resultados, estadísticas
+						y noticias de la liga.
+					</p>
+				</div>
+
+				<div class="beneficios fade-in-up">
+					<h2 class="section-title">Beneficios para tu negocio</h2>
+					<div class="beneficios-list">
+						<div class="beneficio-item">
+							<span class="beneficio-icon">→</span>
+							<div>
+								<strong>Visibilidad local</strong>
+								<p>Tu marca aparece frente a jugadores, dirigentes, hinchas y familias de la comuna.</p>
+							</div>
+						</div>
+						<div class="beneficio-item">
+							<span class="beneficio-icon">→</span>
+							<div>
+								<strong>Compromiso comunitario</strong>
+								<p>Asociar tu negocio con el deporte local fortalece tu imagen y muestra tu apoyo a la comunidad.</p>
+							</div>
+						</div>
+						<div class="beneficio-item">
+							<span class="beneficio-icon">→</span>
+							<div>
+								<strong>Difusión en redes</strong>
+								<p>Mención y agradecimiento en nuestras redes sociales para llegar a más personas.</p>
+							</div>
+						</div>
+						<div class="beneficio-item">
+							<span class="beneficio-icon">→</span>
+							<div>
+								<strong>Enlace a tu sitio web</strong>
+								<p>Quienes vean tu logo podrán hacer clic y visitar tu negocio directamente.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="contacto fade-in-up">
+					<h2 class="section-title">Contáctanos</h2>
+					<p>Si quieres que tu negocio aparezca en <strong>Galvarino Liga Fútbol</strong>, escríbenos y te contamos los planes disponibles.</p>
+					<div class="contacto-links">
+						<a href="mailto:galvarinoligafutbol@gmail.com?subject=Quiero%20ser%20Sponsor" class="contacto-btn">
+							galvarinoligafutbol@gmail.com
+						</a>
+						<a href="https://www.instagram.com/galvarinoliga/" class="contacto-btn" target="_blank" rel="noopener noreferrer">
+							@galvarinoliga
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<SponsorsBanners />
+	<Footer />
+</Layout>
+
+<style>
+	.sponsor-page {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-md);
+	}
+
+	.section-title {
+		font-family: var(--font-headline);
+		font-size: 1.2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-md);
+		position: relative;
+		display: inline-block;
+	}
+
+	.section-title::after {
+		content: '';
+		display: block;
+		width: 100%;
+		height: 3px;
+		background: var(--color-primary);
+		margin-top: 4px;
+		border-radius: 2px;
+	}
+
+	.content-card {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		line-height: 1.7;
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.content-card strong {
+		color: var(--color-neutral);
+	}
+
+	.beneficios {
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.beneficios-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.beneficio-item {
+		display: flex;
+		gap: var(--spacing-md);
+		align-items: flex-start;
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-md);
+		padding: var(--spacing-md);
+	}
+
+	.beneficio-icon {
+		font-size: 1.2rem;
+		color: var(--color-primary-light);
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.beneficio-item strong {
+		font-family: var(--font-headline);
+		font-size: 0.9rem;
+		color: var(--color-neutral);
+		text-transform: uppercase;
+		display: block;
+		margin-bottom: 4px;
+	}
+
+	.beneficio-item p {
+		font-family: var(--font-body);
+		font-size: 0.8rem;
+		color: var(--color-secondary);
+		line-height: 1.5;
+		margin: 0;
+	}
+
+	.contacto {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.contacto p {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+	}
+
+	.contacto strong {
+		color: var(--color-neutral);
+	}
+
+	.contacto-links {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+	}
+
+	.contacto-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-sm);
+		color: var(--color-neutral);
+		text-decoration: none;
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		font-weight: 500;
+		padding: var(--spacing-md) var(--spacing-lg);
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.08), rgba(230, 30, 42, 0.02));
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: var(--border-radius-md);
+		transition: all 0.25s;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.contacto-btn::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 3px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.contacto-btn:hover {
+		color: var(--color-neutral);
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.18), rgba(230, 30, 42, 0.06));
+		border-color: rgba(230, 30, 42, 0.35);
+		transform: translateY(-2px);
+	}
+
+	@media (min-width: 640px) {
+		.sponsor-page { padding: var(--spacing-xl) 0; }
+		.page-title { font-size: 2.4rem; }
+		.section-title { font-size: 1.4rem; }
+		.contacto-links { flex-direction: row; }
+		.contacto { padding: var(--spacing-xl); }
+		.content-card { padding: var(--spacing-xl); }
+		.beneficio-item { padding: var(--spacing-lg); }
+	}
+
+	@media (min-width: 1024px) {
+		.sponsor-page { padding: var(--spacing-2xl) 0; }
+		.page-title { font-size: 2.8rem; }
+		.section-title { font-size: 1.6rem; }
+		.contacto { padding: var(--spacing-2xl); border-radius: var(--border-radius-xl); }
+		.content-card { padding: var(--spacing-2xl); border-radius: var(--border-radius-xl); font-size: 1rem; }
+		.beneficio-item strong { font-size: 1rem; }
+		.beneficio-item p { font-size: 0.85rem; }
+		.beneficios-list { gap: var(--spacing-lg); }
+	}
+</style>
