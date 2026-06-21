@@ -20,8 +20,8 @@ const { teams } = Astro.props;
 
 // Helper to determine row highlight
 function getRowClass(pos: number): string {
-	if (pos === 1) return 'standings__row--leader';
-	if (pos <= 3) return 'standings__row--top';
+	if (pos <= 2) return 'standings__row--qualified';
+	if (pos >= 3 && pos <= 6) return 'standings__row--mid';
 	return '';
 }
 ---
@@ -53,7 +53,7 @@ function getRowClass(pos: number): string {
 								teams.map((team, i) => (
 									<tr class={`standings__row ${getRowClass(team.pos)} fade-in-up`} style={`animation-delay: ${i * 0.06}s`}>
 										<td class="standings__td standings__td--pos">
-											<span class={`standings__pos-badge ${team.pos <= 3 ? 'standings__pos-badge--highlight' : ''}`}>
+											<span class={`standings__pos-badge ${team.pos <= 2 ? 'standings__pos-badge--highlight' : ''}`}>
 												{team.pos}
 											</span>
 										</td>
@@ -77,6 +77,10 @@ function getRowClass(pos: number): string {
 							}
 						</tbody>
 					</table>
+				</div>
+				<div class="standings__note">
+					<span class="standings__note-circle"></span>
+					<span class="standings__note-text">Equipos clasificados al Regional</span>
 				</div>
 			) : (
 				<p style="color: var(--color-secondary); text-align: center; padding: 2rem 0;">
@@ -144,7 +148,7 @@ function getRowClass(pos: number): string {
 		transition: background 0.2s;
 	}
 
-	.standings__row--leader {
+	.standings__row--qualified {
 		background: linear-gradient(
 			135deg,
 			rgba(230, 30, 42, 0.15) 0%,
@@ -153,7 +157,7 @@ function getRowClass(pos: number): string {
 		border-left: 3px solid var(--color-primary);
 	}
 
-	.standings__row--top {
+	.standings__row--mid {
 		background: rgba(255, 255, 255, 0.03);
 	}
 
@@ -229,6 +233,28 @@ function getRowClass(pos: number): string {
 		font-size: 0.75rem;
 		font-weight: 700;
 		box-shadow: var(--shadow-red);
+	}
+
+	.standings__note {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		margin-top: var(--spacing-md);
+		font-family: var(--font-label);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+	}
+
+	.standings__note-circle {
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		flex-shrink: 0;
+	}
+
+	.standings__note-text {
+		line-height: 1;
 	}
 
 	/* ===== Tablet (≥768px) ===== */
@@ -314,7 +340,7 @@ function getRowClass(pos: number): string {
 			transform: scale(1.005);
 		}
 
-		.standings__row--leader:hover {
+		.standings__row--qualified:hover {
 			background: linear-gradient(
 				135deg,
 				rgba(230, 30, 42, 0.25) 0%,

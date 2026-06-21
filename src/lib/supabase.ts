@@ -2,7 +2,6 @@ import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { AstroCookies } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 
-
 // Crea un cliente Supabase para SSR (server-side rendering).
 export function createServerSupabase({
 	request,
