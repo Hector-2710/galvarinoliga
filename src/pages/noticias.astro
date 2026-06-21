@@ -72,6 +72,38 @@ const sorted = noticias
 					)
 				}
 			</div>
+
+			<!-- ===== CTA: Enviar noticia ===== -->
+			<div class="container">
+				<div class="noticias-cta fade-in-up" style={`animation-delay: ${Math.min(sorted.length, 1) * 0.05 + 0.3}s`}>
+					<div class="noticias-cta__icon">
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+							<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+							<polyline points="2,4 12,13 22,4"></polyline>
+						</svg>
+					</div>
+					<div class="noticias-cta__content">
+						<p class="noticias-cta__text">
+							¿Tienes una noticia del club que quieras compartir?
+						</p>
+						<p class="noticias-cta__fields-label">Al enviarla incluye estos datos:</p>
+						<ul class="noticias-cta__fields">
+							<li><strong>Título</strong> de la noticia</li>
+							<li><strong>Resumen</strong> o descripción breve</li>
+							<li><strong>Fecha</strong> del evento o publicación</li>
+							<li><strong>Foto</strong> <span class="noticias-cta__optional">(opcional)</span></li>
+							<li><strong>Autor</strong> <span class="noticias-cta__optional">(opcional)</span></li>
+						</ul>
+						<a href="mailto:galvarinoligafutbol@gmail.com" class="noticias-cta__email">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="2" y="4" width="20" height="16" rx="2"></rect>
+								<polyline points="2,4 12,13 22,4"></polyline>
+							</svg>
+							galvarinoligafutbol@gmail.com
+						</a>
+					</div>
+				</div>
+			</div>
 		</section>
 	</main>
 	<Footer />
@@ -412,6 +444,229 @@ const sorted = noticias
 		}
 
 		.noticia-row__resumen {
+			font-size: 0.95rem;
+		}
+	}
+
+	/* ================================================
+	   CTA — Envíanos tu noticia
+	   ================================================ */
+	.noticias-cta {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--spacing-md);
+		margin-top: var(--spacing-xl);
+		padding: var(--spacing-lg);
+		background: linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--color-tertiary-light) 92%, var(--color-primary)) 0%,
+			var(--color-tertiary) 100%
+		);
+		border-radius: var(--border-radius-lg);
+		border: 1px solid rgba(230, 30, 42, 0.15);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.noticias-cta__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border-radius: var(--border-radius-sm);
+		background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+		color: var(--color-primary);
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.noticias-cta__content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-xs);
+	}
+
+	.noticias-cta__text {
+		font-family: var(--font-body);
+		font-size: 0.8rem;
+		color: var(--color-neutral);
+		line-height: 1.4;
+		margin: 0;
+		font-weight: 500;
+	}
+
+	.noticias-cta__fields-label {
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		margin: var(--spacing-xs) 0 0 0;
+	}
+
+	.noticias-cta__fields {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+	}
+
+	.noticias-cta__fields li {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		line-height: 1.4;
+		padding-left: 14px;
+		position: relative;
+	}
+
+	.noticias-cta__fields li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 7px;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		opacity: 0.6;
+	}
+
+	.noticias-cta__fields li strong {
+		color: var(--color-neutral);
+		font-weight: 500;
+	}
+
+	.noticias-cta__optional {
+		font-family: var(--font-label);
+		font-size: 0.65rem;
+		color: var(--color-secondary);
+		opacity: 0.6;
+		text-transform: lowercase;
+	}
+
+	.noticias-cta__email {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		font-family: var(--font-label);
+		font-size: 0.8rem;
+		color: var(--color-primary);
+		text-decoration: none;
+		letter-spacing: 0.02em;
+		transition: color 0.2s ease;
+		margin-top: var(--spacing-xs);
+		padding: 6px 12px;
+		border-radius: var(--border-radius-sm);
+		background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+		border: 1px solid rgba(230, 30, 42, 0.15);
+		word-break: break-all;
+		align-self: flex-start;
+	}
+
+	.noticias-cta__email svg {
+		width: 14px;
+		height: 14px;
+		flex-shrink: 0;
+	}
+
+	@media (hover: hover) {
+		.noticias-cta__email:hover {
+			color: var(--color-primary-light);
+			background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+	}
+
+	.noticias-cta__email:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+
+	@media (min-width: 640px) {
+		.noticias-cta {
+			gap: var(--spacing-lg);
+			padding: var(--spacing-xl);
+			margin-top: var(--spacing-2xl);
+		}
+
+		.noticias-cta__icon {
+			width: 48px;
+			height: 48px;
+		}
+
+		.noticias-cta__icon svg {
+			width: 24px;
+			height: 24px;
+		}
+
+		.noticias-cta__text {
+			font-size: 0.9rem;
+		}
+
+		.noticias-cta__fields-label {
+			font-size: 0.72rem;
+		}
+
+		.noticias-cta__fields li {
+			font-size: 0.8rem;
+		}
+
+		.noticias-cta__fields li::before {
+			top: 8px;
+		}
+
+		.noticias-cta__optional {
+			font-size: 0.68rem;
+		}
+
+		.noticias-cta__email {
+			font-size: 0.9rem;
+			padding: 8px 16px;
+		}
+
+		.noticias-cta__email svg {
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.noticias-cta {
+			padding: var(--spacing-xl) var(--spacing-2xl);
+			margin-top: var(--spacing-2xl);
+		}
+
+		.noticias-cta__icon {
+			width: 52px;
+			height: 52px;
+		}
+
+		.noticias-cta__icon svg {
+			width: 26px;
+			height: 26px;
+		}
+
+		.noticias-cta__text {
+			font-size: 0.95rem;
+		}
+
+		.noticias-cta__fields-label {
+			font-size: 0.75rem;
+		}
+
+		.noticias-cta__fields li {
+			font-size: 0.85rem;
+		}
+
+		.noticias-cta__fields li::before {
+			top: 9px;
+		}
+
+		.noticias-cta__email {
 			font-size: 0.95rem;
 		}
 	}

@@ -6,11 +6,6 @@ imagen: "/banner.png"
 autor: "Comunicaciones Galvarino Liga"
 destacado: true
 ---
-
-## Calendario
-
-El calendario completo de partidos ya aun no está disponible.
-
 ## Únete a la Comunidad
 
 Sigue nuestras redes sociales para estar al tanto de todas las novedades:
