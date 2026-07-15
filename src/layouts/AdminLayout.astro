@@ -1,7 +1,7 @@
 ---
 export interface Props {
 	title: string;
-	activeRoute: 'dashboard' | 'partidos' | 'equipos' | 'jugadores' | 'jornadas' | 'temporadas' | 'goleadores';
+	activeRoute: 'dashboard' | 'partidos' | 'equipos' | 'jugadores' | 'jornadas' | 'temporadas' | 'goleadores' | 'asistencias';
 	adminName?: string;
 }
 
@@ -135,6 +135,7 @@ const { title, activeRoute, adminName = 'Admin' } = Astro.props;
 			<a href="/admin/jornadas" class:list={{ active: activeRoute === 'jornadas' }}>Jornadas</a>
 			<a href="/admin/temporadas" class:list={{ active: activeRoute === 'temporadas' }}>Temporadas</a>
 			<a href="/admin/goleadores" class:list={{ active: activeRoute === 'goleadores' }}>Goleadores</a>
+			<a href="/admin/asistencias" class:list={{ active: activeRoute === 'asistencias' }}>Asistencias</a>
 		</nav>
 
 		<main class="admin-content">

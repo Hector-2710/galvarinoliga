@@ -1,0 +1,90 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const { data: asistencias } = await supabase
+	.from('asistencias')
+	.select('*, jugador:jugador_id(nombre, apellido), equipos!inner(nombre), partido:partido_id(fecha, temporada:temporada_id(nombre))')
+	.order('id');
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Asistencias" activeRoute="asistencias" {adminName}>
+	<div class="page-header">
+		<h2>Asistencias</h2>
+		<a href="/admin/asistencias/nuevo" class="btn">+ Nueva Asistencia</a>
+	</div>
+
+	<div class="table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>Jugador</th>
+					<th>Equipo</th>
+					<th>Partido</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					(asistencias ?? []).length > 0 ? (
+						(asistencias ?? []).map((a) => {
+							const j = a.jugador as { nombre: string; apellido: string } | null;
+							const eq = a.equipos as { nombre: string } | null;
+							const p = a.partido as { fecha: string; temporada: { nombre: string } | null } | null;
+							return (
+								<tr>
+									<td><strong>{j?.nombre} {j?.apellido}</strong></td>
+									<td style="color:#888;">{eq?.nombre || '—'}</td>
+									<td style="color:#888;">{p?.fecha || '—'}{p?.temporada?.nombre ? ` (${p.temporada.nombre})` : ''}</td>
+									<td>
+										<div style="display:flex;gap:0.4rem;">
+											<a href={`/admin/asistencias/${a.id}/editar`} class="btn btn-sm">Editar</a>
+											<button class="btn btn-sm btn-danger" data-delete-id={a.id}>Eliminar</button>
+										</div>
+									</td>
+								</tr>
+							);
+						})
+					) : (
+						<tr>
+							<td colspan="4">
+								<div class="empty-state">No hay asistencias registradas</div>
+							</td>
+						</tr>
+					)
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		document.querySelectorAll('[data-delete-id]').forEach((btn) => {
+			btn.addEventListener('click', async () => {
+				const id = btn.dataset.deleteId;
+				if (!confirm('Estas seguro de eliminar esta asistencia?')) return;
+
+				try {
+					const res = await fetch(`/api/asistencias/${id}`, { method: 'DELETE' });
+					if (res.ok) {
+						window.location.reload();
+					} else {
+						const data = await res.json();
+						alert(data.error || 'Error al eliminar');
+					}
+				} catch {
+					alert('Error de conexion');
+				}
+			});
+		});
+	</script>
+</AdminLayout>

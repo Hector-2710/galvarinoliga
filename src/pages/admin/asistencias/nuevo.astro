@@ -1,0 +1,118 @@
+---
+export const prerender = false;
+
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createServerSupabase } from '../../../lib/supabase';
+
+const supabase = createServerSupabase({
+	request: Astro.request,
+	cookies: Astro.cookies,
+});
+
+const [partidosRes, jugadoresRes, equiposRes] = await Promise.all([
+	supabase.from('partidos').select('id, fecha, temporada:temporada_id(nombre)').order('fecha', { ascending: false }),
+	supabase.from('jugadores').select('id, nombre, apellido, equipo_id').order('apellido'),
+	supabase.from('equipos').select('id, nombre').order('nombre'),
+]);
+
+const partidos = partidosRes.data;
+const jugadores = jugadoresRes.data;
+const equipos = equiposRes.data;
+
+const adminName = Astro.locals.user?.email ?? 'Admin';
+---
+
+<AdminLayout title="Nueva Asistencia" activeRoute="asistencias" {adminName}>
+	<div style="max-width:700px;margin:0 auto;">
+		<a href="/admin/asistencias" class="back-link">← Volver a Asistencias</a>
+		<div class="page-header">
+			<h2>Nueva Asistencia</h2>
+		</div>
+
+		<div class="error-msg" id="error-msg" style="display:none;"></div>
+
+		<form class="form-card" id="asistencia-form">
+			<div class="form-group">
+				<label for="partido_id">Partido *</label>
+				<select id="partido_id" name="partido_id" required>
+					<option value="">Seleccionar partido...</option>
+					{partidos?.map((p) => {
+						const t = p.temporada as { nombre: string } | null;
+						return (
+							<option value={p.id}>{p.fecha}{t?.nombre ? ` - ${t.nombre}` : ''}</option>
+						);
+					})}
+				</select>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group">
+					<label for="jugador_id">Jugador *</label>
+					<select id="jugador_id" name="jugador_id" required>
+						<option value="">Seleccionar jugador...</option>
+						{jugadores?.map((j) => (
+							<option value={j.id} data-equipo-id={j.equipo_id}>{j.apellido}, {j.nombre}</option>
+						))}
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="equipo_id">Equipo *</label>
+					<select id="equipo_id" name="equipo_id" required>
+						<option value="">Seleccionar equipo...</option>
+						{equipos?.map((eq) => (
+							<option value={eq.id}>{eq.nombre}</option>
+						))}
+					</select>
+				</div>
+			</div>
+
+			<div class="form-actions">
+				<button type="submit" class="btn">Guardar Asistencia</button>
+				<a href="/admin/asistencias" class="btn btn-secondary">Cancelar</a>
+			</div>
+		</form>
+	</div>
+
+	<script>
+		// @ts-nocheck
+		// Auto-select equipo when jugador changes
+		document.getElementById('jugador_id')?.addEventListener('change', (e) => {
+			const selected = e.target.selectedOptions[0];
+			const equipoId = selected?.dataset.equipoId;
+			if (equipoId) {
+				document.getElementById('equipo_id').value = equipoId;
+			}
+		});
+
+		document.getElementById('asistencia-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const formData = new FormData(e.target);
+			const errorMsg = document.getElementById('error-msg');
+
+			const data = {
+				partido_id: parseInt(formData.get('partido_id')),
+				jugador_id: parseInt(formData.get('jugador_id')),
+				equipo_id: parseInt(formData.get('equipo_id')),
+			};
+
+			try {
+				const res = await fetch('/api/asistencias', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+
+				if (res.ok) {
+					window.location.href = '/admin/asistencias';
+				} else {
+					const result = await res.json();
+					errorMsg.textContent = result.error || 'Error al crear asistencia';
+					errorMsg.style.display = 'block';
+				}
+			} catch {
+				errorMsg.textContent = 'Error de conexion';
+				errorMsg.style.display = 'block';
+			}
+		});
+	</script>
+</AdminLayout>
