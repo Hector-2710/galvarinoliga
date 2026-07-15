@@ -63,6 +63,7 @@ interface JugadorRef {
 
 interface GolData {
 	id: number;
+	jugador_id: number | null;
 	equipo_id: number | null;
 	jugador: JugadorRef | JugadorRef[] | null;
 }
@@ -303,7 +304,7 @@ const color2 = equipo2?.color_principal ?? "#E61E2A";
 							{golesEquipo1.map((gol) => {
 								const jugador = normalizeJugador(gol.jugador as JugadorRef | JugadorRef[] | null);
 								return (
-									<div class="scorer-row">
+									<a href={gol.jugador_id ? `/jugadores/${gol.jugador_id}` : "#"} class="scorer-row">
 										<div class="scorer-row__icon">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 												<circle cx="12" cy="12" r="10"></circle>
@@ -318,7 +319,7 @@ const color2 = equipo2?.color_principal ?? "#E61E2A";
 											)}
 										</div>
 										<span class="scorer-row__goal-badge">⚽</span>
-									</div>
+									</a>
 								);
 							})}
 						</div>
@@ -337,7 +338,7 @@ const color2 = equipo2?.color_principal ?? "#E61E2A";
 							{golesEquipo2.map((gol) => {
 								const jugador = normalizeJugador(gol.jugador as JugadorRef | JugadorRef[] | null);
 								return (
-									<div class="scorer-row">
+									<a href={gol.jugador_id ? `/jugadores/${gol.jugador_id}` : "#"} class="scorer-row">
 										<div class="scorer-row__icon">
 											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 												<circle cx="12" cy="12" r="10"></circle>
@@ -352,7 +353,7 @@ const color2 = equipo2?.color_principal ?? "#E61E2A";
 											)}
 										</div>
 										<span class="scorer-row__goal-badge">⚽</span>
-									</div>
+									</a>
 								);
 							})}
 						</div>
@@ -724,10 +725,14 @@ const color2 = equipo2?.color_principal ?? "#E61E2A";
 		background: rgba(255, 255, 255, 0.02);
 		border-radius: var(--border-radius-sm);
 		transition: background 0.2s;
+		text-decoration: none;
+		color: inherit;
 	}
 
-	.scorer-row:hover {
-		background: rgba(255, 255, 255, 0.05);
+	@media (hover: hover) {
+		.scorer-row:hover {
+			background: rgba(255, 255, 255, 0.05);
+		}
 	}
 
 	.scorer-row__icon {

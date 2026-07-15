@@ -203,14 +203,14 @@ for (const p of players) {
 										<div class="pos-group__list">
 											{
 												posPlayers.map((j) => (
-													<div class="player-row">
+													<a href={`/jugadores/${j.id}`} class="player-row">
 														{j.numero_camiseta && (
 															<span class="player-row__number">{j.numero_camiseta}</span>
 														)}
 														<div class="player-row__info">
 															<span class="player-row__name">{j.nombre} {j.apellido}</span>
 														</div>
-													</div>
+													</a>
 												))
 											}
 										</div>
@@ -487,10 +487,14 @@ for (const p of players) {
 		background: rgba(255, 255, 255, 0.02);
 		border-radius: var(--border-radius-sm);
 		transition: background 0.2s;
+		text-decoration: none;
+		color: inherit;
 	}
 
-	.player-row:hover {
-		background: rgba(255, 255, 255, 0.05);
+	@media (hover: hover) {
+		.player-row:hover {
+			background: rgba(255, 255, 255, 0.05);
+		}
 	}
 
 	.player-row__number {

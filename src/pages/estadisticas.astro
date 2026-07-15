@@ -106,7 +106,7 @@ function medalla(pos: number): string {
 												</span>
 											</td>
 											<td class="stats-table__td stats-table__td--player">
-												<span class="stats-table__player-name">{g.nombre} {g.apellido}</span>
+												<a href={`/jugadores/${g.jugador_id}`} class="stats-table__player-name">{g.nombre} {g.apellido}</a>
 											</td>
 											<td class="stats-table__td stats-table__td--team">
 												<span class="stats-table__team-name">{g.equipo}</span>
@@ -165,7 +165,7 @@ function medalla(pos: number): string {
 												</span>
 											</td>
 											<td class="stats-table__td stats-table__td--player">
-												<span class="stats-table__player-name">{a.nombre} {a.apellido}</span>
+												<a href={`/jugadores/${a.jugador_id}`} class="stats-table__player-name">{a.nombre} {a.apellido}</a>
 											</td>
 											<td class="stats-table__td stats-table__td--team">
 												<span class="stats-table__team-name">{a.equipo}</span>
@@ -384,6 +384,15 @@ function medalla(pos: number): string {
 		font-size: 0.85rem;
 		font-weight: 500;
 		color: var(--color-neutral);
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	@media (hover: hover) {
+		.stats-table__player-name:hover {
+			color: var(--color-primary-light);
+			text-decoration: underline;
+		}
 	}
 
 	.stats-table__team-name {
