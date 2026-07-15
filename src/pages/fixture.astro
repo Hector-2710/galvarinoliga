@@ -234,6 +234,13 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 											<div class="matches__list">
 												{
 													jornada.partidos.map((match, mi) => (
+														<a
+															href={`/partidos/${match.id}`}
+															class:list={{
+																"match-card-link": true,
+																"match-card-link--pasado": match.estado === "programado" && isFechaPasada(match.fecha),
+															}}
+														>
 														<article
 															class:list={{
 																"match-card": true,
@@ -314,6 +321,7 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 																{match.cancha}
 															</div>
 														</article>
+														</a>
 													))
 												}
 											</div>
@@ -523,6 +531,20 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 		padding: var(--spacing-md);
 	}
 
+	/* ===== Match Card Link ===== */
+	.match-card-link {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+		-webkit-tap-highlight-color: transparent;
+		border-radius: var(--border-radius-lg);
+		transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+	}
+
+	.match-card-link--pasado {
+		opacity: 0.55;
+	}
+
 	/* ===== Match Card ===== */
 	.match-card {
 		background: rgba(255, 255, 255, 0.02);
@@ -558,12 +580,10 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 	}
 
 	.match-card--pasado {
-		opacity: 0.55;
+		/* opacity handled by .match-card-link--pasado wrapper */
 	}
 
-	.match-card:active {
-		transform: scale(0.98);
-	}
+	/* active scale handled by .match-card-link */
 
 	/* ===== Match Card Header ===== */
 	.match-card__header {
@@ -815,10 +835,19 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 			padding: var(--spacing-xl);
 		}
 
-		.match-card:hover {
-			transform: translateY(-4px);
+		.match-card-link {
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.match-card-link:hover {
+			transform: translateY(-2px);
 			box-shadow: var(--shadow-lg);
-			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.match-card:hover {
+			transform: none;
+			box-shadow: none;
+			border-color: rgba(255, 255, 255, 0.04);
 		}
 
 		.match-card--finalizado:hover {
@@ -826,6 +855,10 @@ const fixture: JornadaGroup[] = (jornadas ?? [])
 		}
 
 		.match-card:active {
+			transform: none;
+		}
+
+		.match-card-link:active {
 			transform: scale(0.97);
 		}
 
