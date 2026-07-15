@@ -87,7 +87,10 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 				{cuerpoTecnico.length > 0 ? cuerpoTecnico.map((ct) => (
 					<div class="inline-item" data-ct-id={ct.id}>
 						<div><strong>{ct.nombre}</strong> <small>({ct.rol})</small></div>
-						<button class="btn btn-sm btn-danger" data-delete-ct={ct.id}>Eliminar</button>
+						<div style="display:flex;gap:0.3rem;">
+							<a href={`/admin/cuerpo-tecnico/${ct.id}/editar`} class="btn btn-sm btn-secondary">Editar</a>
+							<button class="btn btn-sm btn-danger" data-delete-ct={ct.id}>Eliminar</button>
+						</div>
 					</div>
 				)) : (
 					<div style="color:#888;font-size:0.85rem;">Sin cuerpo tecnico registrado</div>
