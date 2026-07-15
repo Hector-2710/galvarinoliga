@@ -5,15 +5,15 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ request, cookies, url }) => {
 	const supabase = createServerSupabase({ request, cookies });
-	const partidoId = url.searchParams.get('partido_id');
+	const golId = url.searchParams.get('gol_id');
 
 	let query = supabase
 		.from('asistencias')
-		.select('*, jugador:jugador_id(nombre, apellido, numero_camiseta), equipos!inner(nombre)')
+		.select('*, jugador:jugador_id(nombre, apellido, numero_camiseta), gol:gol_id(partido:partidos(fecha, estado), jugador:jugadores(nombre, apellido), equipo:equipos(nombre))')
 		.order('id');
 
-	if (partidoId) {
-		query = query.eq('partido_id', parseInt(partidoId));
+	if (golId) {
+		query = query.eq('gol_id', parseInt(golId));
 	}
 
 	const { data, error } = await query;
@@ -44,18 +44,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 	try {
 		const body = await request.json();
-		const { partido_id, jugador_id, equipo_id } = body;
+		const { gol_id, jugador_id } = body;
 
-		if (!partido_id || !jugador_id || !equipo_id) {
+		if (!gol_id || !jugador_id) {
 			return new Response(
-				JSON.stringify({ error: 'Campos requeridos: partido_id, jugador_id, equipo_id' }),
+				JSON.stringify({ error: 'Campos requeridos: gol_id, jugador_id' }),
 				{ status: 400, headers: { 'Content-Type': 'application/json' } }
 			);
 		}
 
 		const { data, error } = await supabase
 			.from('asistencias')
-			.insert({ partido_id, jugador_id, equipo_id })
+			.insert({ gol_id, jugador_id })
 			.select()
 			.single();
 

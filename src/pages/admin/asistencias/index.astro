@@ -11,7 +11,7 @@ const supabase = createServerSupabase({
 
 const { data: asistencias } = await supabase
 	.from('asistencias')
-	.select('*, jugador:jugador_id(nombre, apellido), equipos!inner(nombre), partido:partido_id(fecha, temporada:temporada_id(nombre))')
+	.select('*, jugador:jugadores(nombre, apellido), gol:goles(jugador:jugadores(nombre, apellido), equipo:equipos(nombre), partido:partidos(fecha))')
 	.order('id');
 
 const adminName = Astro.locals.user?.email ?? 'Admin';
@@ -27,8 +27,10 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 		<table>
 			<thead>
 				<tr>
-					<th>Jugador</th>
+					<th>#</th>
+					<th>Asistidor</th>
 					<th>Equipo</th>
+					<th>Gol de</th>
 					<th>Partido</th>
 					<th>Acciones</th>
 				</tr>
@@ -36,15 +38,16 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			<tbody>
 				{
 					(asistencias ?? []).length > 0 ? (
-						(asistencias ?? []).map((a) => {
+						(asistencias ?? []).map((a, i: number) => {
 							const j = a.jugador as { nombre: string; apellido: string } | null;
-							const eq = a.equipos as { nombre: string } | null;
-							const p = a.partido as { fecha: string; temporada: { nombre: string } | null } | null;
+							const g = a.gol as { jugador: { nombre: string; apellido: string } | null; equipo: { nombre: string } | null; partido: { fecha: string } | null } | null;
 							return (
 								<tr>
+									<td style="text-align:center;font-weight:700;">{i + 1}</td>
 									<td><strong>{j?.nombre} {j?.apellido}</strong></td>
-									<td style="color:#888;">{eq?.nombre || '—'}</td>
-									<td style="color:#888;">{p?.fecha || '—'}{p?.temporada?.nombre ? ` (${p.temporada.nombre})` : ''}</td>
+									<td style="color:#888;">{g?.equipo?.nombre || '—'}</td>
+									<td>{g?.jugador?.nombre} {g?.jugador?.apellido}</td>
+									<td style="color:#888;">{g?.partido?.fecha || '—'}</td>
 									<td>
 										<div style="display:flex;gap:0.4rem;">
 											<a href={`/admin/asistencias/${a.id}/editar`} class="btn btn-sm">Editar</a>
@@ -56,7 +59,7 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 						})
 					) : (
 						<tr>
-							<td colspan="4">
+							<td colspan="6">
 								<div class="empty-state">No hay asistencias registradas</div>
 							</td>
 						</tr>

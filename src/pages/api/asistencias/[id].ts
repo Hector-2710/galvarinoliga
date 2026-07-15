@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ params, request, cookies }) => {
 
 	const { data, error } = await supabase
 		.from('asistencias')
-		.select('*, jugador:jugador_id(nombre, apellido, numero_camiseta), equipos!inner(nombre)')
+		.select('*, jugador:jugador_id(nombre, apellido, numero_camiseta)')
 		.eq('id', id)
 		.single();
 
@@ -43,9 +43,8 @@ export const PUT: APIRoute = async ({ params, request, cookies }) => {
 		const body = await request.json();
 		const updateData: Record<string, unknown> = {};
 
-		if (body.partido_id !== undefined) updateData.partido_id = body.partido_id;
+		if (body.gol_id !== undefined) updateData.gol_id = body.gol_id;
 		if (body.jugador_id !== undefined) updateData.jugador_id = body.jugador_id;
-		if (body.equipo_id !== undefined) updateData.equipo_id = body.equipo_id;
 
 		const { data, error } = await supabase
 			.from('asistencias')

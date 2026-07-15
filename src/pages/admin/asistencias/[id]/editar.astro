@@ -11,17 +11,18 @@ const supabase = createServerSupabase({
 
 const { id } = Astro.params;
 
-const [asistenciaRes, partidosRes, jugadoresRes, equiposRes] = await Promise.all([
+const [asistenciaRes, golesRes, jugadoresRes] = await Promise.all([
 	supabase.from('asistencias').select('*').eq('id', id).single(),
-	supabase.from('partidos').select('id, fecha, temporada:temporada_id(nombre)').order('fecha', { ascending: false }),
+	supabase
+		.from('goles')
+		.select('id, jugador:jugadores(nombre, apellido), equipo:equipos(nombre), partido:partidos(fecha, estado)')
+		.order('id'),
 	supabase.from('jugadores').select('id, nombre, apellido, equipo_id').order('apellido'),
-	supabase.from('equipos').select('id, nombre').order('nombre'),
 ]);
 
 const asistencia = asistenciaRes.data;
-const partidos = partidosRes.data;
+const goles = golesRes.data;
 const jugadores = jugadoresRes.data;
-const equipos = equiposRes.data;
 
 if (!asistencia) {
 	return Astro.redirect('/admin/asistencias');
@@ -42,34 +43,28 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 
 		<form class="form-card" id="asistencia-form" data-id={id}>
 			<div class="form-group">
-				<label for="partido_id">Partido</label>
-				<select id="partido_id" name="partido_id">
-					{partidos?.map((p) => {
-						const t = p.temporada as { nombre: string } | null;
+				<label for="gol_id">Gol Asistido</label>
+				<select id="gol_id" name="gol_id">
+					{goles?.map((g) => {
+						const j = g.jugador as { nombre: string; apellido: string } | null;
+						const eq = g.equipo as { nombre: string } | null;
+						const p = g.partido as { fecha: string; estado: string } | null;
 						return (
-							<option value={p.id} selected={p.id === asistencia.partido_id}>{p.fecha}{t?.nombre ? ` - ${t.nombre}` : ''}</option>
+							<option value={g.id} selected={g.id === asistencia.gol_id}>
+								{eq?.nombre || '?'} — {j?.nombre} {j?.apellido}{p?.fecha ? ` (${p.fecha})` : ''}
+							</option>
 						);
 					})}
 				</select>
 			</div>
 
-			<div class="form-row">
-				<div class="form-group">
-					<label for="jugador_id">Jugador</label>
-					<select id="jugador_id" name="jugador_id">
-						{jugadores?.map((j) => (
-							<option value={j.id} selected={j.id === asistencia.jugador_id} data-equipo-id={j.equipo_id}>{j.apellido}, {j.nombre}</option>
-						))}
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="equipo_id">Equipo</label>
-					<select id="equipo_id" name="equipo_id">
-						{equipos?.map((eq) => (
-							<option value={eq.id} selected={eq.id === asistencia.equipo_id}>{eq.nombre}</option>
-						))}
-					</select>
-				</div>
+			<div class="form-group">
+				<label for="jugador_id">Jugador Asistidor</label>
+				<select id="jugador_id" name="jugador_id">
+					{jugadores?.map((j) => (
+						<option value={j.id} selected={j.id === asistencia.jugador_id}>{j.apellido}, {j.nombre}</option>
+					))}
+				</select>
 			</div>
 
 			<div class="form-actions">
@@ -83,15 +78,6 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 		// @ts-nocheck
 		const asistenciaId = document.getElementById('asistencia-form').dataset.id;
 
-		// Auto-select equipo when jugador changes
-		document.getElementById('jugador_id')?.addEventListener('change', (e) => {
-			const selected = e.target.selectedOptions[0];
-			const equipoId = selected?.dataset.equipoId;
-			if (equipoId) {
-				document.getElementById('equipo_id').value = equipoId;
-			}
-		});
-
 		document.getElementById('asistencia-form')?.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const formData = new FormData(e.target);
@@ -102,9 +88,8 @@ const adminName = Astro.locals.user?.email ?? 'Admin';
 			successMsg.style.display = 'none';
 
 			const data = {
-				partido_id: parseInt(formData.get('partido_id')),
+				gol_id: parseInt(formData.get('gol_id')),
 				jugador_id: parseInt(formData.get('jugador_id')),
-				equipo_id: parseInt(formData.get('equipo_id')),
 			};
 
 			try {
