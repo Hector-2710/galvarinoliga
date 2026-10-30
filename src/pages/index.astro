@@ -1,11 +1,102 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Banner from "../components/Banner.astro";
+import NextMatches from "../components/NextMatches.astro";
+import StandingsTable from "../components/StandingsTable.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
+import Footer from "../components/Footer.astro";
+import { calcularTabla, getProximosPartidosDeFecha } from "../lib/liga";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const matches = (await getProximosPartidosDeFecha()).map((partido) => ({
+	id: partido.slug,
+	equipo1: partido.equipo1.nombre,
+	equipo2: partido.equipo2.nombre,
+	fecha: partido.fecha,
+	hora: partido.hora,
+	cancha: partido.cancha,
+	estado: partido.estado,
+}));
+
+const standings = (await calcularTabla()).map((fila) => ({
+	pos: fila.pos,
+	equipo_nombre: fila.equipo.nombre,
+	pj: fila.pj,
+	g: fila.g,
+	e: fila.e,
+	p: fila.p,
+	gf: fila.gf,
+	gc: fila.gc,
+	dg: fila.dg,
+	pts: fila.pts,
+}));
 ---
 
 <Layout>
-	<Welcome />
+	<Header />
+	<main class="main-content">
+		<section class="banner-section">
+			<div class="container">
+				<Banner />
+			</div>
+		</section>
+		<NextMatches matches={matches} />
+		<StandingsTable teams={standings} />
+		<section class="banner-section">
+			<div class="container">
+				<Banner />
+			</div>
+		</section>
+	</main>
+	<SponsorsBanners />
+	<Footer />
 </Layout>
+
+<style is:global>
+	.main-content {
+		padding-top: var(--header-height);
+		padding-bottom: var(--spacing-lg);
+		min-height: 100vh;
+		min-height: 100dvh;
+	}
+	
+	.banner-section {
+		padding: var(--spacing-md) 0;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.fade-in-up {
+			opacity: 0;
+			animation: fadeInUp 0.5s ease-out both;
+		}
+	}
+
+	/* ===== Desktop (≥1024px) ===== */
+	@media (min-width: 1024px) {
+		.main-content {
+			padding-top: calc(var(--header-height) + var(--spacing-lg));
+			padding-bottom: var(--spacing-2xl);
+		}
+
+		.banner-section {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.banner-section .container {
+			display: flex;
+			justify-content: center;
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px) ===== */
+	@media (min-width: 1280px) {
+		.main-content {
+			padding-top: calc(var(--header-height) + var(--spacing-2xl));
+			padding-bottom: var(--spacing-2xl);
+		}
+
+		.banner-section {
+			padding: var(--spacing-2xl) 0;
+		}
+	}
+</style>

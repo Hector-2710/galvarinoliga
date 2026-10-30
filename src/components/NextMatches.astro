@@ -1,0 +1,302 @@
+---
+export interface Match {
+	id?: string;
+	equipo1: string;
+	equipo2: string;
+	equipo1_id?: number;
+	equipo2_id?: number;
+	fecha: string;
+	hora: string;
+	cancha: string;
+	estado?: string;
+}
+
+export interface Props {
+	matches: Match[];
+}
+
+const { matches } = Astro.props;
+
+function formatFecha(fechaStr: string): string {
+	const fecha = new Date(fechaStr + 'T12:00:00');
+	const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+	const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+	return `${dias[fecha.getDay()]} ${fecha.getDate()} ${meses[fecha.getMonth()]}`;
+}
+---
+
+<section class="matches">
+	<div class="container">
+		<h2 class="section-title fade-in-up">Próxima Fecha</h2>
+
+		{
+			matches.length > 0 ? (
+				<div class="matches__list">
+					{
+						matches.map((match, i) => (
+							<article class={`match-card fade-in-up`} style={`animation-delay: ${i * 0.1}s`}>
+								<div class="match-card__header">
+									<span class="match-card__date">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+											<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+											<line x1="16" y1="2" x2="16" y2="6"></line>
+											<line x1="8" y1="2" x2="8" y2="6"></line>
+											<line x1="3" y1="10" x2="21" y2="10"></line>
+										</svg>
+										{formatFecha(match.fecha)}
+									</span>
+									<span class="match-card__time">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+											<circle cx="12" cy="12" r="10"></circle>
+											<polyline points="12 6 12 12 16 14"></polyline>
+										</svg>
+										{match.hora?.slice(0, 5)}
+									</span>
+								</div>
+
+								<div class="match-card__teams">
+									<div class="match-card__team match-card__team--local">
+										<span class="match-card__team-name">{match.equipo1}</span>
+									</div>
+
+									<div class="match-card__vs">
+										<span class="match-card__vs-text">VS</span>
+									</div>
+
+									<div class="match-card__team match-card__team--visita">
+										<span class="match-card__team-name">{match.equipo2}</span>
+									</div>
+								</div>
+
+								<div class="match-card__footer">
+									<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+										<circle cx="12" cy="10" r="3"></circle>
+									</svg>
+									{match.cancha}
+								</div>
+							</article>
+						))
+					}
+				</div>
+			) : (
+				<p style="color: var(--color-secondary); text-align: center; padding: 2rem 0;">
+					No hay partidos programados. Vuelve pronto.
+				</p>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.matches {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.matches__list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+	}
+
+	.match-card {
+		background: linear-gradient(
+			145deg,
+			var(--color-tertiary-light) 0%,
+			var(--color-tertiary) 100%
+		);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-md);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		box-shadow: var(--shadow-sm);
+		position: relative;
+		overflow: hidden;
+		transition: transform 0.2s, box-shadow 0.2s;
+	}
+
+	.match-card:active {
+		transform: scale(0.98);
+	}
+
+	/* Red accent bar on left */
+	.match-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 4px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.match-card__header {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-md);
+		margin-bottom: var(--spacing-sm);
+		padding-left: var(--spacing-sm);
+	}
+
+	.match-card__date,
+	.match-card__time {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.match-card__date svg,
+	.match-card__time svg,
+	.match-card__footer svg {
+		flex-shrink: 0;
+	}
+
+	.match-card__teams {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: var(--spacing-sm) 0;
+		gap: var(--spacing-sm);
+	}
+
+	.match-card__team {
+		flex: 1;
+	}
+
+	.match-card__team--local {
+		text-align: right;
+	}
+
+	.match-card__team--visita {
+		text-align: left;
+	}
+
+	.match-card__team-name {
+		font-family: var(--font-headline);
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		line-height: 1.2;
+	}
+
+	.match-card__vs {
+		flex-shrink: 0;
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-primary);
+		border-radius: 50%;
+		box-shadow: var(--shadow-red);
+	}
+
+	.match-card__vs-text {
+		font-family: var(--font-headline);
+		font-size: 0.8rem;
+		color: var(--color-neutral);
+		letter-spacing: 0.04em;
+	}
+
+	.match-card__footer {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		padding-left: var(--spacing-sm);
+		margin-top: var(--spacing-xs);
+	}
+
+	/* ===== Tablet (≥640px): 2-column grid ===== */
+	@media (min-width: 640px) {
+		.matches {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.matches__list {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-lg);
+		}
+
+		.match-card {
+			padding: var(--spacing-lg);
+		}
+
+		.match-card__team-name {
+			font-size: 1rem;
+		}
+
+		.match-card__date,
+		.match-card__time {
+			font-size: 0.75rem;
+		}
+
+		.match-card__footer {
+			font-size: 0.75rem;
+		}
+	}
+
+	/* ===== Desktop (≥1024px): hover effects & wider cards ===== */
+	@media (min-width: 1024px) {
+		.matches {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.matches__list {
+			grid-template-columns: 1fr 1fr;
+			gap: var(--spacing-xl);
+		}
+
+		.match-card {
+			padding: var(--spacing-xl);
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+		.match-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.match-card:active {
+			transform: scale(0.97);
+		}
+
+		.match-card__team-name {
+			font-size: 1.1rem;
+		}
+
+		.match-card__vs {
+			width: 52px;
+			height: 52px;
+		}
+
+		.match-card__vs-text {
+			font-size: 0.9rem;
+		}
+
+		.match-card__header {
+			margin-bottom: var(--spacing-md);
+		}
+	}
+
+	/* ===== Large Desktop (≥1280px): 3-column grid ===== */
+	@media (min-width: 1280px) {
+		.matches__list {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+
+		.match-card__team-name {
+			font-size: 1.15rem;
+		}
+	}
+</style>

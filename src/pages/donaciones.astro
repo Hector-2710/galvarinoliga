@@ -1,0 +1,745 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import SponsorsBanners from "../components/SponsorsBanners.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout>
+	<Header />
+	<main class="main-content">
+		<section class="donaciones">
+			<div class="container">
+				<h1 class="page-title fade-in-up">Donaciones</h1>
+				<p class="page-subtitle fade-in-up">
+					<strong>Galvarino Liga Futbol</strong> trabaja para digitalizar y modernizar el futbol comunal de 
+					Galvarino a traves de una plataforma digitalizada que permite ver fixtures, resulados y estadísticas de los partidos.
+				    Cada aporte ayuda a mantener y mejorar nuestra plataforma para toda la comunidad
+					de futbol en Galvarino.
+				</p>	
+
+				<section class="seccion fade-in-up">
+					<h2 class="section-title">¿Qué buscamos?</h2>
+					<div class="content-card">
+						<p>
+							Crear una plataforma deportiva completa en Galvarino y poder expandirnos a mas series como femenino, sub 35, sub 45.
+						</p>
+					</div>
+				</section>
+
+				<section class="impacto fade-in-up">
+					<h2 class="section-title">¿Por qué donar?</h2>
+					<p class="section-desc">Tu aporte marca la diferencia. Estas son algunas razones para sumarte:</p>
+
+					<div class="impacto-grid">
+						<article class="impacto-card">
+							<div class="impacto-card__icon">
+								<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+								</svg>
+							</div>
+							<h3 class="impacto-card__title">Fomento del deporte local</h3>
+							<p class="impacto-card__desc">
+								Tu aporte nos ayuda a llegar a mas gente de la comuna para promover el
+							 deporte, la vida saludable y la sana competencia en nuestra comuna.
+							</p>
+						</article>
+
+						<article class="impacto-card">
+							<div class="impacto-card__icon">
+								<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+								</svg>
+							</div>
+							<h3 class="impacto-card__title">Visibilidad para tu comuna</h3>
+							<p class="impacto-card__desc">
+								Ayudas a poner a Galvarino en el mapa deportivo, mostrando el talento
+								y la pasión futbolera de nuestra gente.
+							</p>
+						</article>
+
+						<article class="impacto-card">
+							<div class="impacto-card__icon">
+								<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+								</svg>
+							</div>
+							<h3 class="impacto-card__title">Transparencia total</h3>
+							<p class="impacto-card__desc">
+								Cada aporte se reinvierte directamente en la plataforma y su mejora continua.
+							</p>
+						</article>
+					</div>
+				</section>
+				<section class="donar fade-in-up">
+					<h2 class="section-title">Donación (proximamente)</h2>
+					<p class="section-desc">Puedes realizar tu aporte mediante transferencia bancaria a la siguiente cuenta:</p>
+
+					<article class="donar-card">
+						<div class="donar-card__header">
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="1" y="6" width="22" height="12" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="7" y1="14" x2="11" y2="14"/><line x1="15" y1="14" x2="17" y2="14"/>
+							</svg>
+							<h3 class="donar-card__title">Transferencia Bancaria</h3>
+						</div>
+						<div class="donar-card__body">
+							<div class="donar-card__row">
+								<span class="donar-card__label">Banco</span>
+								<span class="donar-card__value">Banco Estado</span>
+							</div>
+							<div class="donar-card__row">
+								<span class="donar-card__label">Tipo de cuenta</span>
+								<span class="donar-card__value">Cuenta Vista</span>
+							</div>
+							<div class="donar-card__row">
+								<span class="donar-card__label">RUT</span>
+								<span class="donar-card__value">xx.xxx.xxx-x</span>
+							</div>
+							<div class="donar-card__row">
+								<span class="donar-card__label">Número</span>
+								<span class="donar-card__value donar-card__value--highlight">xx.xxx.xxx-x</span>
+							</div>
+							<div class="donar-card__row">
+								<span class="donar-card__label">Correo</span>
+								<span class="donar-card__value">galvarinoligafutbol@gmail.com</span>
+							</div>
+							<button class="copy-btn" onclick="navigator.clipboard.writeText('1234 5678 9012 3456')" title="Copiar número de cuenta">
+								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+									<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+								</svg>
+								Copiar número
+							</button>
+						</div>
+					</article>
+				</section>
+
+				<div class="donaciones-contacto fade-in-up">
+					<h2 class="section-title">¿Dudas?</h2>
+					<p class="contacto-desc">
+						Si tienes dudas, sugerencias o quieres ser parte del proyecto, no dudes en escribirnos por cualquiera de estos medios:
+					</p>
+					<div class="contacto-links">
+						<a href="mailto:galvarinoligafutbol@gmail.com" class="contacto-link">
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+							galvarinoligafutbol@gmail.com
+						</a>
+						<a href="https://www.instagram.com/galvarinoliga/" class="contacto-link" target="_blank" rel="noopener noreferrer">
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+							@galvarinoliga
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<SponsorsBanners />
+	<Footer />
+</Layout>
+
+<style>
+	.donaciones {
+		padding: var(--spacing-lg) 0;
+	}
+
+	.page-title {
+		font-family: var(--font-headline);
+		font-size: 2rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-xs);
+	}
+
+	.page-subtitle {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		margin-bottom: var(--spacing-xl);
+	}
+
+	.donaciones-intro {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		margin-bottom: var(--spacing-xl);
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		line-height: 1.7;
+	}
+
+	.donaciones-intro strong {
+		color: var(--color-neutral);
+	}
+
+	.section-title {
+		font-family: var(--font-headline);
+		font-size: 1.3rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-md);
+		position: relative;
+		display: inline-block;
+	}
+
+	.section-title::after {
+		content: '';
+		display: block;
+		width: 100%;
+		height: 3px;
+		background: var(--color-primary);
+		margin-top: 4px;
+		border-radius: 2px;
+	}
+
+	.section-desc {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+		margin-bottom: var(--spacing-lg);
+	}
+
+	/* ===== Generic sections ===== */
+
+	.seccion {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.content-card {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: var(--color-secondary);
+		line-height: 1.7;
+	}
+
+	.content-card strong {
+		color: var(--color-neutral);
+	}
+
+	/* ===== Why donate ===== */
+
+	.impacto {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.impacto-grid {
+		display: grid;
+		gap: var(--spacing-md);
+	}
+
+	.impacto-card {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		box-shadow: var(--shadow-sm);
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.impacto-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 4px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.impacto-card__icon {
+		width: 52px;
+		height: 52px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: rgba(230, 30, 42, 0.1);
+		color: var(--color-primary-light);
+		margin-bottom: var(--spacing-md);
+	}
+
+	.impacto-card__title {
+		font-family: var(--font-headline);
+		font-size: 1rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.impacto-card__desc {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+		line-height: 1.6;
+		flex: 1;
+	}
+
+	/* ===== Resources ===== */
+
+	.recursos {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.recursos-grid {
+		display: grid;
+		gap: var(--spacing-md);
+	}
+
+	.recurso-card {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		box-shadow: var(--shadow-sm);
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.recurso-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 4px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.recurso-card__icon {
+		width: 48px;
+		height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: rgba(230, 30, 42, 0.1);
+		color: var(--color-primary-light);
+		margin-bottom: var(--spacing-md);
+	}
+
+	.recurso-card__title {
+		font-family: var(--font-headline);
+		font-size: 1rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+		margin-bottom: var(--spacing-sm);
+	}
+
+	.recurso-card__desc {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+		line-height: 1.6;
+		flex: 1;
+	}
+
+	/* ===== Donation card ===== */
+
+	.donar {
+		margin-bottom: var(--spacing-2xl);
+	}
+
+	.donar-card {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		box-shadow: var(--shadow-sm);
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.donar-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 4px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.donar-card__header {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		margin-bottom: var(--spacing-md);
+		color: var(--color-primary-light);
+	}
+
+	.donar-card__title {
+		font-family: var(--font-headline);
+		font-size: 1rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.02em;
+	}
+
+	.donar-card__body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+		flex: 1;
+	}
+
+	.donar-card__row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--spacing-sm);
+		padding: var(--spacing-xs) 0;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.donar-card__row:last-of-type {
+		border-bottom: none;
+	}
+
+	.donar-card__label {
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		flex-shrink: 0;
+	}
+
+	.donar-card__value {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-neutral);
+		text-align: right;
+		word-break: break-all;
+	}
+
+	.donar-card__value--highlight {
+		font-family: var(--font-label);
+		font-weight: 700;
+		font-size: 0.9rem;
+		color: var(--color-primary-light);
+		letter-spacing: 0.06em;
+		background: rgba(230, 30, 42, 0.08);
+		padding: 2px 8px;
+		border-radius: var(--border-radius-sm);
+	}
+
+	.copy-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-xs);
+		font-family: var(--font-label);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		background: none;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: var(--border-radius-sm);
+		padding: 6px 12px;
+		cursor: pointer;
+		transition: all 0.2s;
+		-webkit-tap-highlight-color: transparent;
+		align-self: flex-start;
+	}
+
+	.copy-btn:hover,
+	.copy-btn:focus-visible {
+		color: var(--color-neutral);
+		border-color: var(--color-primary);
+		background: rgba(230, 30, 42, 0.08);
+	}
+
+	.copy-btn:active {
+		transform: scale(0.96);
+	}
+
+	/* ===== Contact ===== */
+
+	.donaciones-contacto {
+		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: var(--border-radius-lg);
+		padding: var(--spacing-lg);
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.contacto-desc {
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-lg);
+	}
+
+	.contacto-links {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-sm);
+	}
+
+	.contacto-link {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--spacing-md);
+		color: var(--color-neutral);
+		text-decoration: none;
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		font-weight: 500;
+		padding: var(--spacing-md) var(--spacing-lg);
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.08), rgba(230, 30, 42, 0.02));
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: var(--border-radius-md);
+		transition: all 0.25s;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.contacto-link::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 3px;
+		height: 100%;
+		background: var(--color-primary);
+		border-radius: 0 2px 2px 0;
+	}
+
+	.contacto-link svg {
+		flex-shrink: 0;
+		width: 22px;
+		height: 22px;
+		color: var(--color-primary-light);
+	}
+
+	.contacto-link:hover {
+		color: var(--color-neutral);
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.18), rgba(230, 30, 42, 0.06));
+		border-color: rgba(230, 30, 42, 0.35);
+		transform: translateY(-2px);
+	}
+
+	/* ===== Responsive ===== */
+
+	@media (min-width: 640px) {
+		.donaciones {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.4rem;
+		}
+
+		.donaciones-intro {
+			padding: var(--spacing-xl);
+			font-size: 0.95rem;
+		}
+
+		.section-title {
+			font-size: 1.5rem;
+		}
+
+		.section-desc {
+			font-size: 0.9rem;
+		}
+
+		.content-card {
+			padding: var(--spacing-xl);
+			font-size: 0.95rem;
+		}
+
+		.impacto-card {
+			padding: var(--spacing-xl);
+		}
+
+		.impacto-card__title {
+			font-size: 1.1rem;
+		}
+
+		.recursos-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.recurso-card {
+			padding: var(--spacing-xl);
+		}
+
+		.recurso-card__title {
+			font-size: 1.05rem;
+		}
+
+		.donar-card {
+			padding: var(--spacing-xl);
+		}
+
+		.donar-card__title {
+			font-size: 1.1rem;
+		}
+
+		.donar-card__value {
+			font-size: 0.9rem;
+		}
+
+		.donar-card__value--highlight {
+			font-size: 1rem;
+		}
+
+		.contacto-links {
+			flex-direction: row;
+		}
+
+		.contacto-link {
+			flex: 1;
+		}
+
+		.donaciones-contacto {
+			padding: var(--spacing-xl);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.donaciones {
+			padding: var(--spacing-2xl) 0;
+		}
+
+		.page-title {
+			font-size: 2.8rem;
+		}
+
+		.page-subtitle {
+			font-size: 1rem;
+			margin-bottom: var(--spacing-2xl);
+		}
+
+		.donaciones-intro {
+			padding: var(--spacing-2xl);
+			font-size: 1rem;
+			border-radius: var(--border-radius-xl);
+		}
+
+		.section-title {
+			font-size: 1.7rem;
+		}
+
+		.section-desc {
+			font-size: 0.95rem;
+		}
+
+		.content-card {
+			padding: var(--spacing-2xl);
+			font-size: 1rem;
+			border-radius: var(--border-radius-xl);
+		}
+
+		.impacto-grid {
+			grid-template-columns: repeat(3, 1fr);
+			gap: var(--spacing-lg);
+		}
+
+		.impacto-card {
+			padding: var(--spacing-2xl);
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.impacto-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.impacto-card__icon {
+			width: 56px;
+			height: 56px;
+		}
+
+		.impacto-card__title {
+			font-size: 1.15rem;
+		}
+
+		.impacto-card__desc {
+			font-size: 0.9rem;
+		}
+
+		.recursos-grid {
+			gap: var(--spacing-lg);
+		}
+
+		.recurso-card {
+			padding: var(--spacing-2xl);
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.recurso-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.recurso-card__title {
+			font-size: 1.1rem;
+		}
+
+		.recurso-card__desc {
+			font-size: 0.9rem;
+		}
+
+		.donar-card {
+			padding: var(--spacing-2xl);
+			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+		}
+
+		.donar-card:hover {
+			transform: translateY(-4px);
+			box-shadow: var(--shadow-lg);
+			border-color: rgba(230, 30, 42, 0.3);
+		}
+
+		.donar-card__title {
+			font-size: 1.15rem;
+		}
+
+		.donar-card__value--highlight {
+			font-size: 1.05rem;
+		}
+
+		.donaciones-contacto {
+			padding: var(--spacing-2xl);
+			border-radius: var(--border-radius-xl);
+		}
+
+		.contacto-desc {
+			font-size: 0.95rem;
+		}
+
+		.contacto-link {
+			font-size: 0.95rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.page-title {
+			font-size: 3.2rem;
+		}
+
+		.section-title {
+			font-size: 1.9rem;
+		}
+	}
+</style>

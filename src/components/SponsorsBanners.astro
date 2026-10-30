@@ -1,0 +1,141 @@
+---
+
+---
+
+<section class="sponsors-banners">
+	<div class="container">
+		<div class="sponsors-banners__inner">
+			<div class="sponsors-banners__label">
+				<span class="sponsors-banners__label-text">Sponsors</span>
+				<span class="sponsors-banners__label-sub">Oficiales</span>
+			</div>
+			<div class="sponsors-banners__logos">
+				<div class="sponsors-banners__placeholder">
+					<span class="sponsors-banners__ph-text">proximamente</span>
+				</div>
+				<div class="sponsors-banners__placeholder">
+					<span class="sponsors-banners__ph-text">proximamente</span>
+				</div>
+				<div class="sponsors-banners__placeholder">
+					<span class="sponsors-banners__ph-text">proximamente</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.sponsors-banners {
+		padding: var(--spacing-lg) 0;
+		background: var(--color-tertiary);
+		border-top: 1px solid rgba(255, 255, 255, 0.04);
+	}
+
+	.sponsors-banners__inner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-md);
+	}
+
+	/* Label */
+	.sponsors-banners__label {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex-shrink: 0;
+	}
+
+	.sponsors-banners__label-text {
+		font-family: var(--font-headline);
+		font-size: 1.4rem;
+		text-transform: uppercase;
+		color: var(--color-neutral);
+		letter-spacing: 0.04em;
+		line-height: 1;
+	}
+
+	.sponsors-banners__label-sub {
+		font-family: var(--font-label);
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+		color: var(--color-secondary);
+		opacity: 0.5;
+	}
+
+	/* Logos */
+	.sponsors-banners__logos {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: var(--spacing-md);
+		flex-wrap: wrap;
+	}
+
+	.sponsors-banners__placeholder {
+		width: 130px;
+		height: 65px;
+		border: 2px dashed rgba(255, 255, 255, 0.08);
+		border-radius: var(--border-radius-sm);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: border-color 0.2s;
+	}
+
+	.sponsors-banners__placeholder:hover {
+		border-color: rgba(230, 30, 42, 0.3);
+	}
+
+	.sponsors-banners__ph-text {
+		font-family: var(--font-label);
+		font-size: 0.6rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--color-secondary);
+		opacity: 0.25;
+	}
+
+	@media (min-width: 640px) {
+		.sponsors-banners__label-text {
+			font-size: 1.6rem;
+		}
+
+		.sponsors-banners__label-sub {
+			font-size: 0.8rem;
+		}
+
+		.sponsors-banners__placeholder {
+			width: 150px;
+			height: 70px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.sponsors-banners {
+			padding: var(--spacing-xl) 0;
+		}
+
+		.sponsors-banners__inner {
+			gap: var(--spacing-lg);
+		}
+
+		.sponsors-banners__label-text {
+			font-size: 1.8rem;
+		}
+
+		.sponsors-banners__label-sub {
+			font-size: 0.85rem;
+		}
+
+		.sponsors-banners__logos {
+			gap: var(--spacing-lg);
+		}
+
+		.sponsors-banners__placeholder {
+			width: 160px;
+			height: 80px;
+		}
+	}
+</style>
