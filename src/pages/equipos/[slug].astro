@@ -1,93 +1,28 @@
 ---
-export const prerender = false;
-
+import { getEntry, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import SponsorsBanners from "../../components/SponsorsBanners.astro";
 import Footer from "../../components/Footer.astro";
-import { createServerSupabase } from "../../lib/supabase";
+import { getEquipo, getEquipos, getFilaTabla, getGoleadoresDeEquipo } from "../../lib/liga";
 
-const supabase = createServerSupabase({
-	request: Astro.request,
-	cookies: Astro.cookies,
-});
-
-const equipoId = Astro.url.searchParams.get("id");
-
-if (!equipoId) {
-	return Astro.redirect("/equipos");
+export async function getStaticPaths() {
+	const equipos = await getEquipos();
+	return equipos.map((equipo) => ({ params: { slug: equipo.slug } }));
 }
 
-const { data: equipo, error } = await supabase
-	.from("equipos")
-	.select("id, nombre, ano_creacion, logo_url, presidente, secretaria, tesorera, color_principal")
-	.eq("id", equipoId)
-	.single();
+const equipo = await getEquipo(Astro.params.slug ?? "");
 
-if (error || !equipo) {
-	return Astro.redirect("/equipos");
+if (!equipo) {
+	throw new Error(`El club "${Astro.params.slug}" no existe`);
 }
 
-const { data: jugadores } = await supabase
-	.from("jugadores")
-	.select("id, nombre, apellido, posicion, numero_camiseta, foto_url")
-	.eq("equipo_id", equipoId)
-	.order("numero_camiseta", { ascending: true })
-	.order("apellido");
+const fila = await getFilaTabla(equipo.slug);
+const goleadores = await getGoleadoresDeEquipo(equipo.slug);
+const colorPrincipal = equipo.color_principal;
 
-const { data: cuerpoTecnico } = await supabase
-	.from("cuerpo_tecnico")
-	.select("id, nombre, rol")
-	.eq("equipo_id", equipoId)
-	.order("rol");
-
-interface Jugador {
-	id: number;
-	nombre: string;
-	apellido: string;
-	posicion: string | null;
-	numero_camiseta: number | null;
-	foto_url: string | null;
-}
-
-interface Tecnico {
-	id: number;
-	nombre: string;
-	rol: string;
-}
-
-const players: Jugador[] = (jugadores ?? []) as Jugador[];
-const staff: Tecnico[] = (cuerpoTecnico ?? []) as Tecnico[];
-
-const colorPrincipal = equipo.color_principal ?? "#E61E2A";
-
-function posicionIcono(posicion: string | null): string {
-	switch (posicion) {
-		case "Arquero": return "🧤";
-		case "Defensa": return "🛡️";
-		case "Mediocampista": return "⚡";
-		case "Delantero": return "⚽";
-		default: return "👕";
-	}
-}
-
-function rolLabel(rol: string): string {
-	return rol === "DT" ? "Director Técnico" : "Asistente Técnico";
-}
-
-const jugadoresPorPosicion: Record<string, Jugador[]> = {
-	Arquero: [],
-	Defensa: [],
-	Mediocampista: [],
-	Delantero: [],
-};
-
-for (const p of players) {
-	const pos = p.posicion ?? "Delantero";
-	if (jugadoresPorPosicion[pos]) {
-		jugadoresPorPosicion[pos].push(p);
-	}
-}
+const entry = await getEntry("equipos", equipo.slug);
+const Historia = entry?.body?.trim() ? (await render(entry)).Content : null;
 ---
 
 <Layout>
@@ -104,8 +39,8 @@ for (const p of players) {
 
 				<div class="team-header fade-in-up">
 					<div class="team-header__logo-wrapper" style={`background-color: ${colorPrincipal}`}>
-						{equipo.logo_url ? (
-							<img src={equipo.logo_url} alt={`Logo de ${equipo.nombre}`} class="team-header__logo" />
+						{equipo.logo ? (
+							<img src={equipo.logo} alt={`Logo de ${equipo.nombre}`} class="team-header__logo" />
 						) : (
 							<span class="team-header__logo-initial">{equipo.nombre.charAt(0)}</span>
 						)}
@@ -123,15 +58,16 @@ for (const p of players) {
 									Fundado {equipo.ano_creacion}
 								</span>
 							)}
-							<span class="team-header__detail">
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-									<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-									<circle cx="9" cy="7" r="4"></circle>
-									<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-									<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-								</svg>
-								{players.length} jugador{players.length !== 1 ? "es" : ""}
-							</span>
+							{fila && (
+								<span class="team-header__detail">
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+										<line x1="18" y1="20" x2="18" y2="10"></line>
+										<line x1="12" y1="20" x2="12" y2="4"></line>
+										<line x1="6" y1="20" x2="6" y2="14"></line>
+									</svg>
+									{fila.pos}° en la tabla · {fila.pts} pts
+								</span>
+							)}
 						</div>
 					</div>
 				</div>
@@ -162,63 +98,40 @@ for (const p of players) {
 					</div>
 				)}
 
-				{staff.length > 0 && (
+				{Historia && (
 					<div class="section-card fade-in-up">
-						<h2 class="section-card__title">Cuerpo Técnico</h2>
+						<h2 class="section-card__title">Historia</h2>
+						<div class="team-history">
+							<Historia />
+						</div>
+					</div>
+				)}
+
+				{goleadores.length > 0 && (
+					<div class="section-card fade-in-up">
+						<h2 class="section-card__title">Goleadores</h2>
 						<div class="staff-list">
-							{
-								staff.map((t) => (
-									<div class="staff-item">
-										<div class="staff-item__icon" style={`background-color: ${colorPrincipal}20; color: ${colorPrincipal}`}>
-											{t.rol === "DT" ? "DT" : "AT"}
-										</div>
-										<div class="staff-item__info">
-											<span class="staff-item__name">{t.nombre}</span>
-											<span class="staff-item__rol">{rolLabel(t.rol)}</span>
-										</div>
+							{goleadores.map((goleador) => (
+								<div class="staff-item">
+									<div class="staff-item__icon" style={`background-color: ${colorPrincipal}20; color: ${colorPrincipal}`}>⚽</div>
+									<div class="staff-item__info">
+										<span class="staff-item__name">{goleador.jugador}</span>
+										<span class="staff-item__rol">{goleador.goles} {goleador.goles === 1 ? "gol" : "goles"}</span>
 									</div>
-								))
-							}
+								</div>
+							))}
 						</div>
 					</div>
 				)}
 
 				<div class="section-card fade-in-up">
-					<h2 class="section-card__title">Plantilla</h2>
+					<h2 class="section-card__title">Cuerpo Técnico</h2>
+					<p class="empty-text">Próximamente.</p>
+				</div>
 
-					{players.length === 0 ? (
-						<p class="empty-text">Este equipo no tiene jugadores registrados.</p>
-					) : (
-						<>
-							{(["Arquero", "Defensa", "Mediocampista", "Delantero"] as const).map((pos) => {
-								const posPlayers = jugadoresPorPosicion[pos];
-								if (posPlayers.length === 0) return null;
-								return (
-									<div class="pos-group">
-										<h3 class="pos-group__title">
-											<span class="pos-group__icon">{posicionIcono(pos)}</span>
-											{pos}es
-											<span class="pos-group__count">{posPlayers.length}</span>
-										</h3>
-										<div class="pos-group__list">
-											{
-												posPlayers.map((j) => (
-													<a href={`/jugadores/${j.id}`} class="player-row">
-														{j.numero_camiseta && (
-															<span class="player-row__number">{j.numero_camiseta}</span>
-														)}
-														<div class="player-row__info">
-															<span class="player-row__name">{j.nombre} {j.apellido}</span>
-														</div>
-													</a>
-												))
-											}
-										</div>
-									</div>
-								);
-							})}
-						</>
-					)}
+				<div class="section-card fade-in-up">
+					<h2 class="section-card__title">Plantilla</h2>
+					<p class="empty-text">Próximamente.</p>
 				</div>
 			</div>
 		</section>
@@ -230,6 +143,17 @@ for (const p of players) {
 <style>
 	.team-stats {
 		padding: var(--spacing-lg) 0;
+	}
+
+	.team-history {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		line-height: 1.7;
+		color: var(--color-secondary-light);
+	}
+
+	.team-history :global(p) {
+		margin-bottom: var(--spacing-sm);
 	}
 
 	.back-link {
@@ -434,96 +358,6 @@ for (const p of players) {
 		padding: var(--spacing-lg) 0;
 	}
 
-	.pos-group {
-		margin-bottom: var(--spacing-lg);
-	}
-
-	.pos-group:last-child {
-		margin-bottom: 0;
-	}
-
-	.pos-group__title {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-		font-family: var(--font-headline);
-		font-size: 0.9rem;
-		text-transform: uppercase;
-		color: var(--color-neutral);
-		letter-spacing: 0.02em;
-		margin-bottom: var(--spacing-sm);
-	}
-
-	.pos-group__icon {
-		font-size: 1rem;
-	}
-
-	.pos-group__count {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: var(--color-primary);
-		color: var(--color-neutral);
-		font-family: var(--font-label);
-		font-size: 0.65rem;
-		font-weight: 700;
-		margin-left: auto;
-	}
-
-	.pos-group__list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-xs);
-	}
-
-	.player-row {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-md);
-		padding: var(--spacing-sm) var(--spacing-md);
-		background: rgba(255, 255, 255, 0.02);
-		border-radius: var(--border-radius-sm);
-		transition: background 0.2s;
-		text-decoration: none;
-		color: inherit;
-	}
-
-	@media (hover: hover) {
-		.player-row:hover {
-			background: rgba(255, 255, 255, 0.05);
-		}
-	}
-
-	.player-row__number {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 30px;
-		height: 30px;
-		border-radius: var(--border-radius-sm);
-		background: rgba(255, 255, 255, 0.06);
-		font-family: var(--font-headline);
-		font-size: 0.85rem;
-		color: var(--color-secondary);
-		flex-shrink: 0;
-	}
-
-	.player-row__info {
-		display: flex;
-		flex-direction: column;
-		gap: 1px;
-		min-width: 0;
-	}
-
-	.player-row__name {
-		font-family: var(--font-body);
-		font-size: 0.9rem;
-		color: var(--color-neutral);
-	}
-
 	@media (min-width: 640px) {
 		.team-stats {
 			padding: var(--spacing-xl) 0;
@@ -562,13 +396,6 @@ for (const p of players) {
 			grid-template-columns: 1fr 1fr 1fr;
 		}
 
-		.pos-group__title {
-			font-size: 1rem;
-		}
-
-		.player-row__name {
-			font-size: 0.95rem;
-		}
 	}
 
 	@media (min-width: 1024px) {
