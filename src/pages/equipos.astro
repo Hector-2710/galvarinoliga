@@ -1,36 +1,24 @@
 ---
-export const prerender = false;
-
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
-import { createServerSupabase } from "../lib/supabase";
-
-const supabase = createServerSupabase({
-	request: Astro.request,
-	cookies: Astro.cookies,
-});
-
-const { data: equipos } = await supabase
-	.from("equipos")
-	.select("id, nombre, ano_creacion, logo_url, color_principal")
-	.order("nombre");
+import { getEquipos } from "../lib/liga";
 
 interface TeamRow {
-	id: number;
+	slug: string;
 	nombre: string;
-	anoCreacion: number | null;
-	logoUrl: string | null;
+	anoCreacion?: number;
+	logoUrl?: string;
 	colorPrincipal: string;
 }
 
-const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
-	id: eq.id,
-	nombre: eq.nombre,
-	anoCreacion: eq.ano_creacion,
-	logoUrl: eq.logo_url,
-	colorPrincipal: eq.color_principal ?? "#E61E2A",
+const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
+	slug: equipo.slug,
+	nombre: equipo.nombre,
+	anoCreacion: equipo.ano_creacion,
+	logoUrl: equipo.logo,
+	colorPrincipal: equipo.color_principal,
 }));
 ---
 
@@ -57,7 +45,7 @@ const teams: TeamRow[] = (equipos ?? []).map((eq) => ({
 							{
 								teams.map((team, i) => (
 									<a
-										href={`/equipos/stats?id=${team.id}`}
+										href={`/equipos/${team.slug}`}
 										class="team-row fade-in-up"
 										style={`animation-delay: ${i * 0.08}s`}
 									>

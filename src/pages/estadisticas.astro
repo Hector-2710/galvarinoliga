@@ -1,51 +1,11 @@
 ---
-export const prerender = false;
-
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
-import { createServerSupabase } from "../lib/supabase";
+import { getGoleadores } from "../lib/liga";
 
-const supabase = createServerSupabase({
-	request: Astro.request,
-	cookies: Astro.cookies,
-});
-
-const [{ data: goleadores }, { data: asistidores }] =
-	await Promise.all([
-		supabase
-			.from("vista_goleadores")
-			.select("*")
-			.order("goles", { ascending: false })
-			.limit(5),
-		supabase
-			.from("vista_asistidores")
-			.select("*")
-			.order("asistencias", { ascending: false })
-			.limit(5),
-	]);
-
-interface GoleadorRow {
-	jugador_id: number;
-	nombre: string;
-	apellido: string;
-	equipo: string;
-	equipo_id: number;
-	goles: number;
-}
-
-interface AsistidorRow {
-	jugador_id: number;
-	nombre: string;
-	apellido: string;
-	equipo: string;
-	equipo_id: number;
-	asistencias: number;
-}
-
-const topGoleadores = (goleadores ?? []) as GoleadorRow[];
-const topAsistidores = (asistidores ?? []) as AsistidorRow[];
+const topGoleadores = await getGoleadores();
 
 function medalla(pos: number): string {
 	if (pos === 0) return "🥇";
@@ -62,7 +22,7 @@ function medalla(pos: number): string {
 			<div class="container">
 				<h1 class="page-title fade-in-up">Estadísticas</h1>
 				<p class="page-subtitle fade-in-up">
-					Máximos goleadores y asistentes de la temporada
+					Máximos goleadores de la temporada
 				</p>
 
 				<div class="stats-card fade-in-up">
@@ -106,73 +66,14 @@ function medalla(pos: number): string {
 												</span>
 											</td>
 											<td class="stats-table__td stats-table__td--player">
-												<a href={`/jugadores/${g.jugador_id}`} class="stats-table__player-name">{g.nombre} {g.apellido}</a>
+												<span class="stats-table__player-name">{g.jugador}</span>
 											</td>
 											<td class="stats-table__td stats-table__td--team">
-												<span class="stats-table__team-name">{g.equipo}</span>
+												<span class="stats-table__team-name">{g.equipo.nombre}</span>
 											</td>
 											<td class="stats-table__td stats-table__td--stat">
 												<span class="stats-table__stat-badge stats-table__stat-badge--goles">
 													{g.goles} {g.goles === 1 ? "gol" : "goles"}
-												</span>
-											</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					)}
-				</div>
-
-				<div class="stats-card fade-in-up">
-					<h2 class="stats-card__title">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-						</svg>
-						Asistidores
-					</h2>
-
-					{topAsistidores.length === 0 ? (
-						<div class="empty-state">
-							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-								<circle cx="9" cy="7" r="4"></circle>
-								<path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-								<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-							</svg>
-							<p>No hay asistencias registradas todavía.</p>
-						</div>
-					) : (
-						<div class="stats-table-wrapper">
-							<table class="stats-table">
-								<thead>
-									<tr>
-										<th class="stats-table__th stats-table__th--pos">#</th>
-										<th class="stats-table__th stats-table__th--player">Jugador</th>
-										<th class="stats-table__th stats-table__th--team">Equipo</th>
-										<th class="stats-table__th stats-table__th--stat">Asistencias</th>
-									</tr>
-								</thead>
-								<tbody>
-									{topAsistidores.map((a, i) => (
-										<tr class="stats-table__row">
-											<td class="stats-table__td stats-table__td--pos">
-												<span class:list={{
-													"stats-table__pos-badge": true,
-													"stats-table__pos-badge--medal": i < 3,
-												}}>
-													{i < 3 ? medalla(i) : i + 1}
-												</span>
-											</td>
-											<td class="stats-table__td stats-table__td--player">
-												<a href={`/jugadores/${a.jugador_id}`} class="stats-table__player-name">{a.nombre} {a.apellido}</a>
-											</td>
-											<td class="stats-table__td stats-table__td--team">
-												<span class="stats-table__team-name">{a.equipo}</span>
-											</td>
-											<td class="stats-table__td stats-table__td--stat">
-												<span class="stats-table__stat-badge stats-table__stat-badge--asistencias">
-													{a.asistencias} {a.asistencias === 1 ? "asistencia" : "asistencias"}
 												</span>
 											</td>
 										</tr>
@@ -418,11 +319,6 @@ function medalla(pos: number): string {
 	.stats-table__stat-badge--goles {
 		background: rgba(34, 197, 94, 0.15);
 		color: #4ade80;
-	}
-
-	.stats-table__stat-badge--asistencias {
-		background: rgba(59, 130, 246, 0.15);
-		color: #60a5fa;
 	}
 
 	.stats-table__stat-badge--total {

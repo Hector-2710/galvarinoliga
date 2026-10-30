@@ -1,33 +1,22 @@
 ---
-export const prerender = false;
-
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import StandingsTable from "../components/StandingsTable.astro";
-import { createServerSupabase } from "../lib/supabase";
+import { calcularTabla } from "../lib/liga";
 
-const supabase = createServerSupabase({
-	request: Astro.request,
-	cookies: Astro.cookies,
-});
-
-const { data: posiciones } = await supabase
-	.from("vista_tabla_posiciones")
-	.select("*");
-
-const standings = (posiciones ?? []).map((t, index) => ({
-	pos: index + 1,
-	equipo_nombre: t.equipo_nombre ?? "",
-	pj: t.pj ?? 0,
-	g: t.g ?? 0,
-	e: t.e ?? 0,
-	p: t.p ?? 0,
-	gf: t.gf ?? 0,
-	gc: t.gc ?? 0,
-	dg: t.dg ?? 0,
-	pts: t.pts ?? 0,
+const standings = (await calcularTabla()).map((fila) => ({
+	pos: fila.pos,
+	equipo_nombre: fila.equipo.nombre,
+	pj: fila.pj,
+	g: fila.g,
+	e: fila.e,
+	p: fila.p,
+	gf: fila.gf,
+	gc: fila.gc,
+	dg: fila.dg,
+	pts: fila.pts,
 }));
 ---
 

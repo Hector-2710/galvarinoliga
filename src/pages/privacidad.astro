@@ -1,6 +1,4 @@
 ---
-export const prerender = false;
-
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import SponsorsBanners from "../components/SponsorsBanners.astro";
@@ -14,144 +12,70 @@ import Footer from "../components/Footer.astro";
 			<div class="container">
 				<h1 class="page-title fade-in-up">Aviso de Privacidad</h1>
 				<p class="page-subtitle fade-in-up">
-					Última actualización: junio 2026
+					Última actualización: octubre 2026
 				</p>
 
 				<div class="legal-card fade-in-up">
-					<h2>1. Identificación del Responsable</h2>
+					<h2>Responsable</h2>
 					<p>
-						<strong>Galvarino Liga Fútbol</strong> es una plataforma digital comunal
-						para la administración y difusión del fútbol amateur de Galvarino,
-						Región de La Araucanía, Chile.
+						<strong>Galvarino Liga Fútbol</strong> es un sitio de difusión del
+						fútbol amateur de Galvarino, Región de La Araucanía, Chile.
 					</p>
 					<p>
-						Correo de contacto: <a href="mailto:galvarinoligafutbol@gmail.com">galvarinoligafutbol@gmail.com</a>
+						Contacto: <a href="mailto:galvarinoligafutbol@gmail.com">galvarinoligafutbol@gmail.com</a>
 					</p>
 				</div>
 
 				<div class="legal-card fade-in-up">
-					<h2>2. Datos Personales que Tratamos</h2>
-					<p>Para el funcionamiento de la plataforma, tratamos los siguientes datos de carácter personal:</p>
-					<table>
-						<thead>
-							<tr>
-								<th>Categoría</th>
-								<th>Datos</th>
-								<th>Fuente</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Jugadores</td>
-								<td>Nombre, apellido, fecha de nacimiento, posición, número de camiseta, foto</td>
-								<td>Directiva de cada equipo</td>
-							</tr>
-							<tr>
-								<td>Cuerpo Técnico</td>
-								<td>Nombre, rol (DT / Asistente)</td>
-								<td>Directiva de cada equipo</td>
-							</tr>
-							<tr>
-								<td>Directivos</td>
-								<td>Nombre, cargo (presidente, secretaria, tesorera)</td>
-								<td>Cada equipo</td>
-							</tr>
-							<tr>
-								<td>Administradores</td>
-								<td>Nombre completo, correo electrónico</td>
-								<td>Registro en la plataforma</td>
-							</tr>
-						</tbody>
-					</table>
+					<h2>Qué datos publicamos y para qué</h2>
+					<p>
+						Publicamos únicamente información deportiva del campeonato:
+						el nombre de los jugadores goleadores y el nombre y cargo de los
+						directivos de cada club. Los datos provienen de las planillas de
+						cada partido y de la información entregada por los equipos.
+					</p>
+					<p>
+						La finalidad es la difusión deportiva: calendario, resultados,
+						tabla de posiciones y goleadores. El tratamiento se ampara en el
+						interés legítimo de la organización deportiva, conforme a la
+						Ley 19.628 y la Ley 21.719.
+					</p>
 				</div>
 
 				<div class="legal-card fade-in-up">
-					<h2>3. Finalidades del Tratamiento</h2>
-					<p>Utilizamos tus datos personales para las siguientes finalidades:</p>
+					<h2>Qué no hacemos</h2>
 					<ul>
-						<li><strong>Gestión deportiva:</strong> administrar equipos, jugadores, fixtures, resultados y estadísticas de la liga.</li>
-						<li><strong>Publicación de información:</strong> mostrar plantillas, posiciones, goleadores y calendario de partidos en el sitio web público.</li>
-						<li><strong>Administración interna:</strong> gestionar usuarios del panel de administración.</li>
-						<li><strong>Comunicación:</strong> responder consultas recibidas a través del correo de contacto.</li>
+						<li>No hay cuentas de usuario, formularios de registro ni comentarios.</li>
+						<li>No usamos cookies propias, analítica ni publicidad.</li>
+						<li>No hay base de datos ni servidor propio que almacene datos de visitantes.</li>
 					</ul>
 				</div>
 
 				<div class="legal-card fade-in-up">
-					<h2>4. Base Legal</h2>
+					<h2>Terceros</h2>
 					<p>
-						El tratamiento de datos se realiza sobre la base del <strong>interés legítimo</strong>
-						de la organización deportiva para la gestión y difusión del campeonato
-						de fútbol comunal, conforme al artículo 4° de la Ley 19.628 y la
-						Ley 21.719 sobre Protección de Datos Personales.
+						El sitio se distribuye mediante un proveedor de hosting estático,
+						que puede registrar datos técnicos de acceso (dirección IP, agente
+						de usuario) según su propia política.
 					</p>
 					<p>
-						Para los datos de administradores, la base legal es el consentimiento
-						otorgado al momento de crear la cuenta de acceso.
-					</p>
-				</div>
-
-				<div class="legal-card fade-in-up">
-					<h2>5. Destinatarios y Transferencias</h2>
-					<p>
-						Los datos se almacenan en <strong>Supabase</strong> (proveedor de base de datos
-						y autenticación con servidores en Estados Unidos), que cumple con
-						estándares de seguridad como SOC 2, ISO 27001 y el Escudo de Privacidad
-						UE-EE.UU.
-					</p>
-					<p>
-						No compartimos datos personales con terceros no vinculados a la
-						operación de la plataforma.
+						Las tipografías se cargan desde Google Fonts
+						(<code>fonts.googleapis.com</code>), por lo que el navegador
+						transfiere la dirección IP a Google al solicitar los archivos.
 					</p>
 				</div>
 
 				<div class="legal-card fade-in-up">
-					<h2>6. Medidas de Seguridad</h2>
-					<p>Implementamos las siguientes medidas técnicas y organizativas:</p>
-					<ul>
-						<li>Cifrado en tránsito (HTTPS/TLS) para todas las conexiones.</li>
-						<li>Cifrado en reposo a nivel de almacenamiento (AES-256).</li>
-						<li>Control de acceso mediante autenticación segura con Supabase Auth.</li>
-						<li>Políticas de seguridad a nivel de fila (RLS) en la base de datos.</li>
-						<li>Protección contra fuerza bruta en el inicio de sesión.</li>
-						<li>Cabeceras de seguridad HTTP (CSP, HSTS, X-Frame-Options).</li>
-					</ul>
-				</div>
-
-				<div class="legal-card fade-in-up">
-					<h2>7. Plazo de Conservación</h2>
+					<h2>Tus derechos</h2>
 					<p>
-						Los datos personales se conservarán mientras sean necesarios para la
-						gestión de la liga. Al finalizar cada temporada, los datos históricos
-						se mantendrán para efectos estadísticos y de registro deportivo.
-						Si un titular solicita la eliminación, sus datos serán suprimidos
-						en un plazo máximo de 10 días hábiles.
+						Puedes solicitar el acceso, la rectificación, la cancelación o la
+						oposición al tratamiento de tus datos escribiendo al correo de
+						contacto. Responderemos en un plazo máximo de 10 días hábiles.
 					</p>
-				</div>
-
-				<div class="legal-card fade-in-up">
-					<h2>8. Derechos del Titular</h2>
 					<p>
-						La Ley 19.628 y Ley 21.719 te otorgan los siguientes derechos:
-					</p>
-					<ul>
-						<li><strong>Acceso:</strong> solicitar una copia de tus datos personales.</li>
-						<li><strong>Rectificación:</strong> corregir datos inexactos o incompletos.</li>
-						<li><strong>Cancelación:</strong> solicitar la eliminación de tus datos.</li>
-						<li><strong>Oposición:</strong> oponerte al tratamiento de tus datos.</li>
-					</ul>
-					<p>
-						Para ejercer estos derechos, escríbenos a
-						<a href="mailto:galvarinoligafutbol@gmail.com">galvarinoligafutbol@gmail.com</a>.
-						Responderemos tu solicitud en un plazo máximo de 10 días hábiles.
-					</p>
-				</div>
-
-				<div class="legal-card fade-in-up">
-					<h2>9. Cambios a este Aviso</h2>
-					<p>
-						Podemos actualizar este aviso de privacidad periódicamente.
-						Te recomendamos revisarlo cada cierto tiempo. Los cambios
-						significativos serán comunicados a través del sitio web.
+						Si pides corregir o eliminar tu nombre, lo haremos en el sitio y en
+						los archivos del proyecto. Podemos actualizar este aviso; la fecha
+						indicada arriba corresponde a la última versión.
 					</p>
 				</div>
 			</div>
@@ -224,7 +148,7 @@ import Footer from "../components/Footer.astro";
 	.legal-card ul {
 		list-style: disc;
 		padding-left: var(--spacing-lg);
-		margin-bottom: var(--spacing-sm);
+		margin-bottom: 0;
 	}
 
 	.legal-card ul li {
@@ -233,6 +157,10 @@ import Footer from "../components/Footer.astro";
 		color: var(--color-secondary);
 		line-height: 1.7;
 		margin-bottom: var(--spacing-xs);
+	}
+
+	.legal-card ul li:last-child {
+		margin-bottom: 0;
 	}
 
 	.legal-card a {
@@ -244,33 +172,10 @@ import Footer from "../components/Footer.astro";
 		color: var(--color-neutral);
 	}
 
-	.legal-card table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-bottom: var(--spacing-sm);
-		font-size: 0.8rem;
-	}
-
-	.legal-card th {
-		text-align: left;
+	.legal-card code {
 		font-family: var(--font-label);
-		font-weight: 600;
+		font-size: 0.8rem;
 		color: var(--color-neutral);
-		text-transform: uppercase;
-		font-size: 0.7rem;
-		letter-spacing: 0.04em;
-		padding: 0.5rem 0.6rem;
-		border-bottom: 1px solid rgba(255,255,255,0.1);
-	}
-
-	.legal-card td {
-		padding: 0.4rem 0.6rem;
-		color: var(--color-secondary);
-		border-bottom: 1px solid rgba(255,255,255,0.04);
-	}
-
-	.legal-card tr:last-child td {
-		border-bottom: none;
 	}
 
 	@media (min-width: 640px) {

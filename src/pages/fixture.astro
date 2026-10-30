@@ -1,55 +1,12 @@
 ---
-export const prerender = false;
-
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
-import { createServerSupabase } from "../lib/supabase";
-
-const supabase = createServerSupabase({
-	request: Astro.request,
-	cookies: Astro.cookies,
-});
-
-const { data: jornadas } = await supabase
-	.from("jornadas")
-	.select(
-		`
-		id,
-		numero,
-		nombre,
-		fecha_inicio,
-		fecha_fin,
-		partidos(
-			id,
-			fecha,
-			hora,
-			cancha,
-			goles1,
-			goles2,
-			estado,
-			equipo1:equipo1_id(nombre),
-			equipo2:equipo2_id(nombre)
-		)
-	`,
-	)
-	.order("numero", { ascending: true });
-
-interface MatchData {
-	id: number;
-	fecha: string;
-	hora: string | null;
-	cancha: string;
-	goles1: number | null;
-	goles2: number | null;
-	estado: string;
-	equipo1: { nombre: string } | { nombre: string }[] | null;
-	equipo2: { nombre: string } | { nombre: string }[] | null;
-}
+import { getJornadas } from "../lib/liga";
 
 interface NormalizedMatch {
-	id: number;
+	id: string;
 	equipo1: string;
 	equipo2: string;
 	fecha: string;
@@ -61,38 +18,15 @@ interface NormalizedMatch {
 }
 
 interface JornadaGroup {
-	id: number;
 	numero: number;
 	nombre: string;
-	fecha_inicio: string | null;
-	fecha_fin: string | null;
+	fecha_inicio: string;
+	fecha_fin: string;
 	partidos: NormalizedMatch[];
 	total: number;
 	finalizados: number;
 	programados: number;
 	en_vivo: number;
-}
-
-function normalizeEquipo(
-	eq: { nombre: string } | { nombre: string }[] | null,
-): string {
-	if (!eq) return "—";
-	if (Array.isArray(eq)) return eq[0]?.nombre ?? "—";
-	return eq.nombre;
-}
-
-function normalizeMatch(m: MatchData): NormalizedMatch {
-	return {
-		id: m.id,
-		equipo1: normalizeEquipo(m.equipo1),
-		equipo2: normalizeEquipo(m.equipo2),
-		fecha: m.fecha,
-		hora: m.hora?.slice(0, 5) ?? "",
-		cancha: m.cancha,
-		goles1: m.goles1,
-		goles2: m.goles2,
-		estado: m.estado,
-	};
 }
 
 function formatFecha(fechaStr: string): string {
@@ -132,23 +66,31 @@ function isFechaPasada(fechaStr: string): boolean {
 	return fechaStr < new Date().toISOString().split("T")[0];
 }
 
-const fixture: JornadaGroup[] = (jornadas ?? [])
-	.filter((j) => (j.partidos ?? []).length > 0)
-	.map((j) => {
-		const partidos = (j.partidos as MatchData[] | undefined ?? [])
-			.map(normalizeMatch)
-			.sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora));
+const fixture: JornadaGroup[] = (await getJornadas())
+	.filter((jornada) => jornada.partidos.length > 0)
+	.map((jornada) => {
+		const partidos: NormalizedMatch[] = jornada.partidos.map((partido) => ({
+			id: partido.slug,
+			equipo1: partido.equipo1.nombre,
+			equipo2: partido.equipo2.nombre,
+			fecha: partido.fecha,
+			hora: partido.hora.slice(0, 5),
+			cancha: partido.cancha,
+			goles1: partido.goles1,
+			goles2: partido.goles2,
+			estado: partido.estado,
+		}));
+
 		return {
-			id: j.id,
-			numero: j.numero,
-			nombre: j.nombre,
-			fecha_inicio: j.fecha_inicio,
-			fecha_fin: j.fecha_fin,
+			numero: jornada.numero,
+			nombre: jornada.nombre,
+			fecha_inicio: jornada.fecha_inicio,
+			fecha_fin: jornada.fecha_fin,
 			partidos,
 			total: partidos.length,
 			finalizados: partidos.filter((p) => p.estado === "finalizado").length,
 			programados: partidos.filter((p) => p.estado === "programado").length,
-			en_vivo: partidos.filter((p) => p.estado === "en_vivo").length,
+			en_vivo: 0,
 		};
 	});
 ---
