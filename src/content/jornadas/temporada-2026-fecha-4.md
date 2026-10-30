@@ -23,11 +23,11 @@ partidos:
     goles1: null
     goles2: null
     estado: programado
-  - slug: fecha-4-madregal-vs-san-antonio
+  - slug: fecha-4-madegal-vs-san-antonio
     fecha: "2026-11-15"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
-    equipo1: madregal
+    equipo1: madegal
     equipo2: san-antonio
     goles1: null
     goles2: null

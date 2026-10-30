@@ -5,11 +5,11 @@ nombre: "Fecha 8"
 fecha_inicio: "2026-12-13"
 fecha_fin: "2026-12-13"
 partidos:
-  - slug: fecha-8-madregal-vs-construccion
+  - slug: fecha-8-madegal-vs-construccion
     fecha: "2026-12-13"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
-    equipo1: madregal
+    equipo1: madegal
     equipo2: construccion
     goles1: null
     goles2: null

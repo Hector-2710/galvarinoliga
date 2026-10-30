@@ -23,11 +23,11 @@ partidos:
     goles1: null
     goles2: null
     estado: programado
-  - slug: fecha-7-madregal-vs-liceo
+  - slug: fecha-7-madegal-vs-liceo
     fecha: "2026-12-06"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
-    equipo1: madregal
+    equipo1: madegal
     equipo2: liceo
     goles1: null
     goles2: null

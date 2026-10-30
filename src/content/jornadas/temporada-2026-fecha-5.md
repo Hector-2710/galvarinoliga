@@ -23,12 +23,12 @@ partidos:
     goles1: null
     goles2: null
     estado: programado
-  - slug: fecha-5-centenario-vs-madregal
+  - slug: fecha-5-centenario-vs-madegal
     fecha: "2026-11-22"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario
-    equipo2: madregal
+    equipo2: madegal
     goles1: null
     goles2: null
     estado: programado

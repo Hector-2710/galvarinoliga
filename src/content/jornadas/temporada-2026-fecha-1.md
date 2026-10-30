@@ -14,12 +14,12 @@ partidos:
     goles1: null
     goles2: null
     estado: programado
-  - slug: fecha-1-galvarino-vs-madregal
+  - slug: fecha-1-galvarino-vs-madegal
     fecha: "2026-10-25"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: galvarino
-    equipo2: madregal
+    equipo2: madegal
     goles1: null
     goles2: null
     estado: programado
