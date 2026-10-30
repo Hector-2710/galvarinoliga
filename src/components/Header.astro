@@ -19,10 +19,12 @@ function isActive(href: string): boolean {
 <header class="header">
 	<div class="header__inner">
 		<div class="header__left">
-			<img src="/logo.png" alt="Galvarino Liga Futbol" class="header__logo" width="40" height="40" />
+			<a href="/" class="header__brand" aria-label="Ir al inicio">
+				<img src="/logo.png" alt="Galvarino Liga Futbol" class="header__logo" width="40" height="40" />
+			</a>
 		</div>
 
-		<span class="header__title">Galvarino Liga Futbol</span>
+		<a href="/" class="header__title">Galvarino Liga Futbol</a>
 
 		<nav class="header__nav" aria-label="Navegación principal">
 			<ul class="header__nav-list">
@@ -144,6 +146,19 @@ function isActive(href: string): boolean {
 		gap: var(--spacing-sm);
 	}
 
+	.header__brand {
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+		border-radius: var(--border-radius-sm);
+		transition: opacity 0.2s;
+	}
+
+	.header__brand:hover,
+	.header__brand:focus-visible {
+		opacity: 0.8;
+	}
+
 	.header__logo {
 		width: 62px;
 		height:62px;
@@ -161,6 +176,13 @@ function isActive(href: string): boolean {
 		text-transform: uppercase;
 		color: var(--color-neutral);
 		letter-spacing: 0.04em;
+		text-decoration: none;
+		transition: opacity 0.2s;
+	}
+
+	.header__title:hover,
+	.header__title:focus-visible {
+		opacity: 0.8;
 	}
 
 	@media (min-width: 480px) {
