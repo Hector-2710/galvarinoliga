@@ -2,11 +2,11 @@
 temporada: temporada-2026
 numero: 10
 nombre: "Fecha 10"
-fecha_inicio: "2026-12-27"
-fecha_fin: "2026-12-27"
+fecha_inicio: "2027-01-03"
+fecha_fin: "2027-01-03"
 partidos:
   - slug: fecha-10-liceo-vs-galvarino
-    fecha: "2026-12-27"
+    fecha: "2027-01-03"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: liceo
@@ -15,7 +15,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-10-construccion-vs-san-antonio
-    fecha: "2026-12-27"
+    fecha: "2027-01-03"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: construccion
@@ -24,7 +24,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-10-madegal-vs-centenario
-    fecha: "2026-12-27"
+    fecha: "2027-01-03"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: madegal
