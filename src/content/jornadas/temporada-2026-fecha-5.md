@@ -2,11 +2,11 @@
 temporada: temporada-2026
 numero: 5
 nombre: "Fecha 5"
-fecha_inicio: "2026-11-22"
-fecha_fin: "2026-11-22"
+fecha_inicio: "2026-11-29"
+fecha_fin: "2026-11-29"
 partidos:
   - slug: fecha-5-galvarino-vs-liceo
-    fecha: "2026-11-22"
+    fecha: "2026-11-29"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: galvarino
@@ -15,7 +15,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-5-san-antonio-vs-construccion
-    fecha: "2026-11-22"
+    fecha: "2026-11-29"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: san-antonio
@@ -24,7 +24,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-5-centenario-vs-madegal
-    fecha: "2026-11-22"
+    fecha: "2026-11-29"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario

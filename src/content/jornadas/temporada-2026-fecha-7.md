@@ -2,11 +2,11 @@
 temporada: temporada-2026
 numero: 7
 nombre: "Fecha 7"
-fecha_inicio: "2026-12-06"
-fecha_fin: "2026-12-06"
+fecha_inicio: "2026-12-13"
+fecha_fin: "2026-12-13"
 partidos:
   - slug: fecha-7-centenario-vs-construccion
-    fecha: "2026-12-06"
+    fecha: "2026-12-13"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario
@@ -15,7 +15,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-7-san-antonio-vs-galvarino
-    fecha: "2026-12-06"
+    fecha: "2026-12-13"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: san-antonio
@@ -24,7 +24,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-7-madegal-vs-liceo
-    fecha: "2026-12-06"
+    fecha: "2026-12-13"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: madegal

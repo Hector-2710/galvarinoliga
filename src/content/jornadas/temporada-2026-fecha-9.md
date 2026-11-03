@@ -2,11 +2,11 @@
 temporada: temporada-2026
 numero: 9
 nombre: "Fecha 9"
-fecha_inicio: "2026-12-20"
-fecha_fin: "2026-12-20"
+fecha_inicio: "2026-12-27"
+fecha_fin: "2026-12-27"
 partidos:
   - slug: fecha-9-centenario-vs-liceo
-    fecha: "2026-12-20"
+    fecha: "2026-12-27"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario
@@ -15,7 +15,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-9-galvarino-vs-construccion
-    fecha: "2026-12-20"
+    fecha: "2026-12-27"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: galvarino
@@ -24,7 +24,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-9-san-antonio-vs-madegal
-    fecha: "2026-12-20"
+    fecha: "2026-12-27"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: san-antonio

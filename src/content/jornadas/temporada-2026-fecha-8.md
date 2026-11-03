@@ -2,11 +2,11 @@
 temporada: temporada-2026
 numero: 8
 nombre: "Fecha 8"
-fecha_inicio: "2026-12-13"
-fecha_fin: "2026-12-13"
+fecha_inicio: "2026-12-20"
+fecha_fin: "2026-12-20"
 partidos:
   - slug: fecha-8-madegal-vs-construccion
-    fecha: "2026-12-13"
+    fecha: "2026-12-20"
     hora: "15:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: madegal
@@ -15,7 +15,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-8-liceo-vs-san-antonio
-    fecha: "2026-12-13"
+    fecha: "2026-12-20"
     hora: "17:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: liceo
@@ -24,7 +24,7 @@ partidos:
     goles2: null
     estado: programado
   - slug: fecha-8-centenario-vs-galvarino
-    fecha: "2026-12-13"
+    fecha: "2026-12-20"
     hora: "19:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario
