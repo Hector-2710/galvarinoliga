@@ -8,7 +8,11 @@ import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { calcularTabla, getProximosPartidosDeFecha } from "../lib/liga";
 
-const matches = (await getProximosPartidosDeFecha()).map((partido) => ({
+const proximosPartidos = await getProximosPartidosDeFecha();
+
+const jornadaNumero = proximosPartidos[0]?.jornada.numero;
+
+const matches = proximosPartidos.map((partido) => ({
 	id: partido.slug,
 	equipo1: partido.equipo1.nombre,
 	equipo2: partido.equipo2.nombre,
@@ -40,7 +44,7 @@ const standings = (await calcularTabla()).map((fila) => ({
 				<Banner />
 			</div>
 		</section>
-		<NextMatches matches={matches} />
+		<NextMatches matches={matches} jornadaNumero={jornadaNumero} />
 		<StandingsTable teams={standings} />
 		<section class="banner-section">
 			<div class="container">
