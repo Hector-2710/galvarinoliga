@@ -13,9 +13,10 @@ export interface Match {
 
 export interface Props {
 	matches: Match[];
+	jornadaNumero?: number;
 }
 
-const { matches } = Astro.props;
+const { matches, jornadaNumero } = Astro.props;
 
 function formatFecha(fechaStr: string): string {
 	const fecha = new Date(fechaStr + 'T12:00:00');
@@ -27,7 +28,10 @@ function formatFecha(fechaStr: string): string {
 
 <section class="matches">
 	<div class="container">
-		<h2 class="section-title fade-in-up">Próxima Fecha</h2>
+		<h2 class="section-title fade-in-up">
+			Próxima Fecha
+			{jornadaNumero && <span class="section-title__numero">{jornadaNumero}</span>}
+		</h2>
 
 		{
 			matches.length > 0 ? (
@@ -91,6 +95,21 @@ function formatFecha(fechaStr: string): string {
 <style>
 	.matches {
 		padding: var(--spacing-lg) 0;
+	}
+
+	.section-title__numero {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.8em;
+		margin-left: 0.4em;
+		padding: 0 0.35em;
+		background: var(--color-primary);
+		color: var(--color-neutral);
+		border-radius: var(--border-radius-sm);
+		font-size: 0.7em;
+		line-height: 1.6;
+		vertical-align: middle;
 	}
 
 	.matches__list {
