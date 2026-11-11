@@ -67,13 +67,14 @@ function medalla(pos: number): string {
 											</td>
 											<td class="stats-table__td stats-table__td--player">
 												<span class="stats-table__player-name">{g.jugador}</span>
+												<span class="stats-table__team-inline">{g.equipo.nombre}</span>
 											</td>
 											<td class="stats-table__td stats-table__td--team">
 												<span class="stats-table__team-name">{g.equipo.nombre}</span>
 											</td>
 											<td class="stats-table__td stats-table__td--stat">
 												<span class="stats-table__stat-badge stats-table__stat-badge--goles">
-													{g.goles} {g.goles === 1 ? "gol" : "goles"}
+													{g.goles}
 												</span>
 											</td>
 										</tr>
@@ -141,7 +142,7 @@ function medalla(pos: number): string {
 		border-radius: var(--border-radius-lg);
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		box-shadow: var(--shadow-sm);
-		padding: var(--spacing-lg);
+		padding: var(--spacing-md);
 		margin-bottom: var(--spacing-lg);
 		transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 	}
@@ -171,15 +172,16 @@ function medalla(pos: number): string {
 
 	.stats-table-wrapper {
 		overflow-x: auto;
-		margin: 0 calc(-1 * var(--spacing-lg));
-		padding: 0 var(--spacing-lg);
+		margin: 0 calc(-1 * var(--spacing-md));
+		padding: 0 var(--spacing-md);
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
 	}
 
 	.stats-table {
 		width: 100%;
-		min-width: 420px;
+		min-width: 0;
+		table-layout: fixed;
 		border-collapse: separate;
 		border-spacing: 0 4px;
 	}
@@ -209,7 +211,7 @@ function medalla(pos: number): string {
 
 	.stats-table__th--pos {
 		text-align: center;
-		width: 44px;
+		width: 48px;
 	}
 
 	.stats-table__th--player {
@@ -222,7 +224,7 @@ function medalla(pos: number): string {
 
 	.stats-table__th--stat {
 		text-align: center;
-		width: 100px;
+		width: 64px;
 	}
 
 	.stats-table__row {
@@ -251,6 +253,23 @@ function medalla(pos: number): string {
 
 	.stats-table__td--player {
 		text-align: left;
+		white-space: normal;
+	}
+
+	/* En móvil la columna de equipo se oculta y el club va bajo el jugador. */
+	.stats-table__th--team,
+	.stats-table__td--team {
+		display: none;
+	}
+
+	.stats-table__team-inline {
+		display: block;
+		margin-top: 2px;
+		font-family: var(--font-label);
+		font-size: 0.62rem;
+		color: var(--color-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
 	.stats-table__td--team {
@@ -308,11 +327,11 @@ function medalla(pos: number): string {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 32px;
-		padding: 2px 10px;
+		min-width: 34px;
+		padding: 3px 10px;
 		border-radius: 20px;
 		font-family: var(--font-label);
-		font-size: 0.7rem;
+		font-size: 0.8rem;
 		font-weight: 700;
 	}
 
@@ -450,6 +469,28 @@ function medalla(pos: number): string {
 			font-size: 1.3rem;
 		}
 
+		.stats-table {
+			min-width: 420px;
+			table-layout: auto;
+		}
+
+		.stats-table__th--pos {
+			width: 44px;
+		}
+
+		.stats-table__th--stat {
+			width: 100px;
+		}
+
+		.stats-table__th--team,
+		.stats-table__td--team {
+			display: table-cell;
+		}
+
+		.stats-table__team-inline {
+			display: none;
+		}
+
 		.stats-table__th {
 			font-size: 0.7rem;
 			padding: var(--spacing-md) var(--spacing-sm);
@@ -481,7 +522,7 @@ function medalla(pos: number): string {
 		}
 
 		.stats-table__stat-badge {
-			font-size: 0.75rem;
+			font-size: 0.8rem;
 			padding: 3px 12px;
 		}
 
