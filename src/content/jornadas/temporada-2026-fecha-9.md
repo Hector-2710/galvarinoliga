@@ -7,7 +7,7 @@ fecha_fin: "2026-12-27"
 partidos:
   - slug: fecha-9-centenario-vs-liceo
     fecha: "2026-12-27"
-    hora: "15:00"
+    hora: "16:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: centenario
     equipo2: liceo
@@ -16,7 +16,7 @@ partidos:
     estado: programado
   - slug: fecha-9-galvarino-vs-construccion
     fecha: "2026-12-27"
-    hora: "17:00"
+    hora: "18:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: galvarino
     equipo2: construccion
@@ -25,7 +25,7 @@ partidos:
     estado: programado
   - slug: fecha-9-san-antonio-vs-madegal
     fecha: "2026-12-27"
-    hora: "19:00"
+    hora: "20:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: san-antonio
     equipo2: madegal
