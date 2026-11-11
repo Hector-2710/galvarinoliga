@@ -5,7 +5,7 @@ import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { getGoleadores } from "../lib/liga";
 
-const topGoleadores = await getGoleadores();
+const topGoleadores = await getGoleadores(5);
 
 function medalla(pos: number): string {
 	if (pos === 0) return "🥇";
@@ -22,7 +22,7 @@ function medalla(pos: number): string {
 			<div class="container">
 				<h1 class="page-title fade-in-up">Estadísticas</h1>
 				<p class="page-subtitle fade-in-up">
-					Máximos goleadores de la temporada
+					Top 5 de goleadores de la temporada
 				</p>
 
 				<div class="stats-card fade-in-up">
@@ -31,7 +31,7 @@ function medalla(pos: number): string {
 							<circle cx="12" cy="12" r="10"></circle>
 							<path d="M12 6v6l4 2"></path>
 						</svg>
-						Goleadores
+						Top 5 goleadores
 					</h2>
 
 					{topGoleadores.length === 0 ? (
@@ -56,7 +56,7 @@ function medalla(pos: number): string {
 								</thead>
 								<tbody>
 									{topGoleadores.map((g, i) => (
-										<tr class="stats-table__row">
+										<tr class:list={["stats-table__row", `stats-table__row--rank-${i + 1}`]}>
 											<td class="stats-table__td stats-table__td--pos">
 												<span class:list={{
 													"stats-table__pos-badge": true,
@@ -324,6 +324,113 @@ function medalla(pos: number): string {
 	.stats-table__stat-badge--total {
 		background: rgba(168, 173, 179, 0.15);
 		color: var(--color-secondary-light);
+	}
+
+	/* Jerarquía del top 5: el 1.º destaca más que el 2.º, y así sucesivamente. */
+	.stats-table__row--rank-1 {
+		background: linear-gradient(
+			90deg,
+			rgba(230, 30, 42, 0.24) 0%,
+			rgba(230, 30, 42, 0.06) 100%
+		);
+	}
+
+	.stats-table__row--rank-2 {
+		background: linear-gradient(
+			90deg,
+			rgba(201, 206, 214, 0.16) 0%,
+			rgba(201, 206, 214, 0.03) 100%
+		);
+	}
+
+	.stats-table__row--rank-3 {
+		background: linear-gradient(
+			90deg,
+			rgba(205, 127, 50, 0.14) 0%,
+			rgba(205, 127, 50, 0.03) 100%
+		);
+	}
+
+	.stats-table__row--rank-4 {
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	.stats-table__row--rank-1 .stats-table__td:first-child,
+	.stats-table__row--rank-2 .stats-table__td:first-child,
+	.stats-table__row--rank-3 .stats-table__td:first-child {
+		box-shadow: inset 3px 0 0 var(--rank-accent);
+	}
+
+	.stats-table__row--rank-1 {
+		--rank-accent: #f5c542;
+	}
+
+	.stats-table__row--rank-2 {
+		--rank-accent: #c9ced6;
+	}
+
+	.stats-table__row--rank-3 {
+		--rank-accent: #cd7f32;
+	}
+
+	.stats-table__row--rank-1 .stats-table__td {
+		padding-top: var(--spacing-md);
+		padding-bottom: var(--spacing-md);
+	}
+
+	.stats-table__row--rank-1 .stats-table__player-name {
+		font-size: clamp(1.05rem, 1rem + 0.6vw, 1.45rem);
+		font-weight: 700;
+		color: var(--color-neutral);
+	}
+
+	.stats-table__row--rank-2 .stats-table__player-name {
+		font-size: clamp(0.98rem, 0.94rem + 0.35vw, 1.22rem);
+		font-weight: 600;
+	}
+
+	.stats-table__row--rank-3 .stats-table__player-name {
+		font-size: clamp(0.92rem, 0.9rem + 0.2vw, 1.08rem);
+		font-weight: 600;
+	}
+
+	.stats-table__row--rank-4 .stats-table__player-name {
+		font-size: clamp(0.88rem, 0.86rem + 0.12vw, 0.98rem);
+	}
+
+	.stats-table__row--rank-5 .stats-table__player-name {
+		font-size: clamp(0.85rem, 0.84rem + 0.08vw, 0.92rem);
+		color: var(--color-secondary);
+	}
+
+	.stats-table__row--rank-1 .stats-table__pos-badge {
+		width: 36px;
+		height: 36px;
+		font-size: 1.35rem;
+	}
+
+	.stats-table__row--rank-2 .stats-table__pos-badge {
+		width: 32px;
+		height: 32px;
+		font-size: 1.15rem;
+	}
+
+	.stats-table__row--rank-1 .stats-table__stat-badge--goles {
+		font-size: clamp(0.85rem, 0.8rem + 0.2vw, 1rem);
+		padding: 4px 14px;
+		background: var(--color-primary);
+		color: var(--color-neutral);
+	}
+
+	.stats-table__row--rank-2 .stats-table__stat-badge--goles {
+		font-size: 0.78rem;
+		padding: 3px 12px;
+	}
+
+	.stats-table__row--rank-4 .stats-table__stat-badge--goles,
+	.stats-table__row--rank-5 .stats-table__stat-badge--goles {
+		background: rgba(34, 197, 94, 0.1);
+		color: #86efac;
 	}
 
 	@media (min-width: 640px) {
