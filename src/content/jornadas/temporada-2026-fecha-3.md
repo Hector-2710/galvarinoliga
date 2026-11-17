@@ -11,25 +11,25 @@ partidos:
     cancha: "Estadio Municipal Galvarino"
     equipo1: construccion
     equipo2: madegal
-    goles1: null
-    goles2: null
-    estado: programado
+    goles1: 3
+    goles2: 3
+    estado: finalizado
   - slug: fecha-3-san-antonio-vs-liceo
     fecha: "2026-11-15"
     hora: "18:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: san-antonio
     equipo2: liceo
-    goles1: null
-    goles2: null
-    estado: programado
+    goles1: 1
+    goles2: 0
+    estado: finalizado
   - slug: fecha-3-galvarino-vs-centenario
     fecha: "2026-11-15"
     hora: "20:00"
     cancha: "Estadio Municipal Galvarino"
     equipo1: galvarino
     equipo2: centenario
-    goles1: null
-    goles2: null
-    estado: programado
+    goles1: 2
+    goles2: 1
+    estado: finalizado
 ---
