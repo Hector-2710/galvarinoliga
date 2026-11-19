@@ -98,4 +98,37 @@ goles:
   - jugador: "Martín Cortés"
     equipo: madegal
     partido: fecha-2-liceo-vs-madegal
+  # Fecha 3 — Construcción 3-3 Madegal
+  - jugador: "Alejandro Novoa"
+    equipo: construccion
+    partido: fecha-3-construccion-vs-madegal
+  - jugador: "Alejandro Novoa"
+    equipo: construccion
+    partido: fecha-3-construccion-vs-madegal
+  - jugador: "Rodrigo Sáez"
+    equipo: construccion
+    partido: fecha-3-construccion-vs-madegal
+  - jugador: "Jeffrey Palomera"
+    equipo: madegal
+    partido: fecha-3-construccion-vs-madegal
+  - jugador: "Jeffrey Palomera"
+    equipo: madegal
+    partido: fecha-3-construccion-vs-madegal
+  - jugador: "César Neira"
+    equipo: madegal
+    partido: fecha-3-construccion-vs-madegal
+  # Fecha 3 — San Antonio 1-0 Liceo
+  - jugador: "Marcelo Ríos"
+    equipo: san-antonio
+    partido: fecha-3-san-antonio-vs-liceo
+  # Fecha 3 — Galvarino 2-1 Centenario
+  - jugador: "Rodrigo Arias"
+    equipo: galvarino
+    partido: fecha-3-galvarino-vs-centenario
+  - jugador: "Brayan Jerez"
+    equipo: galvarino
+    partido: fecha-3-galvarino-vs-centenario
+  - jugador: "Sebastián Morales"
+    equipo: centenario
+    partido: fecha-3-galvarino-vs-centenario
 ---
