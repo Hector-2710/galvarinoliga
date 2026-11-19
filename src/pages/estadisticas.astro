@@ -5,7 +5,8 @@ import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { getGoleadores } from "../lib/liga";
 
-const topGoleadores = await getGoleadores(5);
+const goleadores = await getGoleadores();
+const hayMasGoleadores = goleadores.length > 5;
 
 function medalla(pos: number): string {
 	if (pos === 0) return "🥇";
@@ -22,7 +23,7 @@ function medalla(pos: number): string {
 			<div class="container">
 				<h1 class="page-title fade-in-up">Estadísticas</h1>
 				<p class="page-subtitle fade-in-up">
-					Top 5 de goleadores de la temporada
+					Goleadores de la temporada
 				</p>
 
 				<div class="stats-card fade-in-up">
@@ -34,7 +35,7 @@ function medalla(pos: number): string {
 						Top 5 goleadores
 					</h2>
 
-					{topGoleadores.length === 0 ? (
+					{goleadores.length === 0 ? (
 						<div class="empty-state">
 							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
 								<circle cx="12" cy="12" r="10"></circle>
@@ -44,44 +45,61 @@ function medalla(pos: number): string {
 							<p>No hay goles registrados todavía.</p>
 						</div>
 					) : (
-						<div class="stats-table-wrapper">
-							<table class="stats-table">
-								<thead>
-									<tr>
-										<th class="stats-table__th stats-table__th--pos">#</th>
-										<th class="stats-table__th stats-table__th--player">Jugador</th>
-										<th class="stats-table__th stats-table__th--team">Equipo</th>
-										<th class="stats-table__th stats-table__th--stat">Goles</th>
-									</tr>
-								</thead>
-								<tbody>
-									{topGoleadores.map((g, i) => (
-										<tr class:list={["stats-table__row", `stats-table__row--rank-${i + 1}`]}>
-											<td class="stats-table__td stats-table__td--pos">
-												<span class:list={{
-													"stats-table__pos-badge": true,
-													"stats-table__pos-badge--medal": i < 3,
-												}}>
-													{i < 3 ? medalla(i) : i + 1}
-												</span>
-											</td>
-											<td class="stats-table__td stats-table__td--player">
-												<span class="stats-table__player-name">{g.jugador}</span>
-												<span class="stats-table__team-inline">{g.equipo.nombre}</span>
-											</td>
-											<td class="stats-table__td stats-table__td--team">
-												<span class="stats-table__team-name">{g.equipo.nombre}</span>
-											</td>
-											<td class="stats-table__td stats-table__td--stat">
-												<span class="stats-table__stat-badge stats-table__stat-badge--goles">
-													{g.goles}
-												</span>
-											</td>
+						<>
+							<div class="stats-table-wrapper">
+								<table class="stats-table" id="goleadores-table">
+									<thead>
+										<tr>
+											<th class="stats-table__th stats-table__th--pos">#</th>
+											<th class="stats-table__th stats-table__th--player">Jugador</th>
+											<th class="stats-table__th stats-table__th--team">Equipo</th>
+											<th class="stats-table__th stats-table__th--stat">Goles</th>
 										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
+									</thead>
+									<tbody>
+										{goleadores.map((g, i) => (
+											<tr class:list={[
+												"stats-table__row",
+												i < 5 && `stats-table__row--rank-${i + 1}`,
+												i >= 5 && "stats-table__row--extra",
+											]}>
+												<td class="stats-table__td stats-table__td--pos">
+													<span class:list={{
+														"stats-table__pos-badge": true,
+														"stats-table__pos-badge--medal": i < 3,
+													}}>
+														{i < 3 ? medalla(i) : i + 1}
+													</span>
+												</td>
+												<td class="stats-table__td stats-table__td--player">
+													<span class="stats-table__player-name">{g.jugador}</span>
+													<span class="stats-table__team-inline">{g.equipo.nombre}</span>
+												</td>
+												<td class="stats-table__td stats-table__td--team">
+													<span class="stats-table__team-name">{g.equipo.nombre}</span>
+												</td>
+												<td class="stats-table__td stats-table__td--stat">
+													<span class="stats-table__stat-badge stats-table__stat-badge--goles">
+														{g.goles}
+													</span>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+							{hayMasGoleadores && (
+								<button
+									type="button"
+									class="goleadores-toggle"
+									id="goleadores-toggle"
+									aria-expanded="false"
+									aria-controls="goleadores-table"
+								>
+									Ver todos los goleadores
+								</button>
+							)}
+						</>
 					)}
 				</div>
 
@@ -419,7 +437,7 @@ function medalla(pos: number): string {
 
 	.stats-table__row--rank-5 .stats-table__player-name {
 		font-size: clamp(0.85rem, 0.84rem + 0.08vw, 0.92rem);
-		color: var(--color-secondary);
+		color: var(--color-neutral);
 	}
 
 	.stats-table__row--rank-1 .stats-table__pos-badge {
@@ -450,6 +468,39 @@ function medalla(pos: number): string {
 	.stats-table__row--rank-5 .stats-table__stat-badge--goles {
 		background: rgba(34, 197, 94, 0.1);
 		color: #86efac;
+	}
+
+	.stats-table:not(.is-expanded) .stats-table__row--extra {
+		display: none;
+	}
+
+	.goleadores-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		margin-top: var(--spacing-md);
+		padding: var(--spacing-md) var(--spacing-lg);
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.08), rgba(230, 30, 42, 0.02));
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: var(--border-radius-md);
+		color: var(--color-neutral);
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s, border-color 0.2s, transform 0.2s;
+	}
+
+	.goleadores-toggle:hover,
+	.goleadores-toggle:focus-visible {
+		background: linear-gradient(145deg, rgba(230, 30, 42, 0.18), rgba(230, 30, 42, 0.06));
+		border-color: rgba(230, 30, 42, 0.35);
+		outline: none;
+	}
+
+	.goleadores-toggle:active {
+		transform: scale(0.99);
 	}
 
 	@media (min-width: 640px) {
@@ -607,3 +658,14 @@ function medalla(pos: number): string {
 		}
 	}
 </style>
+
+<script>
+	const boton = document.getElementById("goleadores-toggle");
+	const tabla = document.getElementById("goleadores-table");
+
+	boton?.addEventListener("click", () => {
+		const expandido = tabla?.classList.toggle("is-expanded") ?? false;
+		boton.setAttribute("aria-expanded", String(expandido));
+		boton.textContent = expandido ? "Ver menos" : "Ver todos los goleadores";
+	});
+</script>
