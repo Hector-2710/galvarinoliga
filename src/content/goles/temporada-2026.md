@@ -79,7 +79,7 @@ goles:
     equipo: san-antonio
     partido: fecha-2-galvarino-vs-san-antonio
   # El segundo gol de San Antonio figura solo con el dorsal 7 en la planilla.
-  - jugador: "Jugador N.º 7"
+  - jugador: "Javier Millán"
     equipo: san-antonio
     partido: fecha-2-galvarino-vs-san-antonio
   # Fecha 2 — Liceo 1-4 Madegal
