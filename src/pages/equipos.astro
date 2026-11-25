@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
+import ClubLogo from "../components/ClubLogo.astro";
 import { getEquipos } from "../lib/liga";
 
 interface TeamRow {
@@ -10,7 +10,6 @@ interface TeamRow {
 	nombre: string;
 	anoCreacion?: number;
 	logoUrl?: string;
-	colorPrincipal: string;
 }
 
 const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
@@ -18,7 +17,6 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 	nombre: equipo.nombre,
 	anoCreacion: equipo.ano_creacion,
 	logoUrl: equipo.logo,
-	colorPrincipal: equipo.color_principal,
 }));
 ---
 
@@ -27,8 +25,8 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 	<main class="main-content">
 		<section class="equipos">
 			<div class="container">
-				<h1 class="page-title fade-in-up">Equipos</h1>
-				<p class="page-subtitle fade-in-up">Conoce los equipos que pertenecen a la asociación de Galvarino</p>
+				<h1 class="page-title">Equipos</h1>
+				<p class="page-subtitle">Conoce los equipos que pertenecen a la asociación de Galvarino</p>
 
 				{
 					teams.length === 0 ? (
@@ -43,32 +41,14 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 					) : (
 						<div class="equipos-list">
 							{
-								teams.map((team, i) => (
+								teams.map((team) => (
 									<a
 										href={`/equipos/${team.slug}`}
-										class="team-row fade-in-up"
-										style={`animation-delay: ${i * 0.08}s`}
+										class="team-row"
 									>
-										<div
-											class="team-row__accent"
-											style={`background-color: ${team.colorPrincipal}`}
-										></div>
-
-										{team.logoUrl ? (
-											<img
-												src={team.logoUrl}
-												alt={`Logo de ${team.nombre}`}
-												class="team-row__logo"
-												loading="lazy"
-											/>
-										) : (
-											<div
-												class="team-row__logo-placeholder"
-												style={`background-color: ${team.colorPrincipal}`}
-											>
-												<span class="team-row__logo-initial">{team.nombre.charAt(0)}</span>
-											</div>
-										)}
+										<span class="team-row__logo">
+											<ClubLogo logo={team.logoUrl} size={52} />
+										</span>
 
 										<div class="team-row__info">
 											<h2 class="team-row__name">{team.nombre}</h2>
@@ -100,7 +80,6 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 			</div>
 		</section>
 	</main>
-	<SponsorsBanners />
 	<Footer />
 </Layout>
 
@@ -149,14 +128,9 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 		display: flex;
 		align-items: center;
 		gap: var(--spacing-sm);
-		background: linear-gradient(
-			145deg,
-			var(--color-tertiary-light) 0%,
-			var(--color-tertiary) 100%
-		);
+		background: var(--color-tertiary);
 		border-radius: var(--border-radius-lg);
 		border: 1px solid rgba(255, 255, 255, 0.06);
-		box-shadow: var(--shadow-sm);
 		text-decoration: none;
 		transition: transform 0.2s, border-color 0.2s;
 		cursor: pointer;
@@ -170,39 +144,10 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 		transform: scale(0.99);
 	}
 
-	.team-row__accent {
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 4px;
-		border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
-		flex-shrink: 0;
-	}
-
 	.team-row__logo {
-		width: 40px;
-		height: 40px;
-		object-fit: contain;
-		border-radius: var(--border-radius-sm);
+		--escudo-size: 40px;
+		display: inline-flex;
 		flex-shrink: 0;
-	}
-
-	.team-row__logo-placeholder {
-		width: 40px;
-		height: 40px;
-		border-radius: var(--border-radius-sm);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-	}
-
-	.team-row__logo-initial {
-		font-family: var(--font-headline);
-		font-size: 1.2rem;
-		color: var(--color-neutral);
-		text-transform: uppercase;
 	}
 
 	.team-row__info {
@@ -226,7 +171,7 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 	}
 
 	.team-row__ano {
-		font-family: var(--font-label);
+		font-family: var(--font-body);
 		font-size: 0.65rem;
 		color: var(--color-secondary);
 		text-transform: uppercase;
@@ -237,7 +182,7 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 		display: none;
 		align-items: center;
 		gap: 6px;
-		font-family: var(--font-label);
+		font-family: var(--font-body);
 		font-size: 0.7rem;
 		color: var(--color-primary);
 		text-transform: uppercase;
@@ -275,18 +220,8 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 			min-height: 68px;
 		}
 
-		.team-row__accent {
-			width: 5px;
-		}
-
-		.team-row__logo,
-		.team-row__logo-placeholder {
-			width: 48px;
-			height: 48px;
-		}
-
-		.team-row__logo-initial {
-			font-size: 1.4rem;
+		.team-row__logo {
+			--escudo-size: 44px;
 		}
 
 		.team-row__name {
@@ -325,7 +260,6 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 
 		.team-row:hover {
 			transform: translateX(4px);
-			box-shadow: var(--shadow-lg);
 			border-color: rgba(230, 30, 42, 0.3);
 		}
 
@@ -338,18 +272,8 @@ const teams: TeamRow[] = (await getEquipos()).map((equipo) => ({
 			transform: scale(0.98);
 		}
 
-		.team-row__accent {
-			width: 5px;
-		}
-
-		.team-row__logo,
-		.team-row__logo-placeholder {
-			width: 56px;
-			height: 56px;
-		}
-
-		.team-row__logo-initial {
-			font-size: 1.6rem;
+		.team-row__logo {
+			--escudo-size: 52px;
 		}
 
 		.team-row__name {

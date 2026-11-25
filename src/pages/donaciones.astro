@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 ---
 
@@ -10,13 +9,13 @@ import Footer from "../components/Footer.astro";
 	<main class="main-content">
 		<section class="donaciones">
 			<div class="container">
-				<h1 class="page-title fade-in-up">Sé parte del proyecto</h1>
-				<p class="page-subtitle fade-in-up">
+				<h1 class="page-title">Sé parte del proyecto</h1>
+				<p class="page-subtitle">
 					¿Quieres ser parte de <strong>Galvarino Liga Fútbol</strong>? Ayúdanos con tu donación
 					para seguir creciendo. Todo aporte es bienvenido.
 				</p>
 
-				<section class="seccion fade-in-up">
+				<section class="seccion">
 					<h2 class="section-title">¿Qué buscamos?</h2>
 					<div class="content-card">
 						<p>
@@ -26,7 +25,7 @@ import Footer from "../components/Footer.astro";
 					</div>
 				</section>
 
-				<section class="seccion fade-in-up">
+				<section class="seccion">
 					<h2 class="section-title">¿Por qué donar?</h2>
 					<div class="content-card">
 						<p>
@@ -37,7 +36,7 @@ import Footer from "../components/Footer.astro";
 					</div>
 				</section>
 
-				<div class="donaciones-contacto fade-in-up">
+				<div class="donaciones-contacto">
 					<h2 class="section-title">¿Quieres cooperar?</h2>
 					<p class="contacto-desc">
 						Si quieres cooperar, comunícate con el correo de la cuenta. Te contamos cómo hacer
@@ -57,7 +56,6 @@ import Footer from "../components/Footer.astro";
 			</div>
 		</section>
 	</main>
-	<SponsorsBanners />
 	<Footer />
 </Layout>
 
@@ -98,22 +96,12 @@ import Footer from "../components/Footer.astro";
 		display: inline-block;
 	}
 
-	.section-title::after {
-		content: '';
-		display: block;
-		width: 100%;
-		height: 3px;
-		background: var(--color-primary);
-		margin-top: 4px;
-		border-radius: 2px;
-	}
-
 	.seccion {
 		margin-bottom: var(--spacing-2xl);
 	}
 
 	.content-card {
-		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		background: var(--color-tertiary);
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: var(--border-radius-lg);
 		padding: var(--spacing-lg);
@@ -124,7 +112,7 @@ import Footer from "../components/Footer.astro";
 	}
 
 	.donaciones-contacto {
-		background: linear-gradient(145deg, var(--color-tertiary-light) 0%, var(--color-tertiary) 100%);
+		background: var(--color-tertiary);
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		border-radius: var(--border-radius-lg);
 		padding: var(--spacing-lg);
@@ -155,7 +143,7 @@ import Footer from "../components/Footer.astro";
 		font-size: 0.9rem;
 		font-weight: 500;
 		padding: var(--spacing-md) var(--spacing-lg);
-		background: linear-gradient(145deg, rgba(230, 30, 42, 0.08), rgba(230, 30, 42, 0.02));
+		background: rgba(255, 255, 255, 0.02);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: var(--border-radius-md);
 		transition: all 0.25s;
@@ -183,9 +171,9 @@ import Footer from "../components/Footer.astro";
 
 	.contacto-link:hover {
 		color: var(--color-neutral);
-		background: linear-gradient(145deg, rgba(230, 30, 42, 0.18), rgba(230, 30, 42, 0.06));
+		background: rgba(255, 255, 255, 0.05);
 		border-color: rgba(230, 30, 42, 0.35);
-		transform: translateY(-2px);
+		
 	}
 
 	@media (min-width: 640px) {

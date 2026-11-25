@@ -4,27 +4,15 @@ import Header from "../components/Header.astro";
 import Banner from "../components/Banner.astro";
 import NextMatches from "../components/NextMatches.astro";
 import StandingsTable from "../components/StandingsTable.astro";
-import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { calcularTabla, getProximosPartidosDeFecha } from "../lib/liga";
 
-const proximosPartidos = await getProximosPartidosDeFecha();
-
-const jornadaNumero = proximosPartidos[0]?.jornada.numero;
-
-const matches = proximosPartidos.map((partido) => ({
-	id: partido.slug,
-	equipo1: partido.equipo1.nombre,
-	equipo2: partido.equipo2.nombre,
-	fecha: partido.fecha,
-	hora: partido.hora,
-	cancha: partido.cancha,
-	estado: partido.estado,
-}));
+const partidos = await getProximosPartidosDeFecha();
 
 const standings = (await calcularTabla()).map((fila) => ({
 	pos: fila.pos,
 	equipo_nombre: fila.equipo.nombre,
+	logo: fila.equipo.logo,
 	pj: fila.pj,
 	g: fila.g,
 	e: fila.e,
@@ -39,68 +27,54 @@ const standings = (await calcularTabla()).map((fila) => ({
 <Layout>
 	<Header />
 	<main class="main-content">
-		<section class="banner-section">
-			<div class="container">
-				<Banner />
-			</div>
-		</section>
-		<NextMatches matches={matches} jornadaNumero={jornadaNumero} />
+		<NextMatches partidos={partidos} />
+
+		<div class="separador" aria-hidden="true"><span></span><i></i><span></span></div>
+
 		<StandingsTable teams={standings} />
-		<section class="banner-section">
-			<div class="container">
-				<Banner />
-			</div>
-		</section>
+
+		<div class="container">
+			<Banner />
+		</div>
 	</main>
-	<SponsorsBanners />
 	<Footer />
 </Layout>
 
 <style is:global>
-	.main-content {
-		padding-top: var(--header-height);
-		padding-bottom: var(--spacing-lg);
-		min-height: 100vh;
-		min-height: 100dvh;
-	}
-	
-	.banner-section {
-		padding: var(--spacing-md) 0;
+	.separador {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-md);
+		margin: 0 var(--spacing-md);
 	}
 
-	@media (prefers-reduced-motion: no-preference) {
-		.fade-in-up {
-			opacity: 0;
-			animation: fadeInUp 0.5s ease-out both;
-		}
+	.separador > span {
+		flex: 1;
+		height: 1px;
+		background: var(--color-line);
 	}
 
-	/* ===== Desktop (≥1024px) ===== */
+	.separador i {
+		position: relative;
+		width: 12px;
+		height: 12px;
+		flex-shrink: 0;
+		border: 1px solid var(--color-secondary);
+		border-radius: 50%;
+		opacity: 0.7;
+	}
+
+	.separador i::after {
+		content: '';
+		position: absolute;
+		inset: 3px;
+		border-radius: 50%;
+		background: var(--color-primary);
+	}
+
 	@media (min-width: 1024px) {
-		.main-content {
-			padding-top: calc(var(--header-height) + var(--spacing-lg));
-			padding-bottom: var(--spacing-2xl);
-		}
-
-		.banner-section {
-			padding: var(--spacing-xl) 0;
-		}
-
-		.banner-section .container {
-			display: flex;
-			justify-content: center;
-		}
-	}
-
-	/* ===== Large Desktop (≥1280px) ===== */
-	@media (min-width: 1280px) {
-		.main-content {
-			padding-top: calc(var(--header-height) + var(--spacing-2xl));
-			padding-bottom: var(--spacing-2xl);
-		}
-
-		.banner-section {
-			padding: var(--spacing-2xl) 0;
+		.separador {
+			margin: 0 var(--spacing-xl);
 		}
 	}
 </style>

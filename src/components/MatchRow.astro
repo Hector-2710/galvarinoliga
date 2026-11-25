@@ -1,0 +1,176 @@
+---
+import type { Partido } from '../lib/liga';
+import ClubLogo from './ClubLogo.astro';
+
+export interface Props {
+	partido: Partido;
+	href?: string;
+	conFecha?: boolean;
+	destacado?: boolean;
+}
+
+const { partido, href, conFecha = false, destacado = false } = Astro.props;
+
+const Etiqueta = href ? 'a' : 'div';
+
+const fecha = new Intl.DateTimeFormat('es-CL', {
+	weekday: 'short',
+	day: 'numeric',
+	month: 'short',
+}).format(new Date(`${partido.fecha}T12:00:00`));
+
+const marcador =
+	partido.estado === 'finalizado' && partido.goles1 !== null && partido.goles2 !== null
+		? `${partido.goles1} – ${partido.goles2}`
+		: 'vs';
+---
+
+<Etiqueta
+	class:list={['fila', { 'fila--destacada': destacado, 'fila--enlace': Boolean(href) }]}
+	href={href}
+>
+	<span class="fila__equipo">
+		<ClubLogo logo={partido.equipo1.logo} size={64} />
+		<span class="fila__nombre">{partido.equipo1.nombre}</span>
+	</span>
+
+	<span class="fila__centro">
+		<span class="fila__marcador">{marcador}</span>
+		<span class="fila__hora">{partido.hora.slice(0, 5)}</span>
+	</span>
+
+	<span class="fila__equipo">
+		<ClubLogo logo={partido.equipo2.logo} size={64} />
+		<span class="fila__nombre">{partido.equipo2.nombre}</span>
+	</span>
+
+	<span class="fila__nota">
+		{conFecha && <span>{fecha}</span>}
+		<span>{partido.cancha}</span>
+		{partido.estado === 'finalizado' && <span>Finalizado</span>}
+	</span>
+</Etiqueta>
+
+<style>
+	.fila {
+		--escudo-size: 48px;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		align-items: start;
+		column-gap: var(--spacing-sm);
+		row-gap: var(--spacing-xs);
+		padding: var(--spacing-md) 0;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.fila--enlace:hover .fila__marcador {
+		color: var(--color-primary-light);
+	}
+
+	.fila__equipo {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-xs);
+		min-width: 0;
+	}
+
+	.fila__nombre {
+		font-family: var(--font-headline);
+		font-size: clamp(0.78rem, 3.4vw, 1.1rem);
+		line-height: 1.05;
+		text-transform: uppercase;
+		letter-spacing: 0.01em;
+		text-align: center;
+		white-space: nowrap;
+		color: var(--color-neutral);
+	}
+
+	.fila__centro {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+		min-width: 62px;
+		padding-top: 8px;
+	}
+
+	.fila__hora {
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-secondary);
+	}
+
+	.fila__marcador {
+		font-family: var(--font-headline);
+		font-size: clamp(1.5rem, 7vw, 2.5rem);
+		line-height: 1;
+		color: var(--color-neutral);
+	}
+
+	.fila__nota {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--spacing-xs) var(--spacing-md);
+		font-family: var(--font-body);
+		font-size: 0.7rem;
+		color: var(--color-secondary);
+		opacity: 0.75;
+	}
+
+	.fila--destacada {
+		--escudo-size: 64px;
+		padding: var(--spacing-lg) 0;
+	}
+
+	.fila--destacada .fila__nombre {
+		font-size: clamp(0.95rem, 4vw, 1.4rem);
+	}
+
+	.fila--destacada .fila__centro {
+		padding-top: 16px;
+	}
+
+	.fila--destacada .fila__marcador {
+		font-size: clamp(2.5rem, 12vw, 4.5rem);
+	}
+
+	.fila--destacada .fila__nota {
+		font-size: 0.85rem;
+	}
+
+	@media (min-width: 768px) {
+		.fila {
+			--escudo-size: 64px;
+			column-gap: var(--spacing-lg);
+			padding: var(--spacing-lg) 0;
+		}
+
+		.fila__nombre {
+			font-size: clamp(1.1rem, 2vw, 1.5rem);
+		}
+
+		.fila__nota {
+			font-size: 0.8rem;
+		}
+
+		.fila--destacada {
+			--escudo-size: 88px;
+		}
+
+		.fila--destacada .fila__nombre {
+			font-size: 1.8rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.fila--enlace,
+		.fila__marcador {
+			transition: color 0.2s ease;
+		}
+	}
+</style>
