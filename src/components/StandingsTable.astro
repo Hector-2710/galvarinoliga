@@ -1,7 +1,10 @@
 ---
+import ClubLogo from './ClubLogo.astro';
+
 export interface Team {
 	pos: number;
 	equipo_nombre: string;
+	logo?: string;
 	pj: number;
 	g: number;
 	e: number;
@@ -14,343 +17,297 @@ export interface Team {
 
 export interface Props {
 	teams: Team[];
+	ocultarTitulo?: boolean;
 }
 
-const { teams } = Astro.props;
-
-// Helper to determine row highlight
-function getRowClass(pos: number): string {
-	if (pos <= 2) return 'standings__row--qualified';
-	if (pos >= 3 && pos <= 6) return 'standings__row--mid';
-	return '';
-}
+const { teams, ocultarTitulo = false } = Astro.props;
 ---
 
-<section class="standings">
+<section class="tabla" aria-labelledby={ocultarTitulo ? undefined : 'tabla-titulo'}>
 	<div class="container">
-		<h2 class="section-title fade-in-up">Tabla de Posiciones</h2>
+		{!ocultarTitulo && <h2 class="tabla__titulo" id="tabla-titulo">Tabla de posiciones</h2>}
 
 		{
 			teams.length > 0 ? (
-				<div class="standings__table-wrapper">
-					<table class="standings__table">
-						<thead>
-							<tr class="standings__header-row">
-								<th class="standings__th standings__th--pos">#</th>
-								<th class="standings__th standings__th--team">Equipo</th>
-								<th class="standings__th">PJ</th>
-								<th class="standings__th">G</th>
-								<th class="standings__th">E</th>
-								<th class="standings__th">P</th>
-								<th class="standings__th">GF</th>
-								<th class="standings__th">GC</th>
-								<th class="standings__th">DG</th>
-								<th class="standings__th standings__th--pts">Pts</th>
-							</tr>
-						</thead>
-						<tbody>
-							{
-								teams.map((team, i) => (
-									<tr class={`standings__row ${getRowClass(team.pos)} fade-in-up`} style={`animation-delay: ${i * 0.06}s`}>
-										<td class="standings__td standings__td--pos">
-											<span class={`standings__pos-badge ${team.pos <= 2 ? 'standings__pos-badge--highlight' : ''}`}>
-												{team.pos}
+				<div class="tabla__contenedor">
+					<div class="tabla__cabecera" aria-hidden="true">
+						<span>#</span>
+						<span>Equipo</span>
+						<span>DG</span>
+						<span>Pts</span>
+					</div>
+					<ol class="tabla__filas">
+						{teams.map((team) => (
+							<li>
+								<details class="tabla__fila">
+									<summary>
+										<span class:list={['tabla__pos', { 'tabla__pos--lider': team.pos === 1 }]}>
+											{team.pos}
+										</span>
+										<span class="tabla__equipo">
+											<ClubLogo logo={team.logo} size={32} />
+											<span class="tabla__equipo-texto">
+												<span class="tabla__nombre">{team.equipo_nombre}</span>
+												{team.pos <= 2 && <span class="tabla__regional"></span>}
 											</span>
-										</td>
-									<td class="standings__td standings__td--team">
-										<span class="standings__team-name">{team.equipo_nombre} {team.pos === 1 ? '★' : ''}</span>
-									</td>
-										<td class="standings__td">{team.pj}</td>
-										<td class="standings__td">{team.g}</td>
-										<td class="standings__td">{team.e}</td>
-										<td class="standings__td">{team.p}</td>
-										<td class="standings__td">{team.gf}</td>
-										<td class="standings__td">{team.gc}</td>
-										<td class={`standings__td standings__td--dg ${team.dg > 0 ? 'standings__td--dg-positive' : team.dg < 0 ? 'standings__td--dg-negative' : ''}`}>
+										</span>
+										<span class="tabla__dg">
 											{team.dg > 0 ? `+${team.dg}` : team.dg}
-										</td>
-										<td class="standings__td standings__td--pts">
-											<span class="standings__pts-badge">{team.pts}</span>
-										</td>
-									</tr>
-								))
-							}
-						</tbody>
-					</table>
-				</div>
-				<div class="standings__note">
-					<span class="standings__note-circle"></span>
-					<span class="standings__note-text">Equipos clasificados al Regional</span>
+										</span>
+										<span class="tabla__pts">{team.pts}</span>
+									</summary>
+									<div class="tabla__detalle">
+										<span>PJ <b>{team.pj}</b></span>
+										<span>G <b>{team.g}</b></span>
+										<span>E <b>{team.e}</b></span>
+										<span>P <b>{team.p}</b></span>
+										<span>GF <b>{team.gf}</b></span>
+										<span>GC <b>{team.gc}</b></span>
+									</div>
+								</details>
+							</li>
+						))}
+					</ol>
+					<p class="tabla__nota">Clasificados al Regional</p>
 				</div>
 			) : (
-				<p style="color: var(--color-secondary); text-align: center; padding: 2rem 0;">
-					No hay datos de posiciones disponibles.
-				</p>
+				<p class="tabla__vacio">No hay datos de posiciones disponibles.</p>
 			)
 		}
 	</div>
 </section>
 
 <style>
-	.standings {
-		padding: var(--spacing-lg) 0;
+	.tabla {
+		padding: var(--spacing-xl) 0 var(--spacing-2xl);
 	}
 
-	.standings__table-wrapper {
-		width: 100%;
-	}
-
-	.standings__table {
-		width: 100%;
-		border-collapse: separate;
-		border-spacing: 0 4px;
-	}
-
-	.standings__header-row {
-		background: var(--color-primary);
-	}
-
-	.standings__th {
-		font-family: var(--font-label);
-		font-size: 0.6rem;
-		font-weight: 600;
+	.tabla__titulo {
+		margin-bottom: var(--spacing-lg);
+		font-family: var(--font-headline);
+		font-size: 1.6rem;
+		font-weight: 400;
 		text-transform: uppercase;
 		color: var(--color-neutral);
-		padding: var(--spacing-sm) 2px;
-		text-align: center;
-		letter-spacing: 0.04em;
-		white-space: nowrap;
 	}
 
-	.standings__th--pos {
-		text-align: center;
-		width: 32px;
-		padding-left: 2px;
-	}
-
-	.standings__th--team {
-		text-align: left;
-		padding-left: 2px;
-	}
-
-	.standings__th--pts {
-		padding-right: 2px;
-	}
-
-	.standings__row {
-		background: var(--color-tertiary-light);
+	.tabla__contenedor {
+		--escudo-size: 26px;
+		padding: 0 var(--spacing-sm) var(--spacing-sm);
+		background: rgba(255, 255, 255, 0.015);
+		border: 1px solid var(--color-line);
 		border-radius: var(--border-radius-sm);
-		transition: background 0.2s;
+		overflow: hidden;
 	}
 
-	.standings__row--qualified {
-		background: linear-gradient(
-			135deg,
-			rgba(230, 30, 42, 0.15) 0%,
-			var(--color-tertiary-light) 100%
-		);
-		border-left: 3px solid var(--color-primary);
+	.tabla__cabecera,
+	.tabla__fila summary {
+		display: grid;
+		grid-template-columns: 2rem minmax(0, 1fr) 3rem 2.75rem;
+		align-items: center;
+		gap: var(--spacing-sm);
 	}
 
-	.standings__row--mid {
+	.tabla__cabecera {
+		margin: 0 calc(var(--spacing-sm) * -1);
+		padding: var(--spacing-sm);
+		font-family: var(--font-body);
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-secondary);
 		background: rgba(255, 255, 255, 0.03);
+		border-bottom: 1px solid var(--color-line);
 	}
 
-	.standings__td {
-		font-family: var(--font-label);
-		font-size: 0.7rem;
-		color: var(--color-secondary);
-		padding: var(--spacing-sm) 2px;
-		text-align: center;
-		white-space: nowrap;
+	.tabla__cabecera span:nth-child(n + 3),
+	.tabla__dg,
+	.tabla__pts {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
 	}
 
-	.standings__td--pos {
-		padding-left: 2px;
+	.tabla__filas {
+		list-style: none;
 	}
 
-	.standings__td--team {
-		text-align: left;
-		padding-left: 2px;
-		white-space: normal;
-		overflow-wrap: anywhere;
+	.tabla__filas li + li .tabla__fila {
+		border-top: 1px solid var(--color-line);
 	}
 
-	.standings__td--pts {
-		padding-right: 2px;
+	.tabla__fila summary {
+		padding: var(--spacing-sm) 0;
+		cursor: pointer;
+		list-style: none;
 	}
 
-	.standings__pos-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.08);
-		font-family: var(--font-label);
-		font-size: 0.7rem;
-		font-weight: 600;
+	.tabla__fila summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.tabla__pos {
+		font-family: var(--font-body);
+		font-size: 0.95rem;
+		font-variant-numeric: tabular-nums;
 		color: var(--color-secondary);
 	}
 
-	.standings__pos-badge--highlight {
-		background: var(--color-primary);
-		color: var(--color-neutral);
-		box-shadow: var(--shadow-red);
-	}
-
-	.standings__team-name {
-		font-family: var(--font-label);
-		font-size: 0.7rem;
-		font-weight: 500;
-		color: var(--color-neutral);
-	}
-
-	.standings__td--dg-positive {
-		color: #4ade80;
-		font-weight: 600;
-	}
-
-	.standings__td--dg-negative {
+	.tabla__pos--lider {
+		font-family: var(--font-headline);
+		font-size: 1.5rem;
+		line-height: 1;
 		color: var(--color-primary);
-		font-weight: 600;
 	}
 
-	.standings__pts-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 26px;
-		padding: 2px 6px;
-		border-radius: 20px;
-		background: var(--color-primary);
-		color: var(--color-neutral);
-		font-family: var(--font-label);
-		font-size: 0.75rem;
-		font-weight: 700;
-		box-shadow: var(--shadow-red);
-	}
-
-	.standings__note {
+	.tabla__equipo {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-xs);
-		margin-top: var(--spacing-md);
-		font-family: var(--font-label);
+		gap: var(--spacing-sm);
+		min-width: 0;
+	}
+
+	.tabla__equipo-texto {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	.tabla__nombre {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--color-neutral);
+		overflow-wrap: break-word;
+	}
+
+	.tabla__regional {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-family: var(--font-body);
+		font-size: 0.6rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--color-secondary);
+		white-space: nowrap;
+	}
+
+	.tabla__regional::before {
+		content: '';
+		width: 5px;
+		height: 5px;
+		background: var(--color-primary);
+	}
+
+	.tabla__dg {
+		font-family: var(--font-body);
 		font-size: 0.85rem;
 		color: var(--color-secondary);
 	}
 
-	.standings__note-circle {
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		background: var(--color-primary);
-		flex-shrink: 0;
-	}
-
-	.standings__note-text {
+	.tabla__pts {
+		font-family: var(--font-headline);
+		font-size: 1.25rem;
 		line-height: 1;
+		color: var(--color-neutral);
 	}
 
-	/* ===== Tablet (≥768px) ===== */
+	.tabla__detalle {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-sm) var(--spacing-lg);
+		padding: 0 0 var(--spacing-md) calc(2rem + var(--spacing-sm) * 2 + var(--escudo-size));
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+	}
+
+	.tabla__detalle b {
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-neutral);
+	}
+
+	.tabla__nota {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-sm);
+		margin: 0 calc(var(--spacing-sm) * -1) calc(var(--spacing-sm) * -1);
+		padding: var(--spacing-sm);
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		color: var(--color-secondary);
+		background: rgba(255, 255, 255, 0.03);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.tabla__nota::before {
+		content: '';
+		width: 6px;
+		height: 6px;
+		flex-shrink: 0;
+		background: var(--color-primary);
+	}
+
+	.tabla__vacio {
+		padding: var(--spacing-xl) 0;
+		color: var(--color-secondary);
+	}
+
 	@media (min-width: 768px) {
-		.standings {
-			padding: var(--spacing-xl) 0;
+		.tabla__contenedor {
+			--escudo-size: 32px;
+			padding: 0 var(--spacing-md) var(--spacing-md);
 		}
 
-		.standings__th {
-			font-size: 0.75rem;
-			padding: var(--spacing-md) var(--spacing-sm);
-		}
-
-		.standings__th--pos {
-			width: 44px;
-			padding-left: var(--spacing-md);
-		}
-
-		.standings__th--team {
-			padding-left: var(--spacing-md);
-		}
-
-		.standings__th--pts {
-			padding-right: var(--spacing-md);
-		}
-
-		.standings__td {
-			font-size: 0.85rem;
-			padding: var(--spacing-md) var(--spacing-sm);
-		}
-
-		.standings__td--pos {
-			padding-left: var(--spacing-md);
-		}
-
-		.standings__td--team {
-			padding-left: var(--spacing-md);
-		}
-
-		.standings__td--pts {
-			padding-right: var(--spacing-md);
-		}
-
-		.standings__team-name {
-			font-size: 0.85rem;
-		}
-
-		.standings__pts-badge {
-			min-width: 32px;
-			padding: 4px 12px;
-			font-size: 0.85rem;
-		}
-
-		.standings__pos-badge {
-			width: 28px;
-			height: 28px;
-			font-size: 0.8rem;
-		}
-	}
-
-	/* ===== Desktop (≥1024px) ===== */
-	@media (min-width: 1024px) {
-		.standings {
+		.tabla {
 			padding: var(--spacing-2xl) 0;
 		}
 
-		.standings__row {
-			transition: background 0.2s, transform 0.2s;
+		.tabla__titulo {
+			font-size: 2rem;
 		}
 
-		.standings__row:hover {
-			background: rgba(255, 255, 255, 0.06);
-			transform: scale(1.005);
+		.tabla__cabecera,
+		.tabla__fila summary {
+			grid-template-columns: 3rem minmax(0, 1fr) 4rem 4rem;
 		}
 
-		.standings__row--qualified:hover {
-			background: linear-gradient(
-				135deg,
-				rgba(230, 30, 42, 0.25) 0%,
-				rgba(255, 255, 255, 0.06) 100%
-			);
+		.tabla__cabecera,
+		.tabla__nota {
+			margin-left: calc(var(--spacing-md) * -1);
+			margin-right: calc(var(--spacing-md) * -1);
+			padding-left: var(--spacing-md);
+			padding-right: var(--spacing-md);
 		}
 
-		.standings__th {
-			font-size: 0.8rem;
-			padding: var(--spacing-md) var(--spacing-sm);
+		.tabla__nota {
+			margin-bottom: calc(var(--spacing-md) * -1);
 		}
 
-		.standings__td {
-			font-size: 0.9rem;
-			padding: var(--spacing-md) var(--spacing-sm);
+		.tabla__fila summary {
+			padding: var(--spacing-md) 0;
 		}
 
-		.standings__team-name {
-			font-size: 0.9rem;
+		.tabla__equipo-texto {
+			flex-direction: row;
+			align-items: baseline;
+			gap: var(--spacing-sm);
 		}
 
-		.standings__table {
-			border-spacing: 0 6px;
+		.tabla__nombre {
+			font-size: 1.05rem;
+		}
+
+		.tabla__pts {
+			font-size: 1.5rem;
+		}
+
+		.tabla__detalle {
+			padding-left: calc(3rem + var(--spacing-sm) * 2 + var(--escudo-size));
+			font-size: 0.85rem;
 		}
 	}
 </style>

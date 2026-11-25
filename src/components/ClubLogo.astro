@@ -1,0 +1,61 @@
+---
+/**
+ * Hueco reservado para el escudo de un club.
+ *
+ * Cuando el archivo Markdown del equipo tenga `logo: "/images/equipos/slug.png"`
+ * se muestra la imagen. Mientras tanto se reserva el mismo espacio con una
+ * caja neutra, sin iniciales ni textos de "próximamente".
+ *
+ * El tamaño lo define el contenedor con `--escudo-size`.
+ */
+export interface Props {
+	logo?: string;
+	size?: number;
+}
+
+const { logo, size = 40 } = Astro.props;
+---
+
+<span class="escudo">
+	{
+		logo ? (
+			<img
+				src={logo}
+				alt=""
+				width={size}
+				height={size}
+				loading="lazy"
+				decoding="async"
+			/>
+		) : (
+			<span class="escudo__vacio" aria-hidden="true"></span>
+		)
+	}
+</span>
+
+<style>
+	.escudo {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: var(--escudo-size, 40px);
+		height: var(--escudo-size, 40px);
+		flex-shrink: 0;
+	}
+
+	.escudo img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+
+	.escudo__vacio {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+	}
+</style>
