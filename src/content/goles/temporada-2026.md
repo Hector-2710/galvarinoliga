@@ -131,4 +131,37 @@ goles:
   - jugador: "Sebastián Morales"
     equipo: centenario
     partido: fecha-3-galvarino-vs-centenario
+  # Fecha 4 — Liceo 2-3 Centenario (los 2 goles de Liceo no tienen planilla)
+  - jugador: "Ronald Jerez"
+    equipo: centenario
+    partido: fecha-4-liceo-vs-centenario
+  - jugador: "Ronald Jerez"
+    equipo: centenario
+    partido: fecha-4-liceo-vs-centenario
+  - jugador: "Matías Parada"
+    equipo: centenario
+    partido: fecha-4-liceo-vs-centenario
+  # Fecha 4 — Construcción 1-2 Galvarino
+  - jugador: "Nicolás Sáez"
+    equipo: construccion
+    partido: fecha-4-construccion-vs-galvarino
+  - jugador: "Brayan Villalobos"
+    equipo: galvarino
+    partido: fecha-4-construccion-vs-galvarino
+  - jugador: "Diego Salgado"
+    equipo: galvarino
+    partido: fecha-4-construccion-vs-galvarino
+  # Fecha 4 — Madegal 2-2 San Antonio
+  - jugador: "Jeffrey Palomera"
+    equipo: madegal
+    partido: fecha-4-madegal-vs-san-antonio
+  - jugador: "Abraham Ávila"
+    equipo: madegal
+    partido: fecha-4-madegal-vs-san-antonio
+  - jugador: "Alexis Cañupan"
+    equipo: san-antonio
+    partido: fecha-4-madegal-vs-san-antonio
+  - jugador: "Javier Millán"
+    equipo: san-antonio
+    partido: fecha-4-madegal-vs-san-antonio
 ---
