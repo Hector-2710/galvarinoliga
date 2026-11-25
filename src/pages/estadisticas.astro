@@ -1,19 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import { getGoleadores } from "../lib/liga";
 
 const goleadores = await getGoleadores();
 const hayMasGoleadores = goleadores.length > 5;
-
-function medalla(pos: number): string {
-	if (pos === 0) return "🥇";
-	if (pos === 1) return "🥈";
-	if (pos === 2) return "🥉";
-	return "";
-}
 ---
 
 <Layout>
@@ -21,570 +13,211 @@ function medalla(pos: number): string {
 	<main class="main-content">
 		<section class="estadisticas">
 			<div class="container">
-				<h1 class="page-title fade-in-up">Estadísticas</h1>
-				<p class="page-subtitle fade-in-up">
-					Goleadores de la temporada
-				</p>
+				<h1 class="page-title">Goleadores</h1>
+				<p class="page-subtitle">Goles de la temporada</p>
 
-				<div class="stats-card fade-in-up">
-					<h2 class="stats-card__title">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="12" cy="12" r="10"></circle>
-							<path d="M12 6v6l4 2"></path>
-						</svg>
-						Top 5 goleadores
-					</h2>
-
-					{goleadores.length === 0 ? (
-						<div class="empty-state">
-							<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-								<circle cx="12" cy="12" r="10"></circle>
-								<path d="M16.24 7.76a6 6 0 0 1 0 8.49"></path>
-								<path d="M7.76 7.76a6 6 0 0 0 0 8.49"></path>
-							</svg>
-							<p>No hay goles registrados todavía.</p>
-						</div>
+				{
+					goleadores.length === 0 ? (
+						<p class="vacio">Todavía no hay goles registrados.</p>
 					) : (
 						<>
-							<div class="stats-table-wrapper">
-								<table class="stats-table" id="goleadores-table">
-									<thead>
-										<tr>
-											<th class="stats-table__th stats-table__th--pos">#</th>
-											<th class="stats-table__th stats-table__th--player">Jugador</th>
-											<th class="stats-table__th stats-table__th--team">Equipo</th>
-											<th class="stats-table__th stats-table__th--stat">Goles</th>
-										</tr>
-									</thead>
-									<tbody>
-										{goleadores.map((g, i) => (
-											<tr class:list={[
-												"stats-table__row",
-												i < 5 && `stats-table__row--rank-${i + 1}`,
-												i >= 5 && "stats-table__row--extra",
-											]}>
-												<td class="stats-table__td stats-table__td--pos">
-													<span class:list={{
-														"stats-table__pos-badge": true,
-														"stats-table__pos-badge--medal": i < 3,
-													}}>
-														{i < 3 ? medalla(i) : i + 1}
-													</span>
-												</td>
-												<td class="stats-table__td stats-table__td--player">
-													<span class="stats-table__player-name">{g.jugador}</span>
-													<span class="stats-table__team-inline">{g.equipo.nombre}</span>
-												</td>
-												<td class="stats-table__td stats-table__td--team">
-													<span class="stats-table__team-name">{g.equipo.nombre}</span>
-												</td>
-												<td class="stats-table__td stats-table__td--stat">
-													<span class="stats-table__stat-badge stats-table__stat-badge--goles">
-														{g.goles}
-													</span>
-												</td>
-											</tr>
-										))}
-									</tbody>
-								</table>
+							<div class="ranking">
+								<div class="ranking__cabecera" aria-hidden="true">
+									<span>#</span>
+									<span>Jugador</span>
+									<span>Equipo</span>
+									<span>Goles</span>
+								</div>
+								<ol id="goleadores-lista">
+									{goleadores.map((goleador, i) => (
+										<li class:list={['ranking__fila', { 'ranking__fila--extra': i >= 5 }]}>
+											<span class="ranking__pos">{i + 1}</span>
+											<span class="ranking__jugador">
+												{goleador.jugador}
+												<small>{goleador.equipo.nombre}</small>
+											</span>
+											<span class="ranking__equipo">
+												<i style={`--club: ${goleador.equipo.color_principal}`} aria-hidden="true"></i>
+												{goleador.equipo.nombre}
+											</span>
+											<span class:list={['ranking__goles', { 'ranking__goles--lider': i === 0 }]}>
+												{goleador.goles}
+											</span>
+										</li>
+									))}
+								</ol>
 							</div>
+
 							{hayMasGoleadores && (
-								<button
-									type="button"
-									class="goleadores-toggle"
-									id="goleadores-toggle"
-									aria-expanded="false"
-									aria-controls="goleadores-table"
-								>
+								<button type="button" class="ver-todos" id="goleadores-toggle" aria-expanded="false" aria-controls="goleadores-lista">
 									Ver todos los goleadores
 								</button>
 							)}
 						</>
-					)}
-				</div>
-
+					)
+				}
 			</div>
 		</section>
 	</main>
-	<SponsorsBanners />
 	<Footer />
 </Layout>
 
 <style>
 	.estadisticas {
-		padding: var(--spacing-lg) 0;
+		padding: var(--spacing-xl) 0 var(--spacing-2xl);
 	}
 
 	.page-title {
 		font-family: var(--font-headline);
-		font-size: 2rem;
+		font-size: clamp(2.5rem, 10vw, 3.2rem);
+		font-weight: 400;
+		line-height: 1;
 		text-transform: uppercase;
 		color: var(--color-neutral);
-		letter-spacing: 0.02em;
-		margin-bottom: var(--spacing-xs);
 	}
 
 	.page-subtitle {
+		margin: var(--spacing-sm) 0 var(--spacing-2xl);
 		font-family: var(--font-body);
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 		color: var(--color-secondary);
-		margin-bottom: var(--spacing-xl);
 	}
 
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--spacing-md);
-		padding: var(--spacing-2xl) 0;
+	.vacio {
+		padding: var(--spacing-xl) 0;
 		color: var(--color-secondary);
-		text-align: center;
 	}
 
-	.empty-state svg {
-		opacity: 0.4;
-	}
-
-	.empty-state p {
-		font-family: var(--font-body);
-		font-size: 0.9rem;
-		font-style: italic;
-	}
-
-	.stats-card {
-		background: linear-gradient(
-			145deg,
-			var(--color-tertiary-light) 0%,
-			var(--color-tertiary) 100%
-		);
-		border-radius: var(--border-radius-lg);
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		box-shadow: var(--shadow-sm);
-		padding: var(--spacing-md);
-		margin-bottom: var(--spacing-lg);
-		transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-	}
-
-	.stats-card:active {
-		transform: scale(0.99);
-	}
-
-	.stats-card__title {
-		display: flex;
+	.ranking__cabecera,
+	.ranking__fila {
+		display: grid;
+		grid-template-columns: 2rem minmax(0, 1fr) 4.25rem;
 		align-items: center;
 		gap: var(--spacing-sm);
-		font-family: var(--font-headline);
-		font-size: 1.2rem;
-		text-transform: uppercase;
-		color: var(--color-neutral);
-		letter-spacing: 0.02em;
-		margin-bottom: var(--spacing-md);
-		padding-bottom: var(--spacing-sm);
-		border-bottom: 2px solid var(--color-primary);
 	}
 
-	.stats-card__title svg {
-		flex-shrink: 0;
-		opacity: 0.8;
-	}
-
-	.stats-table-wrapper {
-		overflow-x: auto;
-		margin: 0 calc(-1 * var(--spacing-md));
-		padding: 0 var(--spacing-md);
-		-webkit-overflow-scrolling: touch;
-		scrollbar-width: thin;
-	}
-
-	.stats-table {
-		width: 100%;
-		min-width: 0;
-		table-layout: fixed;
-		border-collapse: separate;
-		border-spacing: 0 4px;
-	}
-
-	.stats-table__th {
-		font-family: var(--font-label);
-		font-size: 0.65rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		color: var(--color-neutral);
-		padding: var(--spacing-sm) var(--spacing-xs);
-		text-align: center;
-		letter-spacing: 0.06em;
-		white-space: nowrap;
-		background: var(--color-primary);
-	}
-
-	.stats-table__th:first-child {
-		border-radius: var(--border-radius-sm) 0 0 var(--border-radius-sm);
-		padding-left: var(--spacing-sm);
-	}
-
-	.stats-table__th:last-child {
-		border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
-		padding-right: var(--spacing-sm);
-	}
-
-	.stats-table__th--pos {
-		text-align: center;
-		width: 48px;
-	}
-
-	.stats-table__th--player {
-		text-align: left;
-	}
-
-	.stats-table__th--team {
-		text-align: left;
-	}
-
-	.stats-table__th--stat {
-		text-align: center;
-		width: 64px;
-	}
-
-	.stats-table__row {
-		transition: background 0.2s;
-		border-radius: var(--border-radius-sm);
-	}
-
-	.stats-table__row:hover {
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	.stats-table__td {
-		font-family: var(--font-label);
-		font-size: 0.75rem;
-		color: var(--color-secondary);
-		padding: var(--spacing-sm) var(--spacing-xs);
-		text-align: center;
-		white-space: nowrap;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-	}
-
-	.stats-table__td--pos {
-		text-align: center;
-		padding-left: var(--spacing-sm);
-	}
-
-	.stats-table__td--player {
-		text-align: left;
-		white-space: normal;
-	}
-
-	/* En móvil la columna de equipo se oculta y el club va bajo el jugador. */
-	.stats-table__th--team,
-	.stats-table__td--team {
-		display: none;
-	}
-
-	.stats-table__team-inline {
-		display: block;
-		margin-top: 2px;
-		font-family: var(--font-label);
-		font-size: 0.62rem;
-		color: var(--color-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-
-	.stats-table__td--team {
-		text-align: left;
-	}
-
-	.stats-table__td--stat {
-		text-align: center;
-	}
-
-	.stats-table__pos-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.06);
-		font-family: var(--font-label);
-		font-size: 0.7rem;
-		font-weight: 600;
-		color: var(--color-secondary);
-	}
-
-	.stats-table__pos-badge--medal {
-		background: transparent;
-		font-size: 1.1rem;
-	}
-
-	.stats-table__player-name {
+	.ranking__cabecera {
+		padding: 0 var(--spacing-sm) var(--spacing-sm);
 		font-family: var(--font-body);
-		font-size: 0.85rem;
-		font-weight: 500;
-		color: var(--color-neutral);
-		text-decoration: none;
-		transition: color 0.2s;
-	}
-
-	@media (hover: hover) {
-		.stats-table__player-name:hover {
-			color: var(--color-primary-light);
-			text-decoration: underline;
-		}
-	}
-
-	.stats-table__team-name {
-		font-family: var(--font-label);
 		font-size: 0.7rem;
-		color: var(--color-secondary);
 		text-transform: uppercase;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.06em;
+		color: var(--color-secondary);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
-	.stats-table__stat-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 34px;
-		padding: 3px 10px;
-		border-radius: 20px;
-		font-family: var(--font-label);
-		font-size: 0.8rem;
-		font-weight: 700;
-	}
-
-	.stats-table__stat-badge--goles {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
-	}
-
-	.stats-table__stat-badge--total {
-		background: rgba(168, 173, 179, 0.15);
-		color: var(--color-secondary-light);
-	}
-
-	/* Jerarquía del top 5: el 1.º destaca más que el 2.º, y así sucesivamente. */
-	.stats-table__row--rank-1 {
-		background: linear-gradient(
-			90deg,
-			rgba(230, 30, 42, 0.24) 0%,
-			rgba(230, 30, 42, 0.06) 100%
-		);
-	}
-
-	.stats-table__row--rank-2 {
-		background: linear-gradient(
-			90deg,
-			rgba(201, 206, 214, 0.16) 0%,
-			rgba(201, 206, 214, 0.03) 100%
-		);
-	}
-
-	.stats-table__row--rank-3 {
-		background: linear-gradient(
-			90deg,
-			rgba(205, 127, 50, 0.14) 0%,
-			rgba(205, 127, 50, 0.03) 100%
-		);
-	}
-
-	.stats-table__row--rank-4 {
-		background: rgba(255, 255, 255, 0.03);
-	}
-
-	.stats-table__row--rank-1 .stats-table__td:first-child,
-	.stats-table__row--rank-2 .stats-table__td:first-child,
-	.stats-table__row--rank-3 .stats-table__td:first-child {
-		box-shadow: inset 3px 0 0 var(--rank-accent);
-	}
-
-	.stats-table__row--rank-1 {
-		--rank-accent: #f5c542;
-	}
-
-	.stats-table__row--rank-2 {
-		--rank-accent: #c9ced6;
-	}
-
-	.stats-table__row--rank-3 {
-		--rank-accent: #cd7f32;
-	}
-
-	.stats-table__row--rank-1 .stats-table__td {
-		padding-top: var(--spacing-md);
-		padding-bottom: var(--spacing-md);
-	}
-
-	.stats-table__row--rank-1 .stats-table__player-name {
-		font-size: clamp(1.05rem, 1rem + 0.6vw, 1.45rem);
-		font-weight: 700;
-		color: var(--color-neutral);
-	}
-
-	.stats-table__row--rank-2 .stats-table__player-name {
-		font-size: clamp(0.98rem, 0.94rem + 0.35vw, 1.22rem);
-		font-weight: 600;
-	}
-
-	.stats-table__row--rank-3 .stats-table__player-name {
-		font-size: clamp(0.92rem, 0.9rem + 0.2vw, 1.08rem);
-		font-weight: 600;
-	}
-
-	.stats-table__row--rank-4 .stats-table__player-name {
-		font-size: clamp(0.88rem, 0.86rem + 0.12vw, 0.98rem);
-	}
-
-	.stats-table__row--rank-5 .stats-table__player-name {
-		font-size: clamp(0.85rem, 0.84rem + 0.08vw, 0.92rem);
-		color: var(--color-neutral);
-	}
-
-	.stats-table__row--rank-1 .stats-table__pos-badge {
-		width: 36px;
-		height: 36px;
-		font-size: 1.35rem;
-	}
-
-	.stats-table__row--rank-2 .stats-table__pos-badge {
-		width: 32px;
-		height: 32px;
-		font-size: 1.15rem;
-	}
-
-	.stats-table__row--rank-1 .stats-table__stat-badge--goles {
-		font-size: clamp(0.85rem, 0.8rem + 0.2vw, 1rem);
-		padding: 4px 14px;
-		background: var(--color-primary);
-		color: var(--color-neutral);
-	}
-
-	.stats-table__row--rank-2 .stats-table__stat-badge--goles {
-		font-size: 0.78rem;
-		padding: 3px 12px;
-	}
-
-	.stats-table__row--rank-4 .stats-table__stat-badge--goles,
-	.stats-table__row--rank-5 .stats-table__stat-badge--goles {
-		background: rgba(34, 197, 94, 0.1);
-		color: #86efac;
-	}
-
-	.stats-table:not(.is-expanded) .stats-table__row--extra {
+	.ranking__cabecera span:nth-child(3) {
 		display: none;
 	}
 
-	.goleadores-toggle {
+	.ranking__cabecera span:last-child,
+	.ranking__goles {
+		text-align: right;
+	}
+
+	.ranking__fila {
+		padding: var(--spacing-md) var(--spacing-sm);
+		font-family: var(--font-body);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+	}
+
+	.ranking__pos {
+		font-size: 0.95rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-secondary);
+	}
+
+	.ranking__jugador {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		margin-top: var(--spacing-md);
-		padding: var(--spacing-md) var(--spacing-lg);
-		background: linear-gradient(145deg, rgba(230, 30, 42, 0.08), rgba(230, 30, 42, 0.02));
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: var(--border-radius-md);
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		font-size: 0.95rem;
 		color: var(--color-neutral);
+	}
+
+	.ranking__jugador small {
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--color-secondary);
+	}
+
+	.ranking__equipo {
+		display: none;
+		align-items: center;
+		gap: var(--spacing-sm);
+		font-size: 0.85rem;
+		color: var(--color-secondary);
+	}
+
+	.ranking__equipo i {
+		width: 3px;
+		height: 20px;
+		background: var(--club);
+		border-radius: 2px;
+	}
+
+	.ranking__goles {
+		font-family: var(--font-headline);
+		font-size: 1.5rem;
+		line-height: 1;
+		color: var(--color-neutral);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.ranking__goles--lider {
+		color: var(--color-primary);
+	}
+
+	.ver-todos {
+		width: 100%;
+		margin-top: var(--spacing-lg);
+		padding: var(--spacing-md);
 		font-family: var(--font-body);
 		font-size: 0.9rem;
 		font-weight: 600;
+		color: var(--color-neutral);
+		background: transparent;
+		border: 1px solid rgba(255, 255, 255, 0.18);
+		border-radius: var(--border-radius-sm);
 		cursor: pointer;
-		transition: background 0.2s, border-color 0.2s, transform 0.2s;
 	}
 
-	.goleadores-toggle:hover,
-	.goleadores-toggle:focus-visible {
-		background: linear-gradient(145deg, rgba(230, 30, 42, 0.18), rgba(230, 30, 42, 0.06));
-		border-color: rgba(230, 30, 42, 0.35);
-		outline: none;
+	.ver-todos:hover,
+	.ver-todos:focus-visible {
+		border-color: var(--color-primary);
 	}
 
-	.goleadores-toggle:active {
-		transform: scale(0.99);
+	#goleadores-lista:not(.is-expanded) .ranking__fila--extra {
+		display: none;
 	}
 
 	@media (min-width: 640px) {
-		.estadisticas {
-			padding: var(--spacing-xl) 0;
+		.ranking__cabecera,
+		.ranking__fila {
+			grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 1fr) 4.25rem;
 		}
 
-		.page-title {
-			font-size: 2.4rem;
+		.ranking__cabecera span:nth-child(3) {
+			display: block;
 		}
 
-		.stats-card {
-			padding: var(--spacing-xl);
+		.ranking__cabecera span:nth-child(3),
+		.ranking__equipo {
+			text-align: left;
 		}
 
-		.stats-card__title {
-			font-size: 1.3rem;
+		.ranking__equipo {
+			display: flex;
 		}
 
-		.stats-table {
-			min-width: 420px;
-			table-layout: auto;
-		}
-
-		.stats-table__th--pos {
-			width: 44px;
-		}
-
-		.stats-table__th--stat {
-			width: 100px;
-		}
-
-		.stats-table__th--team,
-		.stats-table__td--team {
-			display: table-cell;
-		}
-
-		.stats-table__team-inline {
+		.ranking__jugador small {
 			display: none;
 		}
 
-		.stats-table__th {
-			font-size: 0.7rem;
-			padding: var(--spacing-md) var(--spacing-sm);
-		}
-
-		.stats-table__th:first-child {
-			padding-left: var(--spacing-md);
-		}
-
-		.stats-table__th:last-child {
-			padding-right: var(--spacing-md);
-		}
-
-		.stats-table__td {
-			font-size: 0.8rem;
-			padding: var(--spacing-md) var(--spacing-sm);
-		}
-
-		.stats-table__td--pos {
-			padding-left: var(--spacing-md);
-		}
-
-		.stats-table__player-name {
-			font-size: 0.9rem;
-		}
-
-		.stats-table__team-name {
-			font-size: 0.75rem;
-		}
-
-		.stats-table__stat-badge {
-			font-size: 0.8rem;
-			padding: 3px 12px;
-		}
-
-		.stats-table__pos-badge {
-			width: 32px;
-			height: 32px;
-			font-size: 0.8rem;
-		}
-
-		.stats-table__pos-badge--medal {
-			font-size: 1.2rem;
+		.ranking__fila {
+			padding: var(--spacing-md);
 		}
 	}
 
@@ -593,79 +226,19 @@ function medalla(pos: number): string {
 			padding: var(--spacing-2xl) 0;
 		}
 
-		.page-title {
-			font-size: 2.8rem;
-		}
-
-		.page-subtitle {
-			font-size: 1rem;
-			margin-bottom: var(--spacing-2xl);
-		}
-
-		.stats-card {
-			padding: var(--spacing-xl);
-			margin-bottom: var(--spacing-xl);
-			transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
-		}
-
-		.stats-card:hover {
-			transform: translateY(-4px);
-			box-shadow: var(--shadow-lg);
-			border-color: rgba(230, 30, 42, 0.3);
-		}
-
-		.stats-card:active {
-			transform: scale(0.98);
-		}
-
-		.stats-card__title {
-			font-size: 1.4rem;
-			margin-bottom: var(--spacing-lg);
-		}
-
-		.stats-table__th {
-			font-size: 0.75rem;
-		}
-
-		.stats-table__td {
-			font-size: 0.85rem;
-		}
-
-		.stats-table__player-name {
-			font-size: 0.95rem;
-		}
-
-		.stats-table__stat-badge {
-			font-size: 0.8rem;
-		}
-
-		.stats-table__table {
-			border-spacing: 0 6px;
-		}
-	}
-
-	@media (min-width: 1280px) {
-		.page-title {
-			font-size: 3.2rem;
-		}
-
-		.stats-card__title {
-			font-size: 1.5rem;
-		}
-
-		.stats-table__player-name {
-			font-size: 1rem;
+		.ranking__goles {
+			font-size: 1.75rem;
 		}
 	}
 </style>
 
 <script>
-	const boton = document.getElementById("goleadores-toggle");
-	const tabla = document.getElementById("goleadores-table");
+	const boton = document.getElementById('goleadores-toggle');
+	const lista = document.getElementById('goleadores-lista');
 
-	boton?.addEventListener("click", () => {
-		const expandido = tabla?.classList.toggle("is-expanded") ?? false;
-		boton.setAttribute("aria-expanded", String(expandido));
-		boton.textContent = expandido ? "Ver menos" : "Ver todos los goleadores";
+	boton?.addEventListener('click', () => {
+		const expandido = lista?.classList.toggle('is-expanded') ?? false;
+		boton.setAttribute('aria-expanded', String(expandido));
+		boton.textContent = expandido ? 'Ver menos' : 'Ver todos los goleadores';
 	});
 </script>

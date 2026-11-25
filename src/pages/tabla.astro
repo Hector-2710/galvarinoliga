@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
-import SponsorsBanners from "../components/SponsorsBanners.astro";
 import Footer from "../components/Footer.astro";
 import StandingsTable from "../components/StandingsTable.astro";
 import { calcularTabla } from "../lib/liga";
@@ -9,6 +8,7 @@ import { calcularTabla } from "../lib/liga";
 const standings = (await calcularTabla()).map((fila) => ({
 	pos: fila.pos,
 	equipo_nombre: fila.equipo.nombre,
+	logo: fila.equipo.logo,
 	pj: fila.pj,
 	g: fila.g,
 	e: fila.e,
@@ -25,12 +25,12 @@ const standings = (await calcularTabla()).map((fila) => ({
 	<main class="main-content">
 		<section class="tabla">
 			<div class="container">
-				<h1 class="page-title fade-in-up">Tabla de Posiciones</h1>
-				<p class="page-subtitle fade-in-up">Revisa la clasificación actualizada de todos los equipos de la liga comunal en Galvarino</p>
+				<h1 class="page-title">Tabla de Posiciones</h1>
+				<p class="page-subtitle">Revisa la clasificación actualizada de todos los equipos de la liga comunal en Galvarino</p>
 
 				{
 					standings.length > 0 ? (
-						<StandingsTable teams={standings} />
+						<StandingsTable teams={standings} ocultarTitulo />
 					) : (
 						<div class="empty-state">
 							<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -46,7 +46,6 @@ const standings = (await calcularTabla()).map((fila) => ({
 			</div>
 		</section>
 	</main>
-	<SponsorsBanners />
 	<Footer />
 </Layout>
 
