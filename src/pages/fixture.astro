@@ -30,36 +30,27 @@ function dia(fecha: string): Date {
 					jornadas.length === 0 ? (
 						<p class="vacio">En espera del comienzo de la temporada.</p>
 					) : (
-						jornadas.map((jornada) => {
-							const finalizados = jornada.partidos.filter((p) => p.estado === 'finalizado').length;
-							const programados = jornada.partidos.length - finalizados;
-							return (
-								<section class="jornada">
-									<div class="jornada__cabecera">
-										<h2 class="jornada__titulo">
-											<span>Jornada</span>
-											<span class="jornada__numero">{jornada.numero}</span>
-										</h2>
-										<p class="jornada__info">
-											<span>{fechaCorta.format(dia(jornada.fecha_inicio))}</span>
-											{finalizados > 0 && <span>{finalizados} finalizados</span>}
-											{programados > 0 && <span>{programados} por jugar</span>}
-										</p>
-									</div>
-									<ol class="jornada__partidos">
-										{jornada.partidos.map((partido) => (
-											<li>
-												<MatchRow
-													partido={partido}
-													href={`/partidos/${partido.slug}`}
-													conFecha
-												/>
-											</li>
-										))}
-									</ol>
-								</section>
-							);
-						})
+						jornadas.map((jornada) => (
+							<section class="jornada">
+								<div class="jornada__cabecera">
+									<h2 class="jornada__titulo">
+										<span>Jornada</span>
+										<span class="jornada__numero">{jornada.numero}</span>
+									</h2>
+									<p class="jornada__fecha">{fechaCorta.format(dia(jornada.fecha_inicio))}</p>
+								</div>
+								<ol class="jornada__partidos">
+									{jornada.partidos.map((partido) => (
+										<li>
+											<MatchRow
+												partido={partido}
+												href={`/partidos/${partido.slug}`}
+											/>
+										</li>
+									))}
+								</ol>
+							</section>
+						))
 					)
 				}
 			</div>
@@ -129,19 +120,10 @@ function dia(fecha: string): Date {
 		color: var(--color-neutral);
 	}
 
-	.jornada__info {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--spacing-xs) var(--spacing-md);
+	.jornada__fecha {
 		font-family: var(--font-body);
 		font-size: 0.75rem;
 		color: var(--color-secondary);
-	}
-
-	.jornada__info span + span::before {
-		content: '·';
-		margin-right: var(--spacing-md);
-		opacity: 0.5;
 	}
 
 	.jornada__partidos {
@@ -174,7 +156,7 @@ function dia(fecha: string): Date {
 			font-size: 3.5rem;
 		}
 
-		.jornada__info {
+		.jornada__fecha {
 			font-size: 0.9rem;
 		}
 	}
