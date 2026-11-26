@@ -18,6 +18,41 @@ This is where the community follows the championship: fixtures, results, standin
 
 Squad lists and coaching staff will be added later.
 
+## Screenshots
+
+The site is built mobile-first. These views are from the 2026 season (click to open at full size):
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="public/images/web/home.jpeg"><img src="public/images/web/home.jpeg" width="170" alt="Home screen"></a><br/>
+      <b>Home</b>
+    </td>
+    <td align="center">
+      <a href="public/images/web/home-2.jpeg"><img src="public/images/web/home-2.jpeg" width="170" alt="Home screen, scrolled"></a><br/>
+      <b>Home (scroll)</b>
+    </td>
+    <td align="center">
+      <a href="public/images/web/jornadas.jpeg"><img src="public/images/web/jornadas.jpeg" width="170" alt="Fixture screen"></a><br/>
+      <b>Fixture</b>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="public/images/web/equipos.jpeg"><img src="public/images/web/equipos.jpeg" width="170" alt="Clubs screen"></a><br/>
+      <b>Clubs</b>
+    </td>
+    <td align="center">
+      <a href="public/images/web/goleadores.jpeg"><img src="public/images/web/goleadores.jpeg" width="170" alt="Goal scorers screen"></a><br/>
+      <b>Goal scorers</b>
+    </td>
+    <td align="center">
+      <a href="public/images/web/menu.jpeg"><img src="public/images/web/menu.jpeg" width="170" alt="Navigation menu"></a><br/>
+      <b>Menu</b>
+    </td>
+  </tr>
+</table>
+
 ## Clubs
 
 The 2026 season includes:
